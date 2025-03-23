@@ -4,7 +4,8 @@ from multiprocessing.pool import Pool
 
 import tqdm
 
-from lite_dist2.trial import Mapping, Trial
+from lite_dist2.trial import Trial
+from lite_dist2.type_definitions import RawParamType, RawResultType
 from lite_dist2.value_models.space import ParameterSpace
 
 
@@ -15,61 +16,63 @@ class RunnerConfig:
 
 
 class BaseTrialRunner(metaclass=abc.ABCMeta):
-    def __init__(self, runner_config: RunnerConfig):
+    def __init__(self, runner_config: RunnerConfig) -> None:
         self.runner_config = runner_config
 
     @abc.abstractmethod
-    def func(self, *args):
+    def func(self, *args: RawParamType) -> tuple[RawParamType, RawResultType]:
         pass
 
     @abc.abstractmethod
-    def wrap_func(self, parameter_space: ParameterSpace, pool: Pool | None) -> list[Mapping]:
+    def wrap_func(
+        self,
+        parameter_space: ParameterSpace, pool: Pool | None
+    ) -> list[tuple[RawParamType, RawResultType]]:
         pass
 
     def run(self, trial: Trial, pool: Pool | None = None) -> Trial:
-        result_list = self.wrap_func(trial.parameter_space, pool)
-        trial = trial.create_new_with(result_list)
-        return trial
+        raw_mappings = self.wrap_func(trial.parameter_space, pool)
+        mappings = trial.convert_mappings_from(raw_mappings)
+        return trial.create_new_with(mappings)
 
 
 class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
-    def __init__(self, runner_config: RunnerConfig):
+    def __init__(self, runner_config: RunnerConfig) -> None:
         super().__init__(runner_config)
 
-    def wrap_func(self, parameter_space: ParameterSpace, _: Pool | None) -> list[Mapping]:
-        mappings = []
+    def wrap_func(
+            self,
+            parameter_space: ParameterSpace, _: Pool | None
+    ) -> list[tuple[RawParamType, RawResultType]]:
+        raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         total = parameter_space.get_total()
         if self.runner_config.process_num > 1:
             with Pool(processes=self.runner_config.process_num) as pool:
                 with tqdm.tqdm(total=total) as p_bar:
-                    for arg_tuple, result in pool.imap_unordered(self.func, parameter_space.grid()):
-                        parameter = parameter_space.value_tuple_to_param_type(arg_tuple)
-                        mappings.append(Mapping(param=parameter, result=result))
+                    for arg_tuple, result_iter in pool.imap_unordered(self.func, parameter_space.grid()):
+                        # parameter = parameter_space.value_tuple_to_param_type(arg_tuple)
+                        raw_mappings.append((arg_tuple, result_iter))
                         p_bar.update(1)
-            return mappings
+            return raw_mappings
         else:
-            return [
-                Mapping(param=parameter_space.value_tuple_to_param_type(arg_tuple), result=self.func(arg_tuple))
-                for arg_tuple in tqdm.tqdm(parameter_space.grid(), total=total)
-            ]
+            return [self.func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), total=total)]
 
 
 class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
-    def __init__(self, runner_config: RunnerConfig):
+    def __init__(self, runner_config: RunnerConfig) -> None:
         super().__init__(runner_config)
 
-    def wrap_func(self, parameter_space: ParameterSpace, pool: Pool | None) -> list[Mapping]:
-        mappings = []
+    def wrap_func(
+            self,
+            parameter_space: ParameterSpace, pool: Pool | None
+    ) -> list[tuple[RawParamType, RawResultType]]:
+        raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         total = parameter_space.get_total()
         if self.runner_config.process_num > 1:
             with tqdm.tqdm(total=total) as p_bar:
-                for arg_tuple, result in pool.imap_unordered(self.func, parameter_space.grid()):
-                    parameter = parameter_space.value_tuple_to_param_type(arg_tuple)
-                    mappings.append(Mapping(param=parameter, result=result))
+                for arg_tuple, result_iter in pool.imap_unordered(self.func, parameter_space.grid()):
+                    raw_mappings.append((arg_tuple, result_iter))
                     p_bar.update(1)
-            return mappings
+            return raw_mappings
         else:
-            return [
-                Mapping(param=parameter_space.value_tuple_to_param_type(arg_tuple), result=self.func(arg_tuple))
-                for arg_tuple in tqdm.tqdm(parameter_space.grid(), total=total)
-            ]
+            return [self.func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), total=total)]

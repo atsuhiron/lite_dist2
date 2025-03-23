@@ -1,5 +1,9 @@
-from lite_dist2.value_models.point import Value, VectorValue
+from typing import Iterable
 
-type ValueType = int | float | bool
-type ParamType = list[Value]
-type ResultType = Value | VectorValue
+from lite_dist2.value_models.point import ScalerValue, VectorValue
+
+type PrimitiveValueType = int | float | bool
+type RawParamType = tuple[PrimitiveValueType, ...]
+type RawResultType = Iterable[PrimitiveValueType] | PrimitiveValueType
+type ParamType = list[ScalerValue]
+type ResultType = ScalerValue | VectorValue
