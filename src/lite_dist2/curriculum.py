@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 from lite_dist2.study import Study
 
+
 class Curriculum(BaseModel):
     studies: list[Study]
 
