@@ -1,6 +1,7 @@
 import abc
 import dataclasses
 from multiprocessing.pool import Pool
+from typing import Iterator
 
 import tqdm
 
@@ -50,7 +51,6 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
             with Pool(processes=self.runner_config.process_num) as pool:
                 with tqdm.tqdm(total=total) as p_bar:
                     for arg_tuple, result_iter in pool.imap_unordered(self.func, parameter_space.grid()):
-                        # parameter = parameter_space.value_tuple_to_param_type(arg_tuple)
                         raw_mappings.append((arg_tuple, result_iter))
                         p_bar.update(1)
             return raw_mappings
@@ -58,7 +58,7 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
             return [self.func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), total=total)]
 
 
-class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
+class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
     def __init__(self, runner_config: RunnerConfig) -> None:
         super().__init__(runner_config)
 
@@ -76,3 +76,21 @@ class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
             return raw_mappings
         else:
             return [self.func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), total=total)]
+
+
+class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
+    def __init__(self, runner_config: RunnerConfig) -> None:
+        super().__init__(runner_config)
+
+    def func(self, *args: RawParamType) -> tuple[RawParamType, RawResultType]:
+        pass
+
+    @abc.abstractmethod
+    def batch_func(self, raw_params: Iterator[RawParamType]) -> list[tuple[RawParamType, RawResultType]]:
+        pass
+
+    def wrap_func(
+            self,
+            parameter_space: ParameterSpace, pool: Pool | None
+    ) -> list[tuple[RawParamType, RawResultType]]:
+        return self.batch_func(parameter_space.grid())
