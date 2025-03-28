@@ -32,7 +32,7 @@ class ScalerValue(BaseModel, BasePointValue):
     name: str | None = None
 
     def numerize(self) -> PrimitiveValueType:
-        match self.type:
+        match self.value_type:
             case "bool":
                 return self.value
             case "int":
@@ -70,7 +70,7 @@ class VectorValue(BaseModel, BasePointValue):
     name: str | None = None
 
     def numerize(self) -> list[PrimitiveValueType]:
-        match self.type:
+        match self.value_type:
             case "bool":
                 return self.values
             case "int":
@@ -99,3 +99,7 @@ class VectorValue(BaseModel, BasePointValue):
                 return VectorValue(type="vector", value_type="float", values=val, name=name)
             case _:
                 raise LD2InvalidParameterError(f"Unknown type: {value_type}")
+
+
+type ParamType = list[ScalerValue]
+type ResultType = ScalerValue | VectorValue

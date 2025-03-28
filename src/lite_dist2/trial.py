@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from typing_extensions import Literal
 
 from lite_dist2.expections import LD2InvalidParameterError
-from lite_dist2.type_definitions import ParamType, RawParamType, RawResultType, ResultType
-from lite_dist2.value_models.point import ScalerValue, VectorValue
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.value_models.point import ParamType, ResultType, ScalerValue, VectorValue
 from lite_dist2.value_models.space import ParameterSpace
 
 

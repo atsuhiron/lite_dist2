@@ -7,6 +7,7 @@ import lite_dist2.common as common
     ("hex_str", "expected"),
     [
         ("0", 0),
+        ("01", 1),
         ("a", 10),
         ("a54f", 42319)
     ]

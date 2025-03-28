@@ -5,8 +5,8 @@ from typing import Annotated, Generator, Literal
 from pydantic import BaseModel, Field
 
 from lite_dist2.common import hex2float, hex2int
-from lite_dist2.type_definitions import ParamType, PrimitiveValueType
-from lite_dist2.value_models.point import ScalerValue
+from lite_dist2.type_definitions import PrimitiveValueType
+from lite_dist2.value_models.point import ParamType, ScalerValue
 
 
 class LineSegment(BaseModel, metaclass=abc.ABCMeta):
