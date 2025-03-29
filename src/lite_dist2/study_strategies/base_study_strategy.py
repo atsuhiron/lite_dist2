@@ -15,3 +15,8 @@ class BaseStudyStrategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def is_done(self, trial_table: TrialTable) -> bool:
         pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def can_merge() -> bool:
+        pass
