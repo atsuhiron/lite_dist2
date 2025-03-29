@@ -2,7 +2,7 @@ from typing import Any, Literal
 
 import pytest
 
-from lite_dist2.expections import LD2InvalidParameterError
+from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.value_models.point import ScalerValue, VectorValue
 
 
@@ -36,15 +36,16 @@ def test_scaler_value_deserialize(json_dict: dict[str, Any], expected: ScalerVal
         (ScalerValue(type="scaler", value_type="float", value="0x1.999999999999ap-4"), 0.1),
     ],
 )
-def test_scaler_value_numerize(scaler_value: ScalerValue, expected: bool | int | float) -> None:
+def test_scaler_value_numerize(scaler_value: ScalerValue, expected: bool | float) -> None:
     actual = scaler_value.numerize()
     assert actual == expected
 
 
 def test_scaler_value_numerize_value_type_error() -> None:
     scaler = ScalerValue(type="scaler", value_type="bool", value=True)
-    scaler.value_type = "invalid"  # noqa
-    with pytest.raises(LD2InvalidParameterError, match=r"Unknown\stype:\s"):
+    # noinspection PyTypeChecker
+    scaler.value_type = "invalid"
+    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
         _ = scaler.numerize()
 
 
@@ -57,7 +58,7 @@ def test_scaler_value_numerize_value_type_error() -> None:
     ],
 )
 def test_scaler_value_create_from_numeric(
-    raw_result_value: bool | int | float,
+    raw_result_value: bool | float,
     value_type: Literal["bool", "int", "float"],
     name: str | None,
     expected: ScalerValue,
@@ -67,8 +68,9 @@ def test_scaler_value_create_from_numeric(
 
 
 def test_scaler_value_create_from_numeric_value_type_error() -> None:
-    with pytest.raises(LD2InvalidParameterError, match=r"Unknown\stype:\s"):
-        _ = ScalerValue.create_from_numeric(raw_result_value=True, value_type="invalid")  # noqa
+    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
+        # noinspection PyTypeChecker
+        _ = ScalerValue.create_from_numeric(raw_result_value=True, value_type="invalid")
 
 
 @pytest.mark.parametrize(
@@ -108,8 +110,9 @@ def test_vector_value_numerize(vector_value: VectorValue, expected: list[bool | 
 
 def test_vector_value_numerize_value_type_error() -> None:
     vector = VectorValue(type="vector", value_type="bool", values=[True])
-    vector.value_type = "invalid"  # noqa
-    with pytest.raises(LD2InvalidParameterError, match=r"Unknown\stype:\s"):
+    # noinspection PyTypeChecker
+    vector.value_type = "invalid"
+    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
         _ = vector.numerize()
 
 
@@ -132,5 +135,6 @@ def test_vector_value_create_from_numeric(
 
 
 def test_vector_value_create_from_numeric_value_type_error() -> None:
-    with pytest.raises(LD2InvalidParameterError, match=r"Unknown\stype:\s"):
-        _ = VectorValue.create_from_numeric(raw_result_value=[True], value_type="invalid")  # noqa
+    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
+        # noinspection PyTypeChecker
+        _ = VectorValue.create_from_numeric(raw_result_value=[True], value_type="invalid")

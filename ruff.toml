@@ -2,7 +2,28 @@ target-version = "py312"
 line-length = 119
 
 [lint]
-select = ["E", "W", "F", "I", "ANN"]
+select = ["ALL"]
 ignore = [
-    "D"
+    "D",
+    "FIX002",   # use TODO
+    "TD002",    #
+    "TD003"     #
 ]
+
+[lint.per-file-ignores]
+"__init__.py" = [
+    "F401"      # The imported class is rarely used within __init__.py
+]
+"tests/**.py" = [
+    "S101"      # pytest use assert
+]
+
+[lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel"
+]
+
+[format]
+indent-style = "space"
+quote-style = "double"
+skip-magic-trailing-comma = false

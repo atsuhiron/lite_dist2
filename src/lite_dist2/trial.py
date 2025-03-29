@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, Literal
 
-from lite_dist2.expections import LD2InvalidParameterError
-from lite_dist2.type_definitions import RawParamType, RawResultType
+from pydantic import BaseModel
+
+from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.value_models.point import ParamType, ResultType, ScalerValue, VectorValue
 from lite_dist2.value_models.space import ParameterSpace
+
+if TYPE_CHECKING:
+    from lite_dist2.type_definitions import RawParamType, RawResultType
 
 
 class Mapping(BaseModel):
@@ -45,4 +48,4 @@ class Trial(BaseModel):
             case "vector":
                 return VectorValue.create_from_numeric(raw_result, self.result_value_type, self.result_name)
             case _:
-                raise LD2InvalidParameterError(f"Unknown type: {self.result_type}")
+                raise LD2ModelTypeError(self.result_type)

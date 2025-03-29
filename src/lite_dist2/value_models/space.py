@@ -1,12 +1,18 @@
+from __future__ import annotations
+
 import abc
 import itertools
-from typing import Annotated, Generator, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, Field
 
 from lite_dist2.common import hex2float, hex2int
-from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.point import ParamType, ScalerValue
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from lite_dist2.type_definitions import PrimitiveValueType
 
 
 class LineSegment(BaseModel, metaclass=abc.ABCMeta):
@@ -63,8 +69,7 @@ class ParameterSpace(BaseModel):
         return n
 
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
-        for point in itertools.product(*(axis.grid() for axis in self.axes)):
-            yield point
+        yield from itertools.product(*(axis.grid() for axis in self.axes))
 
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         # TODO: type="vector" にも対応させる
