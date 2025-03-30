@@ -7,7 +7,8 @@ ignore = [
     "D",
     "FIX002",   # use TODO
     "TD002",    #
-    "TD003"     #
+    "TD003",    #
+    "PLR0913"   # Because of my lazy
 ]
 
 [lint.per-file-ignores]

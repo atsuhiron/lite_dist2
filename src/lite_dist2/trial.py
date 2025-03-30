@@ -21,7 +21,6 @@ class Trial(BaseModel):
     parameter_space: ParameterSpace
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
-    result_name: str | None = None
     result: list[Mapping] | None = None
 
     def convert_mappings_from(self, raw_mappings: list[tuple[RawParamType, RawResultType]]) -> list[Mapping]:
@@ -37,15 +36,14 @@ class Trial(BaseModel):
             parameter_space=self.parameter_space,
             result_type=self.result_type,
             result_value_type=self.result_value_type,
-            result_name=self.result_name,
             result=mappings,
         )
 
     def _create_result_value(self, raw_result: RawResultType) -> ResultType:
         match self.result_type:
             case "scaler":
-                return ScalerValue.create_from_numeric(raw_result, self.result_value_type, self.result_name)
+                return ScalerValue.create_from_numeric(raw_result, self.result_value_type)
             case "vector":
-                return VectorValue.create_from_numeric(raw_result, self.result_value_type, self.result_name)
+                return VectorValue.create_from_numeric(raw_result, self.result_value_type)
             case _:
                 raise LD2ModelTypeError(self.result_type)
