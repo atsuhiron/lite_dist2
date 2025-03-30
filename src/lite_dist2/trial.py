@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
@@ -17,7 +18,15 @@ class Mapping(BaseModel):
     result: ResultType
 
 
+class TrialStatus(str, Enum):
+    not_exec = "not_exec"
+    running = "running"
+    done = "done"
+
+
 class Trial(BaseModel):
+    study_id: str
+    trial_status: TrialStatus
     parameter_space: ParameterSpace
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
@@ -31,13 +40,8 @@ class Trial(BaseModel):
             mappings.append(Mapping(param=param, result=result))
         return mappings
 
-    def create_new_with(self, mappings: list[Mapping]) -> Trial:
-        return Trial(
-            parameter_space=self.parameter_space,
-            result_type=self.result_type,
-            result_value_type=self.result_value_type,
-            result=mappings,
-        )
+    def set_result(self, mappings: list[Mapping]) -> None:
+        self.result = mappings
 
     def _create_result_value(self, raw_result: RawResultType) -> ResultType:
         match self.result_type:

@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel, Field
 
 from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.trial import Trial
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.point import ResultType
-from lite_dist2.value_models.space import ParameterSpace
+from lite_dist2.value_models.space import ParameterAlignedSpace
 
 if TYPE_CHECKING:
     from lite_dist2.study_strategies import BaseStudyStrategy
@@ -19,7 +20,7 @@ class StudyStrategyModel(BaseModel):
     type: Literal["all_calculation", "find_exact", "minimize"]
     target_value: ResultType | None
 
-    def create_strategy(self) -> BaseStudyStrategy:
+    def create_strategy(self, parameter_space: ParameterAlignedSpace) -> BaseStudyStrategy:
         match self.type:
             case "all_calculation":
                 raise NotImplementedError
@@ -35,10 +36,10 @@ class SuggestStrategyModel(BaseModel):
     type: Literal["sequential", "random", "designated"]
     parameter: dict[str, PrimitiveValueType | str] | None = None
 
-    def create_strategy(self) -> BaseSuggestStrategy:
+    def create_strategy(self, parameter_space: ParameterAlignedSpace) -> BaseSuggestStrategy:
         match self.type:
             case "sequential":
-                raise NotImplementedError
+                return SequentialSuggestStrategy(self.parameter, parameter_space)
             case "random":
                 raise NotImplementedError
             case "designated":
@@ -60,7 +61,7 @@ class StudyModel(BaseModel):
     name: str
     study_strategy: StudyStrategyModel
     suggest_strategy: SuggestStrategyModel
-    parameter_space: ParameterSpace
+    parameter_space: ParameterAlignedSpace
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     trial_table: TrialTable = Field(default_factory=TrialTable.create_empty)
@@ -73,7 +74,7 @@ class Study:
         name: str,
         study_strategy_model: StudyStrategyModel,
         suggest_strategy_model: SuggestStrategyModel,
-        parameter_space: ParameterSpace,
+        parameter_space: ParameterAlignedSpace,
         result_type: Literal["scaler", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         trial_table: TrialTable,
@@ -87,16 +88,17 @@ class Study:
         self.result_value_type = result_value_type
         self.trial_table = trial_table
 
-        self.study_strategy = study_strategy_model.create_strategy()
-        self.suggest_strategy = suggest_strategy_model.create_strategy()
+        self.study_strategy = study_strategy_model.create_strategy(self.parameter_space)
+        self.suggest_strategy = suggest_strategy_model.create_strategy(self.parameter_space)
 
     def is_done(self) -> bool:
         return self.study_strategy.is_done(self.trial_table, self.parameter_space)
 
-    def suggest_next_trial(self) -> Trial:
-        sub_parameter_space = self.suggest_strategy.suggest(self.trial_table, self.parameter_space)
+    def suggest_next_trial(self, num: int | None) -> Trial:
+        parameter_sub_space = self.suggest_strategy.suggest(self.trial_table, num)
         return Trial(
-            parameter_space=sub_parameter_space,
+            study_id=self.study_id,
+            parameter_space=parameter_sub_space,
             result_type=self.result_type,
             result_value_type=self.result_value_type,
         )

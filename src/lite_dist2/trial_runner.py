@@ -40,7 +40,8 @@ class BaseTrialRunner(metaclass=abc.ABCMeta):
     def run(self, trial: Trial, pool: Pool | None = None) -> Trial:
         raw_mappings = self.wrap_func(trial.parameter_space, pool)
         mappings = trial.convert_mappings_from(raw_mappings)
-        return trial.create_new_with(mappings)
+        trial.set_result(mappings)
+        return trial
 
 
 class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):

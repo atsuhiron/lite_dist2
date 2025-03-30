@@ -1,1 +1,2 @@
 from .base_suggest_strategy import BaseSuggestStrategy
+from .sequential_suggest_strategy import SequentialSuggestStrategy
