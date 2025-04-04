@@ -56,9 +56,9 @@ class TrialTable(BaseModel):
         if not self._try_init_aps():
             return
 
-        dims = self.trials[0].parameter_space.get_dims()
-        for d in range(len(dims)):
-            if d == (len(dims) - 1):
+        dim = self.trials[0].parameter_space.get_dim()
+        for d in range(dim):
+            if d == (dim - 1):
                 # last dimension
                 pass
 
@@ -66,7 +66,7 @@ class TrialTable(BaseModel):
         if self.aggregated_parameter_space is not None and len(self.aggregated_parameter_space) > 0:
             return True
         if len(self.trials) > 0:
-            self.aggregated_parameter_space = {i: [] for i in range(len(self.trials[0].parameter_space.get_dims()))}
+            self.aggregated_parameter_space = {i: [] for i in range(self.trials[0].parameter_space.get_dim())}
             return True
         return False
 
