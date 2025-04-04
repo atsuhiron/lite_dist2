@@ -16,7 +16,8 @@ ignore = [
     "F401"      # The imported class is rarely used within __init__.py
 ]
 "tests/**.py" = [
-    "S101"      # pytest use assert
+    "S101",     # pytest use assert
+    "FBT001",   # pytest use flag parameter
 ]
 
 [lint.flake8-type-checking]

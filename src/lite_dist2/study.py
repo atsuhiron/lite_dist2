@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
-from lite_dist2.trial import Trial
+from lite_dist2.trial import Trial, TrialStatus
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.point import ResultType
 from lite_dist2.value_models.space import ParameterAlignedSpace
@@ -50,10 +50,29 @@ class SuggestStrategyModel(BaseModel):
 
 class TrialTable(BaseModel):
     trials: list[Trial]
+    aggregated_parameter_space: dict[int, list[ParameterAlignedSpace]] | None
+
+    def simplify_aps(self) -> None:
+        if not self._try_init_aps():
+            return
+
+        dims = self.trials[0].parameter_space.get_dims()
+        for d in range(len(dims)):
+            if d == (len(dims) - 1):
+                # last dimension
+                pass
+
+    def _try_init_aps(self) -> bool:
+        if self.aggregated_parameter_space is not None and len(self.aggregated_parameter_space) > 0:
+            return True
+        if len(self.trials) > 0:
+            self.aggregated_parameter_space = {i: [] for i in range(len(self.trials[0].parameter_space.get_dims()))}
+            return True
+        return False
 
     @staticmethod
     def create_empty() -> TrialTable:
-        return TrialTable(trials=[])
+        return TrialTable(trials=[], aggregated_parameter_space=None)
 
 
 class StudyModel(BaseModel):
@@ -98,6 +117,7 @@ class Study:
         parameter_sub_space = self.suggest_strategy.suggest(self.trial_table, num)
         return Trial(
             study_id=self.study_id,
+            trial_status=TrialStatus.running,
             parameter_space=parameter_sub_space,
             result_type=self.result_type,
             result_value_type=self.result_value_type,

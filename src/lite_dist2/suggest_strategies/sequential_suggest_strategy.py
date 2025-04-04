@@ -20,8 +20,8 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         self.strict_aligned = self.suggest_parameter.get("strict_aligned", False)
 
     def suggest(self, trial_table: TrialTable, num: int | None) -> ParameterSpace:
-        dims: tuple[int, ...] = self.parameter_space.get_dims()
-        if len(dims) == 1:
+        dims = self.parameter_space.get_dim()
+        if dims == 1:
             return self.suggest_1dim(trial_table, num)
 
         # TODO: もうちょっと考えればもっと多くの場合で True にできる
