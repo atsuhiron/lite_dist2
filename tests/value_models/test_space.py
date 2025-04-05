@@ -141,6 +141,78 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
             0,
             False,  # has stride reverse False
         ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start="64", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            0,
+            True,  # filled y True
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start="64", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            0,
+            True,  # filled y reverse True
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start="65", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            0,
+            False,  # filled y but stride x False
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start="65", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                ],
+                filling_dim=[False, True],
+            ),
+            0,
+            False,  # filled y but stride x reverse False
+        ),
     ],
 )
 def test_parameter_aligned_space_can_merge(
