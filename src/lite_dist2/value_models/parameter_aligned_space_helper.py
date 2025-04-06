@@ -34,7 +34,7 @@ def simplify_table_by_dim(aps: list[ParameterAlignedSpace], target_dim: int) -> 
         group_space_list = sorted([aps[i] for i in group_index_set], key=lambda spc: spc.axes[target_dim].start)
         merged = group_space_list[0]
         for space in group_space_list[1:]:
-            merged = merged.merge(space)
+            merged = merged.merge(space, target_dim)
         new_aps.append(merged)
 
     return sorted(new_aps, key=lambda spc: spc.axes[target_dim].start)
