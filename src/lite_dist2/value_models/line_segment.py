@@ -212,7 +212,7 @@ class ParameterRangeInt(LineSegment):
             size=line_segment_model.size,
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
-            start=line_segment_model.start,
+            start=hex2int(line_segment_model.start),
             step=line_segment_model.step,
         )
 

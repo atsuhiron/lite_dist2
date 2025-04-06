@@ -53,7 +53,7 @@ def test_scaler_value_numerize_value_type_error() -> None:
     ("raw_result_value", "value_type", "name", "expected"),
     [
         (True, "bool", "flag", ScalerValue(type="scaler", value_type="bool", value=True, name="flag")),
-        (3875, "int", "num", ScalerValue(type="scaler", value_type="int", value="f23", name="num")),
+        (3875, "int", "num", ScalerValue(type="scaler", value_type="int", value="0xf23", name="num")),
         (0.1, "float", None, ScalerValue(type="scaler", value_type="float", value="0x1.999999999999ap-4")),
     ],
 )
@@ -81,8 +81,8 @@ def test_scaler_value_create_from_numeric_value_type_error() -> None:
             VectorValue(type="vector", value_type="bool", values=[True], name="some flag"),
         ),
         (
-            {"type": "vector", "value_type": "int", "values": ["f23"], "name": "some int"},
-            VectorValue(type="vector", value_type="int", values=["f23"], name="some int"),
+            {"type": "vector", "value_type": "int", "values": ["0xf23"], "name": "some int"},
+            VectorValue(type="vector", value_type="int", values=["0xf23"], name="some int"),
         ),
         (
             {"type": "vector", "value_type": "float", "values": ["0x1.999999999999ap-4"], "name": "some float"},
@@ -120,7 +120,7 @@ def test_vector_value_numerize_value_type_error() -> None:
     ("raw_result_value", "value_type", "name", "expected"),
     [
         ([True], "bool", "flag", VectorValue(type="vector", value_type="bool", values=[True], name="flag")),
-        ([3875], "int", "num", VectorValue(type="vector", value_type="int", values=["f23"], name="num")),
+        ([3875], "int", "num", VectorValue(type="vector", value_type="int", values=["0xf23"], name="num")),
         ([0.1], "float", None, VectorValue(type="vector", value_type="float", values=["0x1.999999999999ap-4"])),
     ],
 )

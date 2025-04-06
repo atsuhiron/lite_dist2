@@ -1,7 +1,9 @@
 import pytest
 
+from lite_dist2.common import hex2float
 from lite_dist2.value_models.line_segment import (
     LineSegment,
+    LineSegmentModel,
     ParameterRangeBool,
     ParameterRangeFloat,
     ParameterRangeInt,
@@ -200,3 +202,63 @@ def test_line_segment_merge(one: LineSegment, other: LineSegment, expected: Line
 def test_line_segment_is_universal(line_segment: LineSegment, expected: bool) -> None:
     actual = line_segment.is_universal()
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "model",
+    [
+        LineSegmentModel(name="x", type="bool", size=2, step=1, start=False, ambient_index="0x0", ambient_size="0x2"),
+        LineSegmentModel(type="bool", size=2, step=1, start=False, ambient_index="0x0", ambient_size="0x2"),
+    ],
+)
+def test_parameter_range_bool_to_model_from_model(model: LineSegmentModel) -> None:
+    segment = ParameterRangeBool.from_model(model)
+    reconstructed_model = segment.to_model()
+    assert model == reconstructed_model
+
+
+@pytest.mark.parametrize(
+    "model",
+    [
+        LineSegmentModel(name="x", type="int", size=10, step=1, start="0x0", ambient_index="0x0", ambient_size="0x64"),
+        LineSegmentModel(type="int", size=10, step=1, start="0x0", ambient_index="0x0", ambient_size="0x64"),
+    ],
+)
+def test_parameter_range_int_to_model_from_model(model: LineSegmentModel) -> None:
+    segment = ParameterRangeInt.from_model(model)
+    reconstructed_model = segment.to_model()
+    assert model == reconstructed_model
+
+
+@pytest.mark.parametrize(
+    "model",
+    [
+        LineSegmentModel(
+            name="x",
+            type="float",
+            size=10,
+            step="0x1.0p-1",
+            start="0x0.0p+0",
+            ambient_index="0x0",
+            ambient_size="0x64",
+        ),
+        LineSegmentModel(
+            type="float",
+            size=10,
+            step="0x1.0p-1",
+            start="0x0.0p+0",
+            ambient_index="0x0",
+            ambient_size="0x64",
+        ),
+    ],
+)
+def test_parameter_range_float_to_model_from_model(model: LineSegmentModel) -> None:
+    segment = ParameterRangeFloat.from_model(model)
+    reconstructed_model = segment.to_model()
+    assert model.name == reconstructed_model.name
+    assert model.type == reconstructed_model.type
+    assert model.size == reconstructed_model.size
+    assert model.ambient_index == reconstructed_model.ambient_index
+    assert model.ambient_size == reconstructed_model.ambient_size
+    assert hex2float(model.start) == hex2float(reconstructed_model.start)
+    assert hex2float(model.step) == hex2float(reconstructed_model.step)

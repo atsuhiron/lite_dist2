@@ -6,10 +6,11 @@ from lite_dist2 import common
 @pytest.mark.parametrize(
     ("hex_str", "expected"),
     [
-        ("0", 0),
-        ("01", 1),
-        ("a", 10),
-        ("a54f", 42319),
+        ("0x0", 0),
+        ("0x01", 1),
+        ("0xa", 10),
+        ("0xa54f", 42319),
+        ("-0x1", -1),
     ],
 )
 def test_hex2int(hex_str: str, expected: int) -> None:
@@ -19,9 +20,10 @@ def test_hex2int(hex_str: str, expected: int) -> None:
 @pytest.mark.parametrize(
     ("int_val", "expected"),
     [
-        (0, "0"),
-        (10, "a"),
-        (42319, "a54f"),
+        (0, "0x0"),
+        (10, "0xa"),
+        (42319, "0xa54f"),
+        (-1, "-0x1"),
     ],
 )
 def test_int2hex(int_val: int, expected: str) -> None:
