@@ -121,7 +121,12 @@ def test_line_segment_can_merge(one: LineSegment, other: LineSegment, expected: 
 @pytest.mark.parametrize(
     ("seg", "expected"),
     [
-        (),
+        (ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size="2", start=False), 0),
+        (ParameterRangeBool(type="bool", size=1, ambient_index=1, ambient_size="1", start=True), 1),
+        (ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size="ffff", start="0"), 9),
+        (ParameterRangeInt(type="int", size=10, ambient_index=5, ambient_size="ffff", start="0"), 14),
+        (ParameterRangeFloat(type="float", size=5, ambient_index=0, ambient_size="ff", start="0xb.0p+0", step=1), 4),
+        (ParameterRangeFloat(type="float", size=5, ambient_index=2, ambient_size="ff", start="0xb.0p+0", step=1), 6),
     ],
 )
 def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
