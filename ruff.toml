@@ -8,7 +8,8 @@ ignore = [
     "FIX002",   # use TODO
     "TD002",    #
     "TD003",    #
-    "PLR0913"   # Because of my lazy
+    "PLR0913",  # Because of my lazy
+    "ERA001",   # Ocurring False Positive
 ]
 
 [lint.per-file-ignores]

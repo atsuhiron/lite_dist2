@@ -19,6 +19,7 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
     type: Literal["bool", "int", "float"]
     size: int
     ambient_index: int
+    ambient_size: str | None = None
 
     @abc.abstractmethod
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
@@ -33,7 +34,12 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
         pass
 
     def derived_by_same_ambient_space_with(self, other: LineSegment) -> bool:
-        return (self.name == other.name) and (self.type == other.type) and (self.get_step() == other.get_step())
+        return (
+            (self.name == other.name)
+            and (self.type == other.type)
+            and (self.get_step() == other.get_step())
+            and (self.ambient_size == other.ambient_size)
+        )
 
     def can_merge(self, other: LineSegment) -> bool:
         if self.ambient_index < other.ambient_index:
@@ -51,6 +57,11 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
 
     def end_index(self) -> int:
         return self.ambient_index + self.size - 1
+
+    def is_universal(self) -> bool:
+        if self.ambient_size is None:
+            return False
+        return self.size == hex2int(self.ambient_size)
 
 
 class DummyLineSegment(LineSegment):
@@ -75,6 +86,7 @@ class ParameterRangeBool(LineSegment):
     start: bool
     size: Annotated[int, Field(..., ge=1, le=2)]
     step: Annotated[int, Field(1, ge=1, le=1)]
+    step: int = 1
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         for i in range(self.size):
@@ -88,11 +100,12 @@ class ParameterRangeBool(LineSegment):
         return self.step
 
     def merge(self, other: ParameterRangeBool) -> ParameterRangeBool:
-        smaller = self if self.ambient_index < other.ambient_index else other
+        smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
+        size = larger.end_index() - smaller.start
         return ParameterRangeBool(
             name=self.name,
             type="bool",
-            size=self.size + other.size,
+            size=size,
             ambient_index=smaller.ambient_index,
             start=smaller.start,
             step=self.step,
@@ -120,7 +133,7 @@ class ParameterRangeInt(LineSegment):
         return self.step
 
     def merge(self, other: ParameterRangeInt) -> ParameterRangeInt:
-        smaller = self if self.ambient_index < other.ambient_index else other
+        smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
         return ParameterRangeInt(
             name=self.name,
             type="int",
@@ -151,7 +164,7 @@ class ParameterRangeFloat(LineSegment):
         return self.step
 
     def merge(self, other: LineSegment) -> LineSegment:
-        smaller = self if self.ambient_index < other.ambient_index else other
+        smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
         return ParameterRangeFloat(
             name=self.name,
             type="float",
@@ -245,7 +258,7 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
             return False
 
         if not all(self.axes[d] == other.axes[d] for d in range(target_dim)):
-            # target_dim より上層の各次元が一致していなければ False
+            # target_dim より浅層の各次元が一致していなければ False
             return False
 
         self_axis = self.axes[target_dim]
@@ -253,9 +266,21 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
         return self_axis.can_merge(other_axis)
 
     def merge(self, other: ParameterAlignedSpace, target_dim: int) -> ParameterAlignedSpace:
-        self_axis = self.axes[target_dim]
-        other_axis = other.axes[target_dim]
-        merged_space = ParameterAlignedSpace()
+        axes = []
+        filling = []
+        for d in range(self.get_dim()):
+            if d != target_dim:
+                # 浅層次元か深層次元: 同じはずなのでそのままコピー
+                axes.append(self.axes[d])
+                filling.append(self.filling_dim[d])
+                continue
+
+            # target_dim
+            merged_axis = self.axes[d].merge(other.axes[d])
+            axes.append(merged_axis)
+            filling.append(merged_axis.is_universal())
+
+        return ParameterAlignedSpace(axes=axes, filling_dim=filling)
 
 
 class ParameterJaggedSpace(BaseModel, ParameterSpace):

@@ -10,3 +10,8 @@ class LD2ModelTypeError(LD2Error):
 class LD2ParameterError(LD2Error):
     def __init__(self, target_param: str, error_type: str) -> None:
         super().__init__(f"Invalid parameter: {target_param}; Error type: {error_type}")
+
+
+class LD2UndefinedError(LD2Error):
+    def __init__(self, name: str) -> None:
+        super().__init__(f"Undefined: {name}")
