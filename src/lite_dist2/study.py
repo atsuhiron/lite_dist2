@@ -9,7 +9,7 @@ from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.trial import Trial, TrialStatus
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.point import ResultType
-from lite_dist2.value_models.space import ParameterAlignedSpace
+from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 if TYPE_CHECKING:
     from lite_dist2.study_strategies import BaseStudyStrategy
@@ -80,7 +80,7 @@ class StudyModel(BaseModel):
     name: str
     study_strategy: StudyStrategyModel
     suggest_strategy: SuggestStrategyModel
-    parameter_space: ParameterAlignedSpace
+    parameter_space: ParameterAlignedSpaceModel
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     trial_table: TrialTable = Field(default_factory=TrialTable.create_empty)
@@ -129,7 +129,7 @@ class Study:
             name=self.name,
             study_strategy=self.study_strategy_model,
             suggest_strategy=self.suggest_strategy_model,
-            parameter_space=self.parameter_space,
+            parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
             trial_table=self.trial_table,
@@ -142,7 +142,7 @@ class Study:
             name=study_model.name,
             study_strategy_model=study_model.study_strategy,
             suggest_strategy_model=study_model.suggest_strategy,
-            parameter_space=study_model.parameter_space,
+            parameter_space=ParameterAlignedSpace.from_model(study_model.parameter_space),
             result_type=study_model.result_type,
             result_value_type=study_model.result_value_type,
             trial_table=study_model.trial_table,

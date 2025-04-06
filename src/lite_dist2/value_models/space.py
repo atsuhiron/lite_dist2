@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, Field
 
-from lite_dist2.common import hex2float, hex2int
+from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
+from lite_dist2.expections import LD2UndefinedError
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.point import ParamType, ScalerValue
 
@@ -14,12 +15,22 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
+class LineSegmentModel(BaseModel):
+    name: str | None = None
+    type: Literal["bool", "int", "float"]
+    size: int
+    step: int | str
+    start: bool | str
+    ambient_index: str
+    ambient_size: str | None = None
+
+
 class LineSegment(BaseModel, metaclass=abc.ABCMeta):
     name: str | None = None
     type: Literal["bool", "int", "float"]
     size: int
     ambient_index: int
-    ambient_size: str | None = None
+    ambient_size: int | None = None
 
     @abc.abstractmethod
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
@@ -31,6 +42,10 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def get_step(self) -> PrimitiveValueType:
+        pass
+
+    @abc.abstractmethod
+    def merge(self, other: LineSegment) -> LineSegment:
         pass
 
     def derived_by_same_ambient_space_with(self, other: LineSegment) -> bool:
@@ -51,17 +66,22 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
 
         return smaller.end_index() + 1 >= larger.ambient_index
 
-    @abc.abstractmethod
-    def merge(self, other: LineSegment) -> LineSegment:
-        pass
-
     def end_index(self) -> int:
         return self.ambient_index + self.size - 1
 
     def is_universal(self) -> bool:
         if self.ambient_size is None:
             return False
-        return self.size == hex2int(self.ambient_size)
+        return self.size == self.ambient_size
+
+    @abc.abstractmethod
+    def to_model(self) -> LineSegmentModel:
+        pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def from_model(line_segment_model: LineSegmentModel) -> LineSegment:
+        pass
 
 
 class DummyLineSegment(LineSegment):
@@ -79,6 +99,13 @@ class DummyLineSegment(LineSegment):
 
     def merge(self, _other: LineSegment) -> LineSegment:
         return self
+
+    def to_model(self) -> LineSegmentModel:
+        raise NotImplementedError
+
+    @staticmethod
+    def from_model(line_segment_model: LineSegmentModel) -> LineSegment:
+        raise NotImplementedError
 
 
 class ParameterRangeBool(LineSegment):
@@ -111,23 +138,44 @@ class ParameterRangeBool(LineSegment):
             step=self.step,
         )
 
+    def to_model(self) -> LineSegmentModel:
+        return LineSegmentModel(
+            name=self.name,
+            type=self.type,
+            start=self.start,
+            size=self.size,
+            step=self.step,
+            ambient_index=int2hex(self.ambient_index),
+            ambient_size=int2hex(self.ambient_size),
+        )
+
+    @staticmethod
+    def from_model(line_segment_model: LineSegmentModel) -> ParameterRangeBool:
+        return ParameterRangeBool(
+            name=line_segment_model.name,
+            type="bool",
+            size=line_segment_model.size,
+            ambient_index=hex2int(line_segment_model.ambient_index),
+            ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
+            start=line_segment_model.start,
+            step=line_segment_model.step,
+        )
+
 
 class ParameterRangeInt(LineSegment):
     type: Literal["int"]
-    start: str
+    start: int
     size: Annotated[int, Field(..., ge=1)]
     step: Annotated[int, Field(1, ge=1)]
     step: int = 1
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
-        s = hex2int(self.start)
         for i in range(self.size):
-            yield s + i * self.step
+            yield self.start + i * self.step
 
     def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
-        s = hex2int(self.start)
         for i in range(self.size):
-            yield i, s + i * self.step
+            yield i, self.start + i * self.step
 
     def get_step(self) -> PrimitiveValueType:
         return self.step
@@ -143,22 +191,43 @@ class ParameterRangeInt(LineSegment):
             step=self.step,
         )
 
+    def to_model(self) -> LineSegmentModel:
+        return LineSegmentModel(
+            name=self.name,
+            type=self.type,
+            start=int2hex(self.start),
+            size=self.size,
+            step=self.step,
+            ambient_index=int2hex(self.ambient_index),
+            ambient_size=int2hex(self.ambient_size),
+        )
+
+    @staticmethod
+    def from_model(line_segment_model: LineSegmentModel) -> ParameterRangeInt:
+        return ParameterRangeInt(
+            name=line_segment_model.name,
+            type="int",
+            size=line_segment_model.size,
+            ambient_index=hex2int(line_segment_model.ambient_index),
+            ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
+            start=line_segment_model.start,
+            step=line_segment_model.step,
+        )
+
 
 class ParameterRangeFloat(LineSegment):
     type: Literal["float"]
-    start: str
+    start: float
     size: Annotated[int, Field(..., ge=1)]
     step: Annotated[float, Field(..., gt=0)]
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
-        s = hex2float(self.start)
         for i in range(self.size):
-            yield s + i * self.step
+            yield self.start + i * self.step
 
     def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
-        s = hex2float(self.start)
         for i in range(self.size):
-            yield i, s + i * self.step
+            yield i, self.start + i * self.step
 
     def get_step(self) -> PrimitiveValueType:
         return self.step
@@ -173,6 +242,33 @@ class ParameterRangeFloat(LineSegment):
             start=smaller.start,
             step=self.step,
         )
+
+    def to_model(self) -> LineSegmentModel:
+        return LineSegmentModel(
+            name=self.name,
+            type=self.type,
+            start=float2hex(self.start),
+            size=self.size,
+            step=float2hex(self.step),
+            ambient_index=int2hex(self.ambient_index),
+            ambient_size=int2hex(self.ambient_size),
+        )
+
+    @staticmethod
+    def from_model(line_segment_model: LineSegmentModel) -> ParameterRangeFloat:
+        return ParameterRangeFloat(
+            name=line_segment_model.name,
+            type="float",
+            size=line_segment_model.size,
+            ambient_index=hex2int(line_segment_model.ambient_index),
+            ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
+            start=hex2float(line_segment_model.start),
+            step=hex2float(line_segment_model.step),
+        )
+
+
+class ParameterAlignedSpaceModel(BaseModel):
+    axes: list[LineSegmentModel]
 
 
 class ParameterSpace(metaclass=abc.ABCMeta):
@@ -282,6 +378,28 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
 
         return ParameterAlignedSpace(axes=axes, filling_dim=filling)
 
+    def to_model(self) -> ParameterAlignedSpaceModel:
+        return ParameterAlignedSpaceModel(axes=[axis.to_model() for axis in self.axes])
+
+    @staticmethod
+    def from_model(space_model: ParameterAlignedSpaceModel) -> ParameterAlignedSpace:
+        axes = []
+        fillings = []
+        for axis_model in space_model.axes:
+            match axis_model.type:
+                case "bool":
+                    axis = ParameterRangeBool.from_model(axis_model)
+                case "int":
+                    axis = ParameterRangeInt.from_model(axis_model)
+                case "float":
+                    axis = ParameterRangeFloat.from_model(axis_model)
+                case _:
+                    raise LD2UndefinedError(axis_model.type)
+            axes.append(axis)
+            fillings.append(axis.is_universal())
+
+        return ParameterAlignedSpace(axes=axes, filling_dim=fillings)
+
 
 class ParameterJaggedSpace(BaseModel, ParameterSpace):
     parameters: list[tuple[PrimitiveValueType, ...]]
@@ -312,8 +430,8 @@ class ParameterJaggedSpace(BaseModel, ParameterSpace):
 
 
 if __name__ == "__main__":
-    pri1 = ParameterRangeInt(name="x", type="int", start="ff", size=4, ambient_index=0)
-    pri2 = ParameterRangeInt(name="y", type="int", start="fff", size=6, ambient_index=0)
+    pri1 = ParameterRangeInt(name="x", type="int", start=100, size=4, ambient_index=0)
+    pri2 = ParameterRangeInt(name="y", type="int", start=100, size=6, ambient_index=0)
     space = ParameterAlignedSpace(axes=[pri1, pri2], filling_dim=[False, False])
     for g in space.grid():
         print(g)  # noqa: T201

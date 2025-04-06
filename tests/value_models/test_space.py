@@ -13,38 +13,38 @@ from lite_dist2.value_models.space import (
     ("one", "other", "expected"),
     [
         (  # complete match True
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
             True,
         ),
         (  # different start True
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=16, ambient_size="ff", start="10", step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=16, ambient_size=255, start=10, step=1),
             True,
         ),
         (  # different size True
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=16, ambient_size="ff", start="10", step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=16, ambient_size=255, start=10, step=1),
             True,
         ),
         (  # different name False
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
-            ParameterRangeInt(name="y", type="int", size=100, ambient_index=16, ambient_size="ff", start="10", step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
+            ParameterRangeInt(name="y", type="int", size=100, ambient_index=16, ambient_size=255, start=10, step=1),
             False,
         ),
         (  # different type False
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
-            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size="2", start=True, step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=True, step=1),
             False,
         ),
         (  # different ambient_size False
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=16, ambient_size="f0", start="10", step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=16, ambient_size=16, start=10, step=1),
             False,
         ),
         (  # different step False
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size="ff", start="0", step=1),
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=16, ambient_size="ff", start="10", step=2),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=255, start=0, step=1),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=16, ambient_size=255, start=10, step=2),
             False,
         ),
     ],
@@ -60,53 +60,53 @@ def test_line_segment_derived_by_same_ambient_space_with(one: LineSegment, other
     ("one", "other", "expected"),
     [  # Cases that can be excluded by `derived_by_same_ambient_space_with` are not test here
         (  # complete match True
-            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size="2", start=False),
-            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size="2", start=False),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
             True,
         ),
         (  # adjacency True
-            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size="2", start=False),
-            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=1, ambient_size="2", start=True),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=1, ambient_size=2, start=True),
             True,
         ),
         (  # complete match True
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size="ff", start="0"),
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size="ff", start="0"),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
             True,
         ),
         (  # adjacency True
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size="ff", start="0"),
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=10, ambient_size="ff", start="a"),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=10, ambient_size=255, start=10),
             True,
         ),
         (  # overlap True
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size="ff", start="0"),
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=5, ambient_size="ff", start="5"),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=5, ambient_size=255, start=5),
             True,
         ),
         (  # stride False
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size="ff", start="0"),
-            ParameterRangeInt(name="x", type="int", size=10, ambient_index=11, ambient_size="ff", start="b"),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=11, ambient_size=255, start=11),
             False,
         ),
         (  # Complete match True
-            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size="ff", start="0x0.0p+0", step=1),
-            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size="ff", start="0x0.0p+0", step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
             True,
         ),
         (  # overlap True
-            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size="ff", start="0x0.0p+0", step=1),
-            ParameterRangeFloat(type="float", size=10, ambient_index=5, ambient_size="ff", start="0x5.0p+0", step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=5, ambient_size=255, start=5.0, step=1),
             True,
         ),
         (  # adjacency True
-            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size="ff", start="0x0.0p+0", step=1),
-            ParameterRangeFloat(type="float", size=10, ambient_index=10, ambient_size="ff", start="0xa.0p+0", step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=10, ambient_size=255, start=10.0, step=1),
             True,
         ),
         (  # stride False
-            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size="ff", start="0x0.0p+0", step=1),
-            ParameterRangeFloat(type="float", size=10, ambient_index=11, ambient_size="ff", start="0xb.0p+0", step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=11, ambient_size=255, start=11.0, step=1),
             False,
         ),
     ],
@@ -121,12 +121,12 @@ def test_line_segment_can_merge(one: LineSegment, other: LineSegment, expected: 
 @pytest.mark.parametrize(
     ("seg", "expected"),
     [
-        (ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size="2", start=False), 0),
-        (ParameterRangeBool(type="bool", size=1, ambient_index=1, ambient_size="1", start=True), 1),
-        (ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size="ffff", start="0"), 9),
-        (ParameterRangeInt(type="int", size=10, ambient_index=5, ambient_size="ffff", start="0"), 14),
-        (ParameterRangeFloat(type="float", size=5, ambient_index=0, ambient_size="ff", start="0xb.0p+0", step=1), 4),
-        (ParameterRangeFloat(type="float", size=5, ambient_index=2, ambient_size="ff", start="0xb.0p+0", step=1), 6),
+        (ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size=2, start=False), 0),
+        (ParameterRangeBool(type="bool", size=1, ambient_index=1, ambient_size=1, start=True), 1),
+        (ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=255, start=0), 9),
+        (ParameterRangeInt(type="int", size=10, ambient_index=5, ambient_size=255, start=0), 14),
+        (ParameterRangeFloat(type="float", size=5, ambient_index=0, ambient_size=255, start=11, step=1), 4),
+        (ParameterRangeFloat(type="float", size=5, ambient_index=2, ambient_size=255, start=11, step=1), 6),
     ],
 )
 def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
@@ -140,14 +140,14 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start="0"),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False, False],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=102, start="65"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=102, start=101),
                 ],
                 filling_dim=[False],
             ),
@@ -157,15 +157,15 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start="0"),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False, False],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start="0"),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start="64"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100),
                 ],
                 filling_dim=[True, False],
             ),
@@ -175,15 +175,15 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start="0"),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False, True],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start="0"),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start="64"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100),
                 ],
                 filling_dim=[True, True],
             ),
@@ -193,15 +193,15 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start="0"),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False, False],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start="0"),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start="64"),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100),
                 ],
                 filling_dim=[False, False],
             ),
@@ -211,13 +211,13 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start="64"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
                 ],
                 filling_dim=[False],
             ),
@@ -227,13 +227,13 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start="64"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
                 ],
                 filling_dim=[False],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False],
             ),
@@ -243,13 +243,13 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start="65"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101),
                 ],
                 filling_dim=[False],
             ),
@@ -259,13 +259,13 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start="65"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101),
                 ],
                 filling_dim=[False],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                 ],
                 filling_dim=[False],
             ),
@@ -275,15 +275,15 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start="64", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
@@ -293,15 +293,15 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start="64", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
@@ -311,15 +311,15 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start="65", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
@@ -329,15 +329,15 @@ def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start="65", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start="0", name="x"),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start="0", name="y"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y"),
                 ],
                 filling_dim=[False, True],
             ),
