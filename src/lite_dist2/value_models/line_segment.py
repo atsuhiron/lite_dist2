@@ -112,6 +112,7 @@ class ParameterRangeBool(LineSegment):
     size: Annotated[int, Field(..., ge=1, le=2)]
     step: Annotated[int, Field(1, ge=1, le=1)]
     step: int = 1
+    ambient_size: Annotated[int, Field(..., ge=1, le=2)]
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         for i in range(self.size):
@@ -126,12 +127,13 @@ class ParameterRangeBool(LineSegment):
 
     def merge(self, other: ParameterRangeBool) -> ParameterRangeBool:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
-        size = larger.end_index() - smaller.start
+        size = larger.end_index() - smaller.start + 1
         return ParameterRangeBool(
             name=self.name,
             type="bool",
             size=size,
             ambient_index=smaller.ambient_index,
+            ambient_size=self.ambient_size,
             start=smaller.start,
             step=self.step,
         )
@@ -180,11 +182,13 @@ class ParameterRangeInt(LineSegment):
 
     def merge(self, other: ParameterRangeInt) -> ParameterRangeInt:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
+        size = larger.end_index() - smaller.start + 1
         return ParameterRangeInt(
             name=self.name,
             type="int",
-            size=self.size + other.size,
+            size=size,
             ambient_index=smaller.ambient_index,
+            ambient_size=self.ambient_size,
             start=smaller.start,
             step=self.step,
         )
@@ -232,11 +236,13 @@ class ParameterRangeFloat(LineSegment):
 
     def merge(self, other: LineSegment) -> LineSegment:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
+        size = larger.end_index() - smaller.start + 1
         return ParameterRangeFloat(
             name=self.name,
             type="float",
-            size=self.size + other.size,
+            size=size,
             ambient_index=smaller.ambient_index,
+            ambient_size=self.ambient_size,
             start=smaller.start,
             step=self.step,
         )

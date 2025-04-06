@@ -1,28 +1,7 @@
 import pytest
 
-from lite_dist2.value_models.line_segment import (
-    LineSegment,
-    ParameterRangeBool,
-    ParameterRangeFloat,
-    ParameterRangeInt,
-)
+from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.space import ParameterAlignedSpace
-
-
-@pytest.mark.parametrize(
-    ("seg", "expected"),
-    [
-        (ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size=2, start=False), 0),
-        (ParameterRangeBool(type="bool", size=1, ambient_index=1, ambient_size=1, start=True), 1),
-        (ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=255, start=0), 9),
-        (ParameterRangeInt(type="int", size=10, ambient_index=5, ambient_size=255, start=0), 14),
-        (ParameterRangeFloat(type="float", size=5, ambient_index=0, ambient_size=255, start=11, step=1), 4),
-        (ParameterRangeFloat(type="float", size=5, ambient_index=2, ambient_size=255, start=11, step=1), 6),
-    ],
-)
-def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
-    actual = seg.end_index()
-    assert actual == expected
 
 
 @pytest.mark.parametrize(

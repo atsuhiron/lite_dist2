@@ -9,6 +9,22 @@ from lite_dist2.value_models.line_segment import (
 
 
 @pytest.mark.parametrize(
+    ("seg", "expected"),
+    [
+        (ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size=2, start=False), 0),
+        (ParameterRangeBool(type="bool", size=1, ambient_index=1, ambient_size=1, start=True), 1),
+        (ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=255, start=0), 9),
+        (ParameterRangeInt(type="int", size=10, ambient_index=5, ambient_size=255, start=0), 14),
+        (ParameterRangeFloat(type="float", size=5, ambient_index=0, ambient_size=255, start=11, step=1), 4),
+        (ParameterRangeFloat(type="float", size=5, ambient_index=2, ambient_size=255, start=11, step=1), 6),
+    ],
+)
+def test_line_segment_end_index(seg: LineSegment, expected: int) -> None:
+    actual = seg.end_index()
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
     ("one", "other", "expected"),
     [
         (  # complete match True
@@ -115,3 +131,72 @@ def test_line_segment_can_merge(one: LineSegment, other: LineSegment, expected: 
     actual_reverse = other.can_merge(one)
     assert actual == expected
     assert actual_reverse == expected
+
+
+@pytest.mark.parametrize(
+    ("one", "other", "expected"),
+    [
+        (  # complete match True
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+        ),
+        (  # adjacency True
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=1, ambient_size=2, start=True),
+            ParameterRangeBool(name="x", type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+        ),
+        (  # complete match True
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+        ),
+        (  # adjacency True
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=10, ambient_size=255, start=10),
+            ParameterRangeInt(name="x", type="int", size=20, ambient_index=0, ambient_size=255, start=0),
+        ),
+        (  # overlap True
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=0, ambient_size=255, start=0),
+            ParameterRangeInt(name="x", type="int", size=10, ambient_index=5, ambient_size=255, start=5),
+            ParameterRangeInt(name="x", type="int", size=15, ambient_index=0, ambient_size=255, start=0),
+        ),
+        (  # Complete match True
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+        ),
+        (  # overlap True
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=5, ambient_size=255, start=5.0, step=1),
+            ParameterRangeFloat(type="float", size=15, ambient_index=0, ambient_size=255, start=0.0, step=1),
+        ),
+        (  # adjacency True
+            ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=255, start=0.0, step=1),
+            ParameterRangeFloat(type="float", size=10, ambient_index=10, ambient_size=255, start=10.0, step=1),
+            ParameterRangeFloat(type="float", size=20, ambient_index=0, ambient_size=255, start=0.0, step=1),
+        ),
+    ],
+)
+def test_line_segment_merge(one: LineSegment, other: LineSegment, expected: LineSegment) -> None:
+    actual = one.merge(other)
+    actual_reverse = other.merge(one)
+    assert actual == expected
+    assert actual_reverse == expected
+
+
+@pytest.mark.parametrize(
+    ("line_segment", "expected"),
+    [
+        (ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size=1, start=False), True),
+        (ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False), True),
+        (ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size=2, start=True), False),
+        (ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=100, start=0), False),
+        (ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=10, start=0), True),
+        (ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=100, start=0, step=2.0), False),
+        (ParameterRangeFloat(type="float", size=10, ambient_index=0, ambient_size=10, start=0, step=2.0), True),
+    ],
+)
+def test_line_segment_is_universal(line_segment: LineSegment, expected: bool) -> None:
+    actual = line_segment.is_universal()
+    assert actual == expected
