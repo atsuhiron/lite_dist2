@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 from pydantic import BaseModel, Field
 
 from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
+from lite_dist2.expections import LD2ParameterError
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -36,6 +37,10 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
+        pass
+
+    @abc.abstractmethod
+    def slice(self, start_index: int, size: int) -> LineSegment:
         pass
 
     @abc.abstractmethod
@@ -89,6 +94,9 @@ class DummyLineSegment(LineSegment):
     def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
         yield from ()
 
+    def slice(self, _start_index: int, _size: int) -> DummyLineSegment:
+        return self
+
     def get_step(self) -> PrimitiveValueType:
         return 1
 
@@ -121,6 +129,20 @@ class ParameterRangeBool(LineSegment):
     def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
         for i in range(self.size):
             yield i, bool(int(self.start) + i)
+
+    def slice(self, start_index: int, size: int) -> ParameterRangeBool:
+        if size > self.size - start_index:
+            msg = f"{size=}"
+            raise LD2ParameterError(msg, "larger than ambient")
+        return ParameterRangeBool(
+            name=self.name,
+            type="bool",
+            start=bool(self.start + start_index * self.step),
+            size=size,
+            step=self.step,
+            ambient_index=self.ambient_index + start_index,
+            ambient_size=self.ambient_size,
+        )
 
     def get_step(self) -> PrimitiveValueType:
         return self.step
@@ -177,6 +199,20 @@ class ParameterRangeInt(LineSegment):
         for i in range(self.size):
             yield i, self.start + i * self.step
 
+    def slice(self, start_index: int, size: int) -> ParameterRangeInt:
+        if size > self.size - start_index:
+            msg = f"{size=}"
+            raise LD2ParameterError(msg, "larger than ambient")
+        return ParameterRangeInt(
+            name=self.name,
+            type="int",
+            start=self.start + start_index * self.step,
+            size=size,
+            step=self.step,
+            ambient_index=self.ambient_index + start_index,
+            ambient_size=self.ambient_size,
+        )
+
     def get_step(self) -> PrimitiveValueType:
         return self.step
 
@@ -230,6 +266,20 @@ class ParameterRangeFloat(LineSegment):
     def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
         for i in range(self.size):
             yield i, self.start + i * self.step
+
+    def slice(self, start_index: int, size: int) -> ParameterRangeFloat:
+        if size > self.size - start_index:
+            msg = f"{size=}"
+            raise LD2ParameterError(msg, "larger than ambient")
+        return ParameterRangeFloat(
+            name=self.name,
+            type="float",
+            start=self.start + start_index * self.step,
+            size=size,
+            step=self.step,
+            ambient_index=self.ambient_index + start_index,
+            ambient_size=self.ambient_size,
+        )
 
     def get_step(self) -> PrimitiveValueType:
         return self.step

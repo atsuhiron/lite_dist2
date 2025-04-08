@@ -205,13 +205,47 @@ def test_line_segment_is_universal(line_segment: LineSegment, expected: bool) ->
 
 
 @pytest.mark.parametrize(
+    ("line_segment", "start_index", "size", "expected"),
+    [
+        (
+            ParameterRangeBool(name="x", type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+            0,
+            1,
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+        ),
+        (
+            ParameterRangeBool(name="x", type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+            1,
+            1,
+            ParameterRangeBool(name="x", type="bool", size=1, ambient_index=1, ambient_size=2, start=True),
+        ),
+        (
+            ParameterRangeInt(type="int", size=10, ambient_index=20, ambient_size=100, start=20, step=1),
+            5,
+            4,
+            ParameterRangeInt(type="int", size=4, ambient_index=25, ambient_size=100, start=25, step=1),
+        ),
+        (
+            ParameterRangeFloat(type="float", size=10, ambient_index=20, ambient_size=100, start=-100.0, step=5.0),
+            5,
+            4,
+            ParameterRangeFloat(type="float", size=4, ambient_index=25, ambient_size=100, start=-75.0, step=5.0),
+        ),
+    ],
+)
+def test_line_segment_slice(line_segment: LineSegment, start_index: int, size: int, expected: LineSegment) -> None:
+    actual = line_segment.slice(start_index, size)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
     "model",
     [
         LineSegmentModel(name="x", type="bool", size=2, step=1, start=False, ambient_index="0x0", ambient_size="0x2"),
         LineSegmentModel(type="bool", size=2, step=1, start=False, ambient_index="0x0", ambient_size="0x2"),
     ],
 )
-def test_parameter_range_bool_to_model_from_model(model: LineSegmentModel) -> None:
+def test_line_segment_model_bool_to_model_from_model(model: LineSegmentModel) -> None:
     segment = ParameterRangeBool.from_model(model)
     reconstructed_model = segment.to_model()
     assert model == reconstructed_model
@@ -224,7 +258,7 @@ def test_parameter_range_bool_to_model_from_model(model: LineSegmentModel) -> No
         LineSegmentModel(type="int", size=10, step=1, start="0x0", ambient_index="0x0", ambient_size="0x64"),
     ],
 )
-def test_parameter_range_int_to_model_from_model(model: LineSegmentModel) -> None:
+def test_line_segment_model_int_to_model_from_model(model: LineSegmentModel) -> None:
     segment = ParameterRangeInt.from_model(model)
     reconstructed_model = segment.to_model()
     assert model == reconstructed_model
@@ -252,7 +286,7 @@ def test_parameter_range_int_to_model_from_model(model: LineSegmentModel) -> Non
         ),
     ],
 )
-def test_parameter_range_float_to_model_from_model(model: LineSegmentModel) -> None:
+def test_line_segment_model_float_to_model_from_model(model: LineSegmentModel) -> None:
     segment = ParameterRangeFloat.from_model(model)
     reconstructed_model = segment.to_model()
     assert model.name == reconstructed_model.name
