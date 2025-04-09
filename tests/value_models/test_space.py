@@ -1,7 +1,56 @@
 import pytest
 
-from lite_dist2.value_models.line_segment import ParameterRangeInt
+from lite_dist2.expections import LD2ParameterError
+from lite_dist2.value_models.line_segment import ParameterRangeBool, ParameterRangeInt
 from lite_dist2.value_models.space import ParameterAlignedSpace
+
+
+@pytest.mark.parametrize(
+    ("space", "start_and_sizes", "expected"),
+    [
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                ],
+                filling_dim=[True, True, True],
+            ),
+            [(0, 1), (10, 10), (0, 100)],
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
+                    ParameterRangeInt(name="x", type="int", size=10, ambient_index=10, ambient_size=100, start=10),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                ],
+                filling_dim=[False, False, True],
+            ),
+        ),
+    ],
+)
+def test_parameter_aligned_space_slice(
+    space: ParameterAlignedSpace,
+    start_and_sizes: list[tuple[int, int]],
+    expected: ParameterAlignedSpace,
+) -> None:
+    actual = space.slice(start_and_sizes)
+    assert actual == expected
+
+
+def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> None:
+    space = ParameterAlignedSpace(
+        axes=[
+            ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+        ],
+        filling_dim=[True, True, True],
+    )
+    ss = [(0, 1)]
+
+    with pytest.raises(LD2ParameterError):
+        _ = space.slice(ss)
 
 
 @pytest.mark.parametrize(

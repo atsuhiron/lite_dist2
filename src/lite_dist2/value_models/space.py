@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.expections import LD2UndefinedError
+from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.line_segment import (
     DummyLineSegment,
@@ -72,6 +72,19 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
 
     def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
         yield from itertools.product(*(axis.indexed_grid() for axis in self.axes))
+
+    def slice(self, start_and_sizes: list[tuple[int, int]]) -> ParameterAlignedSpace:
+        if len(start_and_sizes) != self.get_dim():
+            msg = "start_and_sizes"
+            raise LD2ParameterError(msg, "different size to axes")
+
+        axes = []
+        fillings = []
+        for i in range(self.get_dim()):
+            sliced_axis = self.axes[i].slice(*start_and_sizes[i])
+            axes.append(sliced_axis)
+            fillings.append(sliced_axis.is_universal())
+        return ParameterAlignedSpace(axes=axes, filling_dim=fillings)
 
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         # TODO: type="vector" にも対応させる
