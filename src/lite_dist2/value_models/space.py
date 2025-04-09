@@ -51,21 +51,30 @@ class ParameterSpace(metaclass=abc.ABCMeta):
         pass
 
 
-class ParameterAlignedSpace(BaseModel, ParameterSpace):
-    axes: list[ParameterRangeBool | ParameterRangeInt | ParameterRangeFloat]  # larger index, deeper dimension
-    filling_dim: list[bool]
+class ParameterAlignedSpace(ParameterSpace):
+    def __init__(self, axes: list[ParameterRangeBool | ParameterRangeInt | ParameterRangeFloat]) -> None:
+        self.axes = axes  # larger index, deeper dimension
+        self.filling_dim = [axis.is_universal() for axis in self.axes]
+
+        self._dimensional_size = tuple(axis.size for axis in self.axes)
+        self._dim = len(self._dimensional_size)
+        self._total = 1
+        for axis in self.axes:
+            self._total *= axis.size
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, ParameterAlignedSpace):
+            return self.axes == other.axes
+        return False
 
     def get_dim(self) -> int:
-        return len(self.get_dims())
+        return self._dim
 
-    def get_dims(self) -> tuple[int, ...]:
-        return tuple(axis.size for axis in self.axes)
+    def get_dimensional_size(self) -> tuple[int, ...]:
+        return self._dimensional_size
 
     def get_total(self) -> int:
-        n = 1
-        for axis in self.axes:
-            n *= axis.size
-        return n
+        return self._total
 
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
         yield from itertools.product(*(axis.grid() for axis in self.axes))
@@ -78,13 +87,8 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
             msg = "start_and_sizes"
             raise LD2ParameterError(msg, "different size to axes")
 
-        axes = []
-        fillings = []
-        for i in range(self.get_dim()):
-            sliced_axis = self.axes[i].slice(*start_and_sizes[i])
-            axes.append(sliced_axis)
-            fillings.append(sliced_axis.is_universal())
-        return ParameterAlignedSpace(axes=axes, filling_dim=fillings)
+        axes = [self.axes[i].slice(*start_and_sizes[i]) for i in range(self.get_dim())]
+        return ParameterAlignedSpace(axes=axes)
 
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         # TODO: type="vector" にも対応させる
@@ -130,20 +134,17 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
 
     def merge(self, other: ParameterAlignedSpace, target_dim: int) -> ParameterAlignedSpace:
         axes = []
-        filling = []
         for d in range(self.get_dim()):
             if d != target_dim:
                 # 浅層次元か深層次元: 同じはずなのでそのままコピー
                 axes.append(self.axes[d])
-                filling.append(self.filling_dim[d])
                 continue
 
             # target_dim
             merged_axis = self.axes[d].merge(other.axes[d])
             axes.append(merged_axis)
-            filling.append(merged_axis.is_universal())
 
-        return ParameterAlignedSpace(axes=axes, filling_dim=filling)
+        return ParameterAlignedSpace(axes=axes)
 
     def to_model(self) -> ParameterAlignedSpaceModel:
         return ParameterAlignedSpaceModel(axes=[axis.to_model() for axis in self.axes])
@@ -151,7 +152,6 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
     @staticmethod
     def from_model(space_model: ParameterAlignedSpaceModel) -> ParameterAlignedSpace:
         axes = []
-        fillings = []
         for axis_model in space_model.axes:
             match axis_model.type:
                 case "bool":
@@ -163,9 +163,8 @@ class ParameterAlignedSpace(BaseModel, ParameterSpace):
                 case _:
                     raise LD2UndefinedError(axis_model.type)
             axes.append(axis)
-            fillings.append(axis.is_universal())
 
-        return ParameterAlignedSpace(axes=axes, filling_dim=fillings)
+        return ParameterAlignedSpace(axes=axes)
 
 
 class ParameterJaggedSpace(BaseModel, ParameterSpace):
@@ -199,6 +198,6 @@ class ParameterJaggedSpace(BaseModel, ParameterSpace):
 if __name__ == "__main__":
     pri1 = ParameterRangeInt(name="x", type="int", start=100, size=4, ambient_index=0)
     pri2 = ParameterRangeInt(name="y", type="int", start=100, size=6, ambient_index=0)
-    space = ParameterAlignedSpace(axes=[pri1, pri2], filling_dim=[False, False])
+    space = ParameterAlignedSpace(axes=[pri1, pri2])
     for g in space.grid():
         print(g)  # noqa: T201
