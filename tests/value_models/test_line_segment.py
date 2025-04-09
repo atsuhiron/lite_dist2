@@ -1,6 +1,7 @@
 import pytest
 
 from lite_dist2.common import hex2float
+from lite_dist2.expections import LD2ParameterError
 from lite_dist2.value_models.line_segment import (
     LineSegment,
     LineSegmentModel,
@@ -220,10 +221,22 @@ def test_line_segment_is_universal(line_segment: LineSegment, expected: bool) ->
             ParameterRangeBool(name="x", type="bool", size=1, ambient_index=1, ambient_size=2, start=True),
         ),
         (
+            ParameterRangeBool(name="x", type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+            0,
+            2,
+            ParameterRangeBool(name="x", type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+        ),
+        (
             ParameterRangeInt(type="int", size=10, ambient_index=20, ambient_size=100, start=20, step=1),
             5,
             4,
             ParameterRangeInt(type="int", size=4, ambient_index=25, ambient_size=100, start=25, step=1),
+        ),
+        (
+            ParameterRangeInt(type="int", size=10, ambient_index=20, ambient_size=100, start=20, step=1),
+            0,
+            10,
+            ParameterRangeInt(type="int", size=10, ambient_index=20, ambient_size=100, start=20, step=1),
         ),
         (
             ParameterRangeFloat(type="float", size=10, ambient_index=20, ambient_size=100, start=-100.0, step=5.0),
@@ -231,11 +244,31 @@ def test_line_segment_is_universal(line_segment: LineSegment, expected: bool) ->
             4,
             ParameterRangeFloat(type="float", size=4, ambient_index=25, ambient_size=100, start=-75.0, step=5.0),
         ),
+        (
+            ParameterRangeFloat(type="float", size=10, ambient_index=20, ambient_size=100, start=-100.0, step=5.0),
+            0,
+            10,
+            ParameterRangeFloat(type="float", size=10, ambient_index=20, ambient_size=100, start=-100.0, step=5.0),
+        ),
     ],
 )
 def test_line_segment_slice(line_segment: LineSegment, start_index: int, size: int, expected: LineSegment) -> None:
     actual = line_segment.slice(start_index, size)
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("line_segment", "size"),
+    [
+        (ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False), 3),
+        (ParameterRangeInt(type="int", size=10, ambient_index=20, ambient_size=100, start=20, step=1), 11),
+        (ParameterRangeFloat(type="float", size=10, ambient_index=20, ambient_size=100, start=-100.0, step=5.0), 11),
+    ],
+)
+def test_line_segment_slice_raise(line_segment: LineSegment, size: int) -> None:
+    start_index = 0
+    with pytest.raises(LD2ParameterError):
+        _ = line_segment.slice(start_index, size)
 
 
 @pytest.mark.parametrize(
