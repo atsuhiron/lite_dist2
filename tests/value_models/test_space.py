@@ -107,6 +107,78 @@ def test_parameter_space_fill_from_lower_not_raise(axes: list[LineSegment]) -> N
     assert space is not None
 
 
+def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
+    space = ParameterAlignedSpace(
+        axes=[ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0)],
+        check_lower_filling=False,
+    )
+    with pytest.raises(LD2InvalidSpaceError, match="Invalid space: Cannot get flatten info."):
+        _ = space.get_flatten_ambient_start_and_size()
+
+
+@pytest.mark.parametrize(
+    ("space", "expected"),
+    [
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            (0, 1),
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="x", type="int", size=2, ambient_index=10, ambient_size=100, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            (10, 2),
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                    ParameterRangeInt(name="y", type="int", size=13, ambient_index=0, ambient_size=100, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            (0, 13),
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                    ParameterRangeInt(name="y", type="int", size=13, ambient_index=0, ambient_size=100, start=0),
+                    ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            (0, 1300),
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                    ParameterRangeInt(name="y", type="int", size=1, ambient_index=17, ambient_size=100, start=0),
+                    ParameterRangeInt(name="z", type="int", size=19, ambient_index=81, ambient_size=100, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            (1781, 19),
+        ),
+    ],
+)
+def test_parameter_space_get_flatten_ambient_start_and_size(
+    space: ParameterAlignedSpace,
+    expected: tuple[int, int],
+) -> None:
+    actual = space.get_flatten_ambient_start_and_size()
+    assert actual == expected
+
+
 @pytest.mark.parametrize(
     ("space", "start_and_sizes", "expected"),
     [

@@ -112,6 +112,20 @@ class ParameterAlignedSpace(ParameterSpace):
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
         yield from itertools.product(*(axis.grid() for axis in self.axes))
 
+    def get_flatten_ambient_start_and_size(self) -> tuple[int, int]:
+        if not self.check_lower_filling:
+            msg = "Cannot get flatten info. Because check_lower_filling of this space is False."
+            raise LD2InvalidSpaceError(msg)
+
+        # ambient_sizes = (a, b, c, d) -> lower_element_num_by_dim = (bcd, cd, d, 1)
+        lower_element_num_by_dim = list(
+            itertools.accumulate([axis.ambient_size for axis in self.axes][1:][::-1], lambda x, y: x * y, initial=1),
+        )[::-1]
+        flatten_index = 0
+        for di in range(self.get_dim()):
+            flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
+        return flatten_index, self.get_total()
+
     def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
         yield from itertools.product(*(axis.indexed_grid() for axis in self.axes))
 
