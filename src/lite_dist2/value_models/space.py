@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
+from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError, LD2UndefinedError
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.line_segment import (
     DummyLineSegment,
+    LineSegment,
     LineSegmentModel,
     ParameterRangeBool,
     ParameterRangeFloat,
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 
 class ParameterAlignedSpaceModel(BaseModel):
     axes: list[LineSegmentModel]
+    check_lower_filling: bool
 
 
 class ParameterSpace(metaclass=abc.ABCMeta):
@@ -52,9 +54,10 @@ class ParameterSpace(metaclass=abc.ABCMeta):
 
 
 class ParameterAlignedSpace(ParameterSpace):
-    def __init__(self, axes: list[ParameterRangeBool | ParameterRangeInt | ParameterRangeFloat]) -> None:
+    def __init__(self, axes: list[LineSegment], check_lower_filling: bool) -> None:
         self.axes = axes  # larger index, deeper dimension
         self.filling_dim = [axis.is_universal() for axis in self.axes]
+        self.check_lower_filling = check_lower_filling
 
         self._dimensional_size = tuple(axis.size for axis in self.axes)
         self._dim = len(self._dimensional_size)
@@ -62,10 +65,40 @@ class ParameterAlignedSpace(ParameterSpace):
         for axis in self.axes:
             self._total *= axis.size
 
+        if self.check_lower_filling:
+            self._check_lower_filling()
+
     def __eq__(self, other: object) -> bool:
         if isinstance(other, ParameterAlignedSpace):
             return self.axes == other.axes
         return False
+
+    def _check_lower_filling(self) -> None:
+        #  F  F  F  T  T
+        #  1  1  3  10 10
+        # のような場合のみ許可する
+        is_lower_filled = False
+        min_filled_dim = -1
+        for i, fill in enumerate(self.filling_dim):
+            if not is_lower_filled and fill:
+                min_filled_dim = i
+                is_lower_filled = True
+                continue
+            if is_lower_filled and (not fill):
+                msg = "Filling from lower dimension"
+                raise LD2InvalidSpaceError(msg)
+
+        dim = self.get_dim()
+        for i, axis in enumerate(self.axes):
+            if i == dim - 1:
+                continue
+            if min_filled_dim == -1 and axis.size != 1:
+                # No axis is universal
+                msg = "Upper dimension must be size=1"
+                raise LD2InvalidSpaceError(msg)
+            if i < min_filled_dim - 1 and axis.size != 1:
+                msg = "Upper dimension must be size=1"
+                raise LD2InvalidSpaceError(msg)
 
     def get_dim(self) -> int:
         return self._dim
@@ -88,7 +121,7 @@ class ParameterAlignedSpace(ParameterSpace):
             raise LD2ParameterError(msg, "different size to axes")
 
         axes = [self.axes[i].slice(*start_and_sizes[i]) for i in range(self.get_dim())]
-        return ParameterAlignedSpace(axes=axes)
+        return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
 
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         # TODO: type="vector" にも対応させる
@@ -144,10 +177,13 @@ class ParameterAlignedSpace(ParameterSpace):
             merged_axis = self.axes[d].merge(other.axes[d])
             axes.append(merged_axis)
 
-        return ParameterAlignedSpace(axes=axes)
+        return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
 
     def to_model(self) -> ParameterAlignedSpaceModel:
-        return ParameterAlignedSpaceModel(axes=[axis.to_model() for axis in self.axes])
+        return ParameterAlignedSpaceModel(
+            axes=[axis.to_model() for axis in self.axes],
+            check_lower_filling=self.check_lower_filling,
+        )
 
     @staticmethod
     def from_model(space_model: ParameterAlignedSpaceModel) -> ParameterAlignedSpace:
@@ -164,7 +200,7 @@ class ParameterAlignedSpace(ParameterSpace):
                     raise LD2UndefinedError(axis_model.type)
             axes.append(axis)
 
-        return ParameterAlignedSpace(axes=axes)
+        return ParameterAlignedSpace(axes=axes, check_lower_filling=space_model.check_lower_filling)
 
 
 class ParameterJaggedSpace(BaseModel, ParameterSpace):
@@ -198,6 +234,6 @@ class ParameterJaggedSpace(BaseModel, ParameterSpace):
 if __name__ == "__main__":
     pri1 = ParameterRangeInt(name="x", type="int", start=100, size=4, ambient_index=0)
     pri2 = ParameterRangeInt(name="y", type="int", start=100, size=6, ambient_index=0)
-    space = ParameterAlignedSpace(axes=[pri1, pri2])
+    space = ParameterAlignedSpace(axes=[pri1, pri2], check_lower_filling=False)
     for g in space.grid():
         print(g)  # noqa: T201

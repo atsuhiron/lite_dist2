@@ -10,6 +10,7 @@ ignore = [
     "TD003",    #
     "PLR0913",  # Because of my lazy
     "ERA001",   # Ocurring False Positive
+    "FBT001",   # flag parameter
 ]
 
 [lint.per-file-ignores]
@@ -18,7 +19,6 @@ ignore = [
 ]
 "tests/**.py" = [
     "S101",     # pytest use assert
-    "FBT001",   # pytest use flag parameter
 ]
 
 [lint.flake8-type-checking]

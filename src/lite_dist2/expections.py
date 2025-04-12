@@ -15,3 +15,8 @@ class LD2ParameterError(LD2Error):
 class LD2UndefinedError(LD2Error):
     def __init__(self, name: str) -> None:
         super().__init__(f"Undefined: {name}")
+
+
+class LD2InvalidSpaceError(LD2Error):
+    def __init__(self, msg: str) -> None:
+        super().__init__(f"Invalid space: {msg}")

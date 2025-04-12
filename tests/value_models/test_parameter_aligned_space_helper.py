@@ -17,6 +17,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
             [
@@ -24,6 +25,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
         ),
@@ -33,11 +35,13 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=200, start=200),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
             [
@@ -45,11 +49,13 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=200, start=200),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
         ),
@@ -59,11 +65,13 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=200, start=200),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
             [
@@ -71,11 +79,13 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=200, start=200),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
         ),
@@ -85,11 +95,13 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
             [
@@ -97,6 +109,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=200, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
         ),
@@ -106,11 +119,13 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
             [
@@ -118,6 +133,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=200, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
         ),
@@ -127,16 +143,19 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=200, start=200),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
             [
@@ -144,6 +163,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     axes=[
                         ParameterRangeInt(type="int", size=300, ambient_index=0, start=0),
                     ],
+                    check_lower_filling=False,
                 ),
             ],
         ),
