@@ -377,3 +377,140 @@ def test_parameter_aligned_space_can_merge(
     actual_reversed = other.can_merge(one, target_dim)
     assert actual == expected
     assert actual_reversed == expected
+
+
+@pytest.mark.parametrize(
+    ("one", "other", "target_dim", "expected"),
+    [
+        (  # adjacency
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
+                ],
+                check_lower_filling=False,
+            ),
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
+                ],
+                check_lower_filling=False,
+            ),
+            0,
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0),
+                ],
+                check_lower_filling=False,
+            ),
+        ),
+        (  # filled y
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                ],
+                check_lower_filling=False,
+            ),
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                ],
+                check_lower_filling=False,
+            ),
+            0,
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                ],
+                check_lower_filling=False,
+            ),
+        ),
+    ],
+)
+def test_parameter_aligned_space_merge(
+    one: ParameterAlignedSpace,
+    other: ParameterAlignedSpace,
+    target_dim: int,
+    expected: ParameterAlignedSpace,
+) -> None:
+    actual = one.merge(other, target_dim)
+    actual_reversed = other.merge(one, target_dim)
+    assert actual == expected
+    assert actual_reversed == expected
+
+
+@pytest.mark.parametrize(
+    "model",
+    [
+        ParameterAlignedSpaceModel(
+            axes=[
+                LineSegmentModel(
+                    name="x",
+                    type="float",
+                    size=10,
+                    step="0x1.0000000000000p+1",
+                    start="-0x1.4000000000000p+2",
+                    ambient_size="0x14",
+                    ambient_index="0x5",
+                ),
+                LineSegmentModel(
+                    name="y",
+                    type="int",
+                    size=10,
+                    step=2,
+                    start="-0x5",
+                    ambient_size="0x14",
+                    ambient_index="0x5",
+                ),
+                LineSegmentModel(
+                    name="z",
+                    type="bool",
+                    size=2,
+                    step=1,
+                    start=False,
+                    ambient_index="0x0",
+                    ambient_size="0x2",
+                ),
+            ],
+            check_lower_filling=False,
+        ),
+        ParameterAlignedSpaceModel(
+            axes=[
+                LineSegmentModel(
+                    name="x",
+                    type="float",
+                    size=1,
+                    step="0x1.0000000000000p+1",
+                    start="-0x1.4000000000000p+2",
+                    ambient_size="0x14",
+                    ambient_index="0x5",
+                ),
+                LineSegmentModel(
+                    name="y",
+                    type="int",
+                    size=1,
+                    step=2,
+                    start="-0x5",
+                    ambient_size="0x14",
+                    ambient_index="0x5",
+                ),
+                LineSegmentModel(
+                    name="z",
+                    type="bool",
+                    size=2,
+                    step=1,
+                    start=False,
+                    ambient_index="0x0",
+                    ambient_size="0x2",
+                ),
+            ],
+            check_lower_filling=True,
+        ),
+    ],
+)
+def test_parameter_aligned_space_model_to_model_from_model(model: ParameterAlignedSpaceModel) -> None:
+    space = ParameterAlignedSpace.from_model(model)
+    reconstructed_model = space.to_model()
+    assert model == reconstructed_model
