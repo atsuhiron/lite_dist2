@@ -76,7 +76,13 @@ class ParameterAlignedSpace(ParameterSpace):
     def _check_lower_filling(self) -> None:
         #  F  F  F  T  T
         #  1  1  3  10 10
+        #  i  f  f  f  f
         # のような場合のみ許可する
+        for axis in self.axes[1:]:
+            if axis.ambient_size is None:
+                msg = "Infinite dimension is only allowed at the first dimension"
+                raise LD2InvalidSpaceError(msg)
+
         is_lower_filled = False
         min_filled_dim = -1
         for i, fill in enumerate(self.filling_dim):

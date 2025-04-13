@@ -38,6 +38,14 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAligne
             ],
             "Invalid space: Upper dimension must be size=1",
         ),
+        (
+            [
+                ParameterRangeInt(name="z", type="int", size=1, ambient_index=0, ambient_size=200, start=0),
+                ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=None, start=0),
+                ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
+            ],
+            "Invalid space: Infinite dimension is only allowed at the first dimension",
+        ),
     ],
 )
 def test_parameter_space_fill_from_lower_raise(
@@ -97,6 +105,14 @@ def test_parameter_space_fill_from_lower_raise(
         ],
         [
             ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+            ParameterRangeInt(name="y", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
+            ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+        ],
+        [
+            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=None, start=0),
+        ],
+        [
+            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=None, start=0),
             ParameterRangeInt(name="y", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
             ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
         ],
