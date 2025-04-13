@@ -533,6 +533,7 @@ def test_parameter_aligned_space_merge(
     "model",
     [
         ParameterAlignedSpaceModel(
+            type="aligned",
             axes=[
                 LineSegmentModel(
                     name="x",
@@ -565,6 +566,7 @@ def test_parameter_aligned_space_merge(
             check_lower_filling=False,
         ),
         ParameterAlignedSpaceModel(
+            type="aligned",
             axes=[
                 LineSegmentModel(
                     name="x",

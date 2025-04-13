@@ -1,0 +1,139 @@
+import pytest
+
+from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
+from lite_dist2.value_models.line_segment import LineSegmentModel
+from lite_dist2.value_models.point import ScalerValue
+from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJaggedSpaceModel
+
+
+@pytest.mark.parametrize(
+    "model",
+    [
+        TrialModel(
+            study_id="my_study_id0",
+            trial_status=TrialStatus.done,
+            parameter_space=ParameterAlignedSpaceModel(
+                type="aligned",
+                axes=[
+                    LineSegmentModel(
+                        name="x",
+                        type="bool",
+                        size=2,
+                        step=1,
+                        start=False,
+                        ambient_index="0x0",
+                        ambient_size="0x2",
+                    ),
+                ],
+                check_lower_filling=True,
+            ),
+            result_type="scaler",
+            result_value_type="bool",
+        ),
+        TrialModel(
+            study_id="my_study_id1",
+            trial_status=TrialStatus.done,
+            parameter_space=ParameterAlignedSpaceModel(
+                type="aligned",
+                axes=[
+                    LineSegmentModel(
+                        name="x",
+                        type="int",
+                        size=2,
+                        step=1,
+                        start="0x0",
+                        ambient_index="0x0",
+                        ambient_size="0x2",
+                    ),
+                ],
+                check_lower_filling=True,
+            ),
+            result_type="scaler",
+            result_value_type="float",
+            result=[
+                Mapping(
+                    param=[
+                        ScalerValue(
+                            type="scaler",
+                            value_type="int",
+                            value="0x1",
+                            name="x",
+                        ),
+                    ],
+                    result=ScalerValue(
+                        type="scaler",
+                        value_type="float",
+                        value="0x1.0000000000000p+1",
+                        name="r1",
+                    ),
+                ),
+            ],
+        ),
+        TrialModel(
+            study_id="my_study_id2",
+            trial_status=TrialStatus.done,
+            parameter_space=ParameterJaggedSpaceModel(
+                type="jagged",
+                axes_info=[
+                    LineSegmentModel(
+                        name="x",
+                        type="int",
+                        size=1,
+                        start="0x0",
+                        step=1,
+                        ambient_index="0x0",
+                        ambient_size="0x1",
+                        is_dummy=True,
+                    ),
+                ],
+                parameters=[(1,)],
+            ),
+            result_type="scaler",
+            result_value_type="int",
+        ),
+        TrialModel(
+            study_id="my_study_id3",
+            trial_status=TrialStatus.done,
+            parameter_space=ParameterJaggedSpaceModel(
+                type="jagged",
+                axes_info=[
+                    LineSegmentModel(
+                        name="x",
+                        type="int",
+                        size=1,
+                        start="0x0",
+                        step=1,
+                        ambient_index="0x0",
+                        ambient_size="0x1",
+                        is_dummy=True,
+                    ),
+                ],
+                parameters=[(1,)],
+            ),
+            result_type="scaler",
+            result_value_type="int",
+            result=[
+                Mapping(
+                    param=[
+                        ScalerValue(
+                            type="scaler",
+                            value_type="int",
+                            value="0x1",
+                            name="x",
+                        ),
+                    ],
+                    result=ScalerValue(
+                        type="scaler",
+                        value_type="int",
+                        value="0x2",
+                        name="r1",
+                    ),
+                ),
+            ],
+        ),
+    ],
+)
+def test_trial_to_model_from_model(model: TrialModel) -> None:
+    trial = Trial.from_model(model)
+    reconstructed_trial = trial.to_model()
+    assert model == reconstructed_trial

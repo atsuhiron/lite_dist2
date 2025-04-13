@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 import itertools
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
@@ -20,11 +20,6 @@ from lite_dist2.value_models.point import ParamType, ScalerValue
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-
-
-class ParameterAlignedSpaceModel(BaseModel):
-    axes: list[LineSegmentModel]
-    check_lower_filling: bool
 
 
 class ParameterSpace(metaclass=abc.ABCMeta):
@@ -51,6 +46,16 @@ class ParameterSpace(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def derived_by_same_ambient_space_with(self, other: ParameterSpace) -> bool:
         pass
+
+    @abc.abstractmethod
+    def to_model(self) -> ParameterAlignedSpaceModel | ParameterJaggedSpaceModel:
+        pass
+
+
+class ParameterAlignedSpaceModel(BaseModel):
+    type: Literal["aligned"]
+    axes: list[LineSegmentModel]
+    check_lower_filling: bool
 
 
 class ParameterAlignedSpace(ParameterSpace):
@@ -201,6 +206,7 @@ class ParameterAlignedSpace(ParameterSpace):
 
     def to_model(self) -> ParameterAlignedSpaceModel:
         return ParameterAlignedSpaceModel(
+            type="aligned",
             axes=[axis.to_model() for axis in self.axes],
             check_lower_filling=self.check_lower_filling,
         )
@@ -209,6 +215,11 @@ class ParameterAlignedSpace(ParameterSpace):
     def from_model(space_model: ParameterAlignedSpaceModel) -> ParameterAlignedSpace:
         axes = []
         for axis_model in space_model.axes:
+            if axis_model.is_dummy:
+                param = f"{LineSegmentModel.__name__}.type"
+                msg = f"An axis of {ParameterAlignedSpace.__name__} is not allowed dummy axis."
+                raise LD2ParameterError(param, msg)
+
             match axis_model.type:
                 case "bool":
                     axis = ParameterRangeBool.from_model(axis_model)
@@ -223,9 +234,16 @@ class ParameterAlignedSpace(ParameterSpace):
         return ParameterAlignedSpace(axes=axes, check_lower_filling=space_model.check_lower_filling)
 
 
-class ParameterJaggedSpace(BaseModel, ParameterSpace):
+class ParameterJaggedSpaceModel(BaseModel):
+    type: Literal["jagged"]
     parameters: list[tuple[PrimitiveValueType, ...]]
-    axes_info: list[DummyLineSegment]
+    axes_info: list[LineSegmentModel]
+
+
+class ParameterJaggedSpace(ParameterSpace):
+    def __init__(self, parameters: list[tuple[PrimitiveValueType, ...]], axes_info: list[DummyLineSegment]) -> None:
+        self.parameters = parameters
+        self.axes_info = axes_info
 
     def get_dim(self) -> int:
         return len(self.axes_info)
@@ -249,6 +267,28 @@ class ParameterJaggedSpace(BaseModel, ParameterSpace):
         if isinstance(other, ParameterJaggedSpace):
             return self.axes_info == other.axes_info
         return False
+
+    def to_model(self) -> ParameterJaggedSpaceModel:
+        return ParameterJaggedSpaceModel(
+            type="jagged",
+            parameters=self.parameters,
+            axes_info=[axis.to_model() for axis in self.axes_info],
+        )
+
+    @staticmethod
+    def from_model(model: ParameterJaggedSpaceModel) -> ParameterJaggedSpace:
+        axes_info = []
+        for axis in model.axes_info:
+            if not axis.is_dummy:
+                param = f"{LineSegmentModel.__name__}.type"
+                msg = f"An axis of {ParameterJaggedSpace.__name__} is only allowed dummy axis."
+                raise LD2ParameterError(param, msg)
+            axes_info.append(DummyLineSegment.from_model(axis))
+
+        return ParameterJaggedSpace(
+            parameters=model.parameters,
+            axes_info=axes_info,
+        )
 
 
 if __name__ == "__main__":

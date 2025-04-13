@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
-from lite_dist2.trial import Trial, TrialStatus
+from lite_dist2.trial import Trial, TrialModel, TrialStatus
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.point import ResultType
 from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAlignedSpaceModel
@@ -48,9 +48,23 @@ class SuggestStrategyModel(BaseModel):
                 raise LD2ModelTypeError(self.type)
 
 
-class TrialTable(BaseModel):
-    trials: list[Trial]
-    aggregated_parameter_space: dict[int, list[ParameterAlignedSpace]] | None
+class TrialTableModel(BaseModel):
+    trials: list[TrialModel]
+    aggregated_parameter_space: dict[int, list[ParameterAlignedSpaceModel]] | None
+
+    @staticmethod
+    def create_empty() -> TrialTableModel:
+        return TrialTableModel(trials=[], aggregated_parameter_space=None)
+
+
+class TrialTable:
+    def __init__(
+        self,
+        trials: list[Trial],
+        aggregated_parameter_space: dict[int, list[ParameterAlignedSpace]] | None,
+    ) -> None:
+        self.trials = trials
+        self.aggregated_parameter_space = aggregated_parameter_space
 
     def simplify_aps(self) -> None:
         if not self._try_init_aps():
@@ -70,9 +84,26 @@ class TrialTable(BaseModel):
             return True
         return False
 
+    def to_model(self) -> TrialTableModel:
+        if self.aggregated_parameter_space is None:
+            aps = None
+        else:
+            aps = {d: [space.to_model() for space in spaces] for d, spaces in self.aggregated_parameter_space.items()}
+        return TrialTableModel(
+            trials=[trial.to_model() for trial in self.trials],
+            aggregated_parameter_space=aps,
+        )
+
     @staticmethod
-    def create_empty() -> TrialTable:
-        return TrialTable(trials=[], aggregated_parameter_space=None)
+    def from_model(model: TrialTableModel) -> TrialTable:
+        if model.aggregated_parameter_space is None:
+            aps = None
+        else:
+            aps = {
+                d: [ParameterAlignedSpace.from_model(space) for space in spaces]
+                for d, spaces in model.aggregated_parameter_space.items()
+            }
+        return TrialTable(trials=[Trial.from_model(trial) for trial in model.trials], aggregated_parameter_space=aps)
 
 
 class StudyModel(BaseModel):
@@ -83,7 +114,7 @@ class StudyModel(BaseModel):
     parameter_space: ParameterAlignedSpaceModel
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
-    trial_table: TrialTable = Field(default_factory=TrialTable.create_empty)
+    trial_table: TrialTableModel = Field(default_factory=TrialTableModel.create_empty)
 
 
 class Study:
@@ -132,7 +163,7 @@ class Study:
             parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
-            trial_table=self.trial_table,
+            trial_table=self.trial_table.to_model(),
         )
 
     @staticmethod
@@ -145,5 +176,5 @@ class Study:
             parameter_space=ParameterAlignedSpace.from_model(study_model.parameter_space),
             result_type=study_model.result_type,
             result_value_type=study_model.result_value_type,
-            trial_table=study_model.trial_table,
+            trial_table=TrialTable.from_model(study_model.trial_table),
         )

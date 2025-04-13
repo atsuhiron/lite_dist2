@@ -22,6 +22,7 @@ class LineSegmentModel(BaseModel):
     start: bool | str
     ambient_index: str
     ambient_size: str | None = None
+    is_dummy: bool = False
 
 
 class LineSegment(BaseModel, metaclass=abc.ABCMeta):
@@ -88,6 +89,12 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
 
 
 class DummyLineSegment(LineSegment):
+    name: str
+    type: Literal["bool", "int", "float"]
+    size: Literal[1] = 1
+    ambient_index: Literal[0] = 0
+    ambient_size: Literal[1] = 1
+
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         yield from ()
 
@@ -107,11 +114,23 @@ class DummyLineSegment(LineSegment):
         return self
 
     def to_model(self) -> LineSegmentModel:
-        raise NotImplementedError
+        return LineSegmentModel(
+            name=self.name,
+            type=self.type,
+            size=self.size,
+            step=self.get_step(),
+            start="0x0",
+            ambient_index="0x0",
+            ambient_size="0x1",
+            is_dummy=True,
+        )
 
     @staticmethod
-    def from_model(line_segment_model: LineSegmentModel) -> LineSegment:
-        raise NotImplementedError
+    def from_model(line_segment_model: LineSegmentModel) -> DummyLineSegment:
+        return DummyLineSegment(
+            name=line_segment_model.name,
+            type=line_segment_model.type,
+        )
 
 
 class ParameterRangeBool(LineSegment):

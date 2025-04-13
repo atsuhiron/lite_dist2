@@ -5,9 +5,15 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
-from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.expections import LD2ModelTypeError, LD2UndefinedError
 from lite_dist2.value_models.point import ParamType, ResultType, ScalerValue, VectorValue
-from lite_dist2.value_models.space import ParameterSpace
+from lite_dist2.value_models.space import (
+    ParameterAlignedSpace,
+    ParameterAlignedSpaceModel,
+    ParameterJaggedSpace,
+    ParameterJaggedSpaceModel,
+    ParameterSpace,
+)
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import RawParamType, RawResultType
@@ -24,13 +30,31 @@ class TrialStatus(str, Enum):
     done = "done"
 
 
-class Trial(BaseModel):
+class TrialModel(BaseModel):
     study_id: str
     trial_status: TrialStatus
-    parameter_space: ParameterSpace
+    parameter_space: ParameterAlignedSpaceModel | ParameterJaggedSpaceModel
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     result: list[Mapping] | None = None
+
+
+class Trial:
+    def __init__(
+        self,
+        study_id: str,
+        trial_status: TrialStatus,
+        parameter_space: ParameterSpace,
+        result_type: Literal["scaler", "vector"],
+        result_value_type: Literal["bool", "int", "float"],
+        result: list[Mapping] | None = None,
+    ) -> None:
+        self.study_id = study_id
+        self.trial_status = trial_status
+        self.parameter_space = parameter_space
+        self.result_type = result_type
+        self.result_value_type = result_value_type
+        self.result = result
 
     def convert_mappings_from(self, raw_mappings: list[tuple[RawParamType, RawResultType]]) -> list[Mapping]:
         mappings = []
@@ -51,3 +75,31 @@ class Trial(BaseModel):
                 return VectorValue.create_from_numeric(raw_result, self.result_value_type)
             case _:
                 raise LD2ModelTypeError(self.result_type)
+
+    def to_model(self) -> TrialModel:
+        return TrialModel(
+            study_id=self.study_id,
+            trial_status=self.trial_status,
+            parameter_space=self.parameter_space.to_model(),
+            result_type=self.result_type,
+            result_value_type=self.result_value_type,
+            result=self.result,
+        )
+
+    @staticmethod
+    def from_model(model: TrialModel) -> Trial:
+        match model.parameter_space.type:
+            case "aligned":
+                parameter_space = ParameterAlignedSpace.from_model(model.parameter_space)
+            case "jagged":
+                parameter_space = ParameterJaggedSpace.from_model(model.parameter_space)
+            case _:
+                raise LD2UndefinedError(model.parameter_space.type)
+        return Trial(
+            study_id=model.study_id,
+            trial_status=model.trial_status,
+            parameter_space=parameter_space,
+            result_type=model.result_type,
+            result_value_type=model.result_value_type,
+            result=model.result,
+        )
