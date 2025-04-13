@@ -137,6 +137,12 @@ class ParameterAlignedSpace(ParameterSpace):
             flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
         return flatten_index, self.get_total()
 
+    def get_lower_not_universal_dim(self) -> int:
+        for i in reversed(range(self._dim)):
+            if not self.axes[i].is_universal():
+                return i
+        return -1
+
     def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
         yield from itertools.product(*(axis.indexed_grid() for axis in self.axes))
 

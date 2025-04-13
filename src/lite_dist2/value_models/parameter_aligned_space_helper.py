@@ -38,3 +38,12 @@ def simplify_table_by_dim(aps: list[ParameterAlignedSpace], target_dim: int) -> 
         new_aps.append(merged)
 
     return sorted(new_aps, key=lambda spc: spc.axes[target_dim].start)
+
+
+def remap_space(aps: list[ParameterAlignedSpace], dim: int) -> dict[int, list[ParameterAlignedSpace]]:
+    remapped = {i: [] for i in range(-1, dim)}
+
+    for space in aps:
+        universal_dim = space.get_lower_not_universal_dim()
+        remapped[universal_dim].append(space)
+    return remapped

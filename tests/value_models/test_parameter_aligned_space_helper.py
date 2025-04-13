@@ -1,14 +1,15 @@
 import pytest
 
-from lite_dist2.value_models.parameter_aligned_space_helper import simplify_table_by_dim
+from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify_table_by_dim
 from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeInt
 
 
 @pytest.mark.parametrize(
-    ("sub_spaces", "expected"),
+    ("sub_spaces", "target_dim", "expected"),
     [
         (  # empty
             [],
+            0,
             [],
         ),
         (  # single
@@ -20,6 +21,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     check_lower_filling=False,
                 ),
             ],
+            0,
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -44,6 +46,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     check_lower_filling=False,
                 ),
             ],
+            0,
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -74,6 +77,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     check_lower_filling=False,
                 ),
             ],
+            0,
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -104,6 +108,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     check_lower_filling=False,
                 ),
             ],
+            0,
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -128,6 +133,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     check_lower_filling=False,
                 ),
             ],
+            0,
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -158,6 +164,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                     check_lower_filling=False,
                 ),
             ],
+            0,
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -167,8 +174,144 @@ from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeI
                 ),
             ],
         ),
+        (  # false adjacency (different dimension)
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=0, ambient_size=20, start=0),
+                    ],
+                    check_lower_filling=True,
+                ),
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=1, ambient_size=100, start=0),
+                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=10, ambient_size=20, start=10),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+            1,
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=0, ambient_size=20, start=0),
+                    ],
+                    check_lower_filling=True,
+                ),
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=1, ambient_size=100, start=0),
+                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=10, ambient_size=20, start=10),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+        ),
+        (  # true adjacency (same dimension)
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=0, ambient_size=20, start=0),
+                    ],
+                    check_lower_filling=True,
+                ),
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=10, ambient_size=20, start=10),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+            1,
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                        ParameterRangeInt(name="y", type="int", size=20, ambient_index=0, ambient_size=20, start=0),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+        ),
     ],
 )
-def test_simplify_table_by_dim(sub_spaces: list[ParameterAlignedSpace], expected: list[ParameterAlignedSpace]) -> None:
-    actual = simplify_table_by_dim(sub_spaces, 0)
+def test_simplify_table_by_dim(
+    sub_spaces: list[ParameterAlignedSpace],
+    target_dim: int,
+    expected: list[ParameterAlignedSpace],
+) -> None:
+    actual = simplify_table_by_dim(sub_spaces, target_dim)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("aps", "dim", "expected"),
+    [
+        (
+            [],
+            3,
+            {-1: [], 0: [], 1: [], 2: []},
+        ),
+        (
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
+                        ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=100, start=0),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+            2,
+            {
+                -1: [],
+                0: [],
+                1: [
+                    ParameterAlignedSpace(
+                        axes=[
+                            ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
+                            ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=100, start=0),
+                        ],
+                        check_lower_filling=True,
+                    ),
+                ],
+            },
+        ),
+        (
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
+                        ParameterRangeInt(type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+            2,
+            {
+                -1: [],
+                0: [
+                    ParameterAlignedSpace(
+                        axes=[
+                            ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
+                            ParameterRangeInt(type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                        ],
+                        check_lower_filling=True,
+                    ),
+                ],
+                1: [],
+            },
+        ),
+    ],
+)
+def test_remap_space(
+    aps: list[ParameterAlignedSpace],
+    dim: int,
+    expected: dict[int, list[ParameterAlignedSpace]],
+) -> None:
+    actual = remap_space(aps, dim)
     assert actual == expected

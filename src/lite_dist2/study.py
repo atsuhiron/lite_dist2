@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import chain
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
@@ -8,6 +9,7 @@ from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.trial import Trial, TrialModel, TrialStatus
 from lite_dist2.type_definitions import PrimitiveValueType
+from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify_table_by_dim
 from lite_dist2.value_models.point import ResultType
 from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 
@@ -71,16 +73,21 @@ class TrialTable:
             return
 
         dim = self.trials[0].parameter_space.get_dim()
-        for d in range(dim):
-            if d == (dim - 1):
-                # last dimension
-                pass
+        remapped_spaces = []
+        for d in reversed(range(dim)):
+            simplified = simplify_table_by_dim(self.aggregated_parameter_space[d], d)
+            remapped_spaces.append(remap_space(simplified, dim))
+
+        self.aggregated_parameter_space = {
+            d: list(chain.from_iterable(remapped_space[d] for remapped_space in remapped_spaces))
+            for d in range(-1, dim)
+        }
 
     def _try_init_aps(self) -> bool:
         if self.aggregated_parameter_space is not None and len(self.aggregated_parameter_space) > 0:
             return True
         if len(self.trials) > 0:
-            self.aggregated_parameter_space = {i: [] for i in range(self.trials[0].parameter_space.get_dim())}
+            self.aggregated_parameter_space = {i: [] for i in range(-1, self.trials[0].parameter_space.get_dim())}
             return True
         return False
 
