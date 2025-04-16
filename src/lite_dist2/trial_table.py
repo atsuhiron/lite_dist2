@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-from enum import Enum
 from itertools import chain
 
 from pydantic import BaseModel
 
 from lite_dist2.trial import Trial, TrialModel
 from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
-from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAlignedSpaceModel
-
-
-class DivisionType(str, Enum):
-    no_division = "no_division"
-    segment = "segment"
-    half_line = "half_line"
+from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 
 class TrialTableModel(BaseModel):
@@ -49,9 +42,9 @@ class TrialTable:
             for d in range(-1, dim)
         }
 
-    def find_least_division(self, total_num: int | None) -> tuple[DivisionType, int]:
+    def find_least_division(self, total_num: int | None) -> FlattenSegment:
         if self.aggregated_parameter_space is None:
-            return DivisionType.half_line, 0
+            return FlattenSegment(0, None)
 
         flatten_segments = [
             space.get_flatten_ambient_start_and_size()
@@ -61,14 +54,15 @@ class TrialTable:
         merged = simplify(flatten_segments)
         match len(merged):
             case 0:
-                return DivisionType.half_line, 0
+                return FlattenSegment(0, None)
             case 1:
                 start_index = merged[0].next_start_index()
                 if total_num is None or start_index < total_num:
-                    return DivisionType.half_line, start_index
-                return DivisionType.no_division, start_index
+                    return FlattenSegment(start_index, None)
+                return FlattenSegment(start_index, 0)
             case _:
-                return DivisionType.segment, merged[0].next_start_index()
+                start = merged[0].next_start_index()
+                return FlattenSegment(start, merged[1].get_start_index() - start)
 
     def _try_init_aps(self) -> bool:
         if self.aggregated_parameter_space is not None and len(self.aggregated_parameter_space) > 0:

@@ -1,8 +1,8 @@
 import pytest
 
-from lite_dist2.trial_table import DivisionType, TrialTable
+from lite_dist2.trial_table import TrialTable
 from lite_dist2.value_models.line_segment import ParameterRangeInt
-from lite_dist2.value_models.space import ParameterAlignedSpace
+from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace
 
 
 @pytest.mark.parametrize(
@@ -14,7 +14,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 aggregated_parameter_space=None,
             ),
             100,
-            (DivisionType.half_line, 0),
+            FlattenSegment(0, None),
         ),
         (  # Empty
             TrialTable(
@@ -22,7 +22,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 aggregated_parameter_space={-1: [], 0: []},
             ),
             100,
-            (DivisionType.half_line, 0),
+            FlattenSegment(0, None),
         ),
         (  # Universal 1D
             TrialTable(
@@ -47,7 +47,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 },
             ),
             10,
-            (DivisionType.no_division, 10),
+            FlattenSegment(10, 0),
         ),
         (  # Infinite 1D
             TrialTable(
@@ -72,7 +72,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 },
             ),
             None,
-            (DivisionType.half_line, 10),
+            FlattenSegment(10, None),
         ),
         (  # Segmented 1D
             TrialTable(
@@ -110,7 +110,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 },
             ),
             10,
-            (DivisionType.segment, 10),
+            FlattenSegment(10, 40),
         ),
         (  # Infinite segmented 1D
             TrialTable(
@@ -148,7 +148,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 },
             ),
             None,
-            (DivisionType.segment, 10),
+            FlattenSegment(10, 40),
         ),
         (  # Universal 2D
             TrialTable(
@@ -184,7 +184,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 },
             ),
             100,
-            (DivisionType.no_division, 100),
+            FlattenSegment(100, 0),
         ),
         (  # Segmented 2D
             TrialTable(
@@ -244,14 +244,14 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 },
             ),
             100,
-            (DivisionType.segment, 5),
+            FlattenSegment(5, 5),
         ),
     ],
 )
 def test_trial_table_find_least_division(
     table: TrialTable,
     total_num: int,
-    expected: tuple[DivisionType, int],
+    expected: FlattenSegment,
 ) -> None:
     actual = table.find_least_division(total_num)
     assert actual == expected

@@ -54,7 +54,7 @@ class ParameterSpace(metaclass=abc.ABCMeta):
 
 
 class FlattenSegment(Mergeable):
-    def __init__(self, start: int, size: int) -> None:
+    def __init__(self, start: int, size: int | None) -> None:
         self.start = start
         self.size = size
 
@@ -74,6 +74,9 @@ class FlattenSegment(Mergeable):
             smaller = other
             larger = self
 
+        if smaller.size is None:
+            return False
+
         return smaller.start + smaller.size >= larger.start
 
     def merge(self, other: FlattenSegment, *_: object) -> FlattenSegment:
@@ -86,6 +89,9 @@ class FlattenSegment(Mergeable):
         return FlattenSegment(smaller.start, smaller.size + larger.start)
 
     def next_start_index(self) -> int:
+        if self.size is None:
+            msg = "Cannot get next start index because size of this segment is None"
+            raise LD2InvalidSpaceError(msg)
         return self.start + self.size
 
 
