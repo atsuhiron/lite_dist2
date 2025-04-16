@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 from pydantic import BaseModel, Field
 
 from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
-from lite_dist2.expections import LD2ParameterError
+from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.interfaces import Mergeable
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ class LineSegmentModel(BaseModel):
 class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
     name: str | None = None
     type: Literal["bool", "int", "float"]
-    size: int
+    size: int | None
     ambient_index: int
     ambient_size: int | None = None
 
@@ -72,6 +72,9 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
         return smaller.end_index() + 1 >= larger.ambient_index
 
     def end_index(self) -> int:
+        if self.size is None:
+            msg = "Cannot get end index because this axis is infinite."
+            raise LD2InvalidSpaceError(msg)
         return self.ambient_index + self.size - 1
 
     def is_universal(self) -> bool:

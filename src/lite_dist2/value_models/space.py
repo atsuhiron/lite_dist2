@@ -109,9 +109,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
 
         self._dimensional_size = tuple(axis.size for axis in self.axes)
         self._dim = len(self._dimensional_size)
-        self._total = 1
-        for axis in self.axes:
-            self._total *= axis.size
+        self._total = self._calc_total()
 
         if self.check_lower_filling:
             self._check_lower_filling()
@@ -154,13 +152,21 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
                 msg = "Upper dimension must be size=1"
                 raise LD2InvalidSpaceError(msg)
 
+    def _calc_total(self) -> int | None:
+        t = 1
+        for axis in self.axes:
+            if axis.size is None:
+                return None
+            t *= axis.size
+        return t
+
     def get_dim(self) -> int:
         return self._dim
 
     def get_dimensional_size(self) -> tuple[int, ...]:
         return self._dimensional_size
 
-    def get_total(self) -> int:
+    def get_total(self) -> int | None:
         return self._total
 
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
