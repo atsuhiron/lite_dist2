@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
 from lite_dist2.expections import LD2ParameterError
+from lite_dist2.interfaces import Mergeable
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -25,7 +26,7 @@ class LineSegmentModel(BaseModel):
     is_dummy: bool = False
 
 
-class LineSegment(BaseModel, metaclass=abc.ABCMeta):
+class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
     name: str | None = None
     type: Literal["bool", "int", "float"]
     size: int
@@ -49,7 +50,7 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def merge(self, other: LineSegment) -> LineSegment:
+    def merge(self, other: LineSegment, *args: object) -> LineSegment:
         pass
 
     def derived_by_same_ambient_space_with(self, other: LineSegment) -> bool:
@@ -60,7 +61,7 @@ class LineSegment(BaseModel, metaclass=abc.ABCMeta):
             and (self.ambient_size == other.ambient_size)
         )
 
-    def can_merge(self, other: LineSegment) -> bool:
+    def can_merge(self, other: LineSegment, *_: object) -> bool:
         if self.ambient_index < other.ambient_index:
             smaller = self
             larger = other
@@ -107,10 +108,13 @@ class DummyLineSegment(LineSegment):
     def get_step(self) -> PrimitiveValueType:
         return 1
 
-    def can_merge(self, _other: LineSegment) -> bool:
+    def get_start_index(self, *_: object) -> int:
+        return 0
+
+    def can_merge(self, _other: LineSegment, *_: object) -> bool:
         return False
 
-    def merge(self, _other: LineSegment) -> LineSegment:
+    def merge(self, _other: LineSegment, *_: object) -> LineSegment:
         return self
 
     def to_model(self) -> LineSegmentModel:
@@ -166,7 +170,10 @@ class ParameterRangeBool(LineSegment):
     def get_step(self) -> PrimitiveValueType:
         return self.step
 
-    def merge(self, other: ParameterRangeBool) -> ParameterRangeBool:
+    def get_start_index(self, *_: object) -> int:
+        return self.ambient_index
+
+    def merge(self, other: ParameterRangeBool, *_: object) -> ParameterRangeBool:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
         size = larger.end_index() - smaller.start + 1
         return ParameterRangeBool(
@@ -235,7 +242,10 @@ class ParameterRangeInt(LineSegment):
     def get_step(self) -> PrimitiveValueType:
         return self.step
 
-    def merge(self, other: ParameterRangeInt) -> ParameterRangeInt:
+    def get_start_index(self, *_: object) -> int:
+        return self.ambient_index
+
+    def merge(self, other: ParameterRangeInt, *_: object) -> ParameterRangeInt:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
         size = larger.end_index() - smaller.start + 1
         return ParameterRangeInt(
@@ -303,7 +313,10 @@ class ParameterRangeFloat(LineSegment):
     def get_step(self) -> PrimitiveValueType:
         return self.step
 
-    def merge(self, other: LineSegment) -> LineSegment:
+    def get_start_index(self, *_: object) -> int:
+        return self.ambient_index
+
+    def merge(self, other: LineSegment, *_: object) -> LineSegment:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
         size = larger.end_index() - smaller.start + 1
         return ParameterRangeFloat(

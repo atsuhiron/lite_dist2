@@ -2,7 +2,7 @@ import pytest
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.value_models.line_segment import LineSegment, LineSegmentModel, ParameterRangeBool, ParameterRangeInt
-from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 
 @pytest.mark.parametrize(
@@ -142,7 +142,7 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
                 ],
                 check_lower_filling=True,
             ),
-            (0, 1),
+            FlattenSegment(0, 1),
         ),
         (
             ParameterAlignedSpace(
@@ -151,7 +151,7 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
                 ],
                 check_lower_filling=True,
             ),
-            (10, 2),
+            FlattenSegment(10, 2),
         ),
         (
             ParameterAlignedSpace(
@@ -161,7 +161,7 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
                 ],
                 check_lower_filling=True,
             ),
-            (0, 13),
+            FlattenSegment(0, 13),
         ),
         (
             ParameterAlignedSpace(
@@ -172,7 +172,7 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
                 ],
                 check_lower_filling=True,
             ),
-            (0, 1300),
+            FlattenSegment(0, 1300),
         ),
         (
             ParameterAlignedSpace(
@@ -183,13 +183,13 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
                 ],
                 check_lower_filling=True,
             ),
-            (1781, 19),
+            FlattenSegment(1781, 19),
         ),
     ],
 )
 def test_parameter_space_get_flatten_ambient_start_and_size(
     space: ParameterAlignedSpace,
-    expected: tuple[int, int],
+    expected: FlattenSegment,
 ) -> None:
     actual = space.get_flatten_ambient_start_and_size()
     assert actual == expected

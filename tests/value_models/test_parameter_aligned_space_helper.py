@@ -1,6 +1,6 @@
 import pytest
 
-from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify_table_by_dim
+from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
 from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeInt
 
 
@@ -244,7 +244,7 @@ def test_simplify_table_by_dim(
     target_dim: int,
     expected: list[ParameterAlignedSpace],
 ) -> None:
-    actual = simplify_table_by_dim(sub_spaces, target_dim)
+    actual = simplify(sub_spaces, target_dim)
     assert actual == expected
 
 

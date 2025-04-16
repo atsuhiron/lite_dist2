@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
-from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError, LD2UndefinedError
+from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError, LD2TypeError, LD2UndefinedError
+from lite_dist2.interfaces import Mergeable
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.line_segment import (
     DummyLineSegment,
@@ -52,13 +53,49 @@ class ParameterSpace(metaclass=abc.ABCMeta):
         pass
 
 
+class FlattenSegment(Mergeable):
+    def __init__(self, start: int, size: int) -> None:
+        self.start = start
+        self.size = size
+
+    def __eq__(self, other: FlattenSegment) -> bool:
+        if isinstance(other, FlattenSegment):
+            return (self.start == other.start) and (self.size == other.size)
+        return False
+
+    def get_start_index(self, *_: object) -> int:
+        return self.start
+
+    def can_merge(self, other: FlattenSegment, *_: object) -> bool:
+        if self.start < other.start:
+            smaller = self
+            larger = other
+        else:
+            smaller = other
+            larger = self
+
+        return smaller.start + smaller.size >= larger.start
+
+    def merge(self, other: FlattenSegment, *_: object) -> FlattenSegment:
+        if self.start < other.start:
+            smaller = self
+            larger = other
+        else:
+            smaller = other
+            larger = self
+        return FlattenSegment(smaller.start, smaller.size + larger.start)
+
+    def next_start_index(self) -> int:
+        return self.start + self.size
+
+
 class ParameterAlignedSpaceModel(BaseModel):
     type: Literal["aligned"]
     axes: list[LineSegmentModel]
     check_lower_filling: bool
 
 
-class ParameterAlignedSpace(ParameterSpace):
+class ParameterAlignedSpace(ParameterSpace, Mergeable):
     def __init__(self, axes: list[LineSegment], check_lower_filling: bool) -> None:
         self.axes = axes  # larger index, deeper dimension
         self.filling_dim = [axis.is_universal() for axis in self.axes]
@@ -123,7 +160,7 @@ class ParameterAlignedSpace(ParameterSpace):
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
         yield from itertools.product(*(axis.grid() for axis in self.axes))
 
-    def get_flatten_ambient_start_and_size(self) -> tuple[int, int]:
+    def get_flatten_ambient_start_and_size(self) -> FlattenSegment:
         if not self.check_lower_filling:
             msg = "Cannot get flatten info. Because check_lower_filling of this space is False."
             raise LD2InvalidSpaceError(msg)
@@ -135,7 +172,7 @@ class ParameterAlignedSpace(ParameterSpace):
         flatten_index = 0
         for di in range(self.get_dim()):
             flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
-        return flatten_index, self.get_total()
+        return FlattenSegment(flatten_index, self.get_total())
 
     def get_lower_not_universal_dim(self) -> int:
         for i in reversed(range(self._dim)):
@@ -171,7 +208,27 @@ class ParameterAlignedSpace(ParameterSpace):
     def get_last_dim_size(self) -> int:
         return self.axes[-1].size
 
-    def can_merge(self, other: ParameterAlignedSpace, target_dim: int) -> bool:
+    def get_start_index(self, *args: object) -> int:
+        if len(args) < 1:
+            name = "target_dim"
+            raise LD2ParameterError(name, "missing")
+
+        target_dim = args[0]
+        if not isinstance(target_dim, int):
+            name = "target_dim"
+            raise LD2TypeError(name, int, type(args[0]))
+        return self.axes[target_dim].get_start_index()
+
+    def can_merge(self, other: ParameterAlignedSpace, *args: object) -> bool:
+        if len(args) < 1:
+            name = "target_dim"
+            raise LD2ParameterError(name, "missing")
+
+        target_dim = args[0]
+        if not isinstance(target_dim, int):
+            name = "target_dim"
+            raise LD2TypeError(name, int, type(args[0]))
+
         if not self.derived_by_same_ambient_space_with(other):
             # 同じ母空間から誘導されたものでなければ False
             return False
@@ -196,7 +253,16 @@ class ParameterAlignedSpace(ParameterSpace):
         other_axis = other.axes[target_dim]
         return self_axis.can_merge(other_axis)
 
-    def merge(self, other: ParameterAlignedSpace, target_dim: int) -> ParameterAlignedSpace:
+    def merge(self, other: ParameterAlignedSpace, *args: object) -> ParameterAlignedSpace:
+        if len(args) < 1:
+            name = "target_dim"
+            raise LD2ParameterError(name, "missing")
+
+        target_dim = args[0]
+        if not isinstance(target_dim, int):
+            name = "target_dim"
+            raise LD2TypeError(name, int, type(args[0]))
+
         axes = []
         for d in range(self.get_dim()):
             if d != target_dim:
