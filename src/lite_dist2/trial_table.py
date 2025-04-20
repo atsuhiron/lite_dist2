@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itertools import chain
+import itertools
 
 from pydantic import BaseModel
 
@@ -38,7 +38,7 @@ class TrialTable:
             remapped_spaces.append(remap_space(simplified, dim))
 
         self.aggregated_parameter_space = {
-            d: list(chain.from_iterable(remapped_space[d] for remapped_space in remapped_spaces))
+            d: list(itertools.chain.from_iterable(remapped_space[d] for remapped_space in remapped_spaces))
             for d in range(-1, dim)
         }
 

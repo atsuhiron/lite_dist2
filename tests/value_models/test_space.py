@@ -196,6 +196,39 @@ def test_parameter_space_get_flatten_ambient_start_and_size(
 
 
 @pytest.mark.parametrize(
+    ("space", "expected"),
+    [
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            (1,),
+        ),
+        (
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                    ParameterRangeInt(name="y", type="int", size=70, ambient_index=0, ambient_size=70, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            (7000, 70, 1),
+        ),
+    ],
+)
+def test_parameter_aligned_space_model_lower_element_num_by_dim(
+    space: ParameterAlignedSpace,
+    expected: tuple[int, ...],
+) -> None:
+    actual = space.lower_element_num_by_dim
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
     ("space", "start_and_sizes", "expected"),
     [
         (
@@ -527,6 +560,24 @@ def test_parameter_aligned_space_merge(
     actual_reversed = other.merge(one, target_dim)
     assert actual == expected
     assert actual_reversed == expected
+
+
+@pytest.mark.parametrize(
+    ("flatten_index", "lower_element_num_by_dim", "expected"),
+    [
+        (0, (1,), (0,)),
+        (0, (24, 1), (0, 0)),
+        (591, (100, 10, 1), (5, 9, 1)),
+        (591, (45, 9, 1), (13, 0, 6)),
+    ],
+)
+def test_parameter_aligned_space_model_loom_by_flatten_index(
+    flatten_index: int,
+    lower_element_num_by_dim: tuple[int, ...],
+    expected: tuple[int, ...],
+) -> None:
+    actual = ParameterAlignedSpace.loom_by_flatten_index(flatten_index, lower_element_num_by_dim)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

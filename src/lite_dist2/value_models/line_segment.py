@@ -34,6 +34,10 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
     ambient_size: int | None = None
 
     @abc.abstractmethod
+    def __hash__(self) -> int:
+        pass
+
+    @abc.abstractmethod
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         pass
 
@@ -51,6 +55,10 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def merge(self, other: LineSegment, *args: object) -> LineSegment:
+        pass
+
+    @abc.abstractmethod
+    def to_dummy(self) -> DummyLineSegment:
         pass
 
     def derived_by_same_ambient_space_with(self, other: LineSegment) -> bool:
@@ -99,6 +107,9 @@ class DummyLineSegment(LineSegment):
     ambient_index: Literal[0] = 0
     ambient_size: Literal[1] = 1
 
+    def __hash__(self) -> int:
+        return hash((self.name, self.type, self.size, self.ambient_size, self.ambient_index))
+
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         yield from ()
 
@@ -118,6 +129,9 @@ class DummyLineSegment(LineSegment):
         return False
 
     def merge(self, _other: LineSegment, *_: object) -> LineSegment:
+        return self
+
+    def to_dummy(self) -> DummyLineSegment:
         return self
 
     def to_model(self) -> LineSegmentModel:
@@ -147,6 +161,9 @@ class ParameterRangeBool(LineSegment):
     step: Annotated[int, Field(1, ge=1, le=1)]
     step: int = 1
     ambient_size: Annotated[int, Field(..., ge=1, le=2)]
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.type, self.size, self.start, self.step, self.ambient_size, self.ambient_index))
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         for i in range(self.size):
@@ -189,6 +206,9 @@ class ParameterRangeBool(LineSegment):
             step=self.step,
         )
 
+    def to_dummy(self) -> DummyLineSegment:
+        return DummyLineSegment(name=self.name, type=self.type)
+
     def to_model(self) -> LineSegmentModel:
         return LineSegmentModel(
             name=self.name,
@@ -216,9 +236,12 @@ class ParameterRangeBool(LineSegment):
 class ParameterRangeInt(LineSegment):
     type: Literal["int"]
     start: int
-    size: Annotated[int, Field(..., ge=1)]
+    size: int | None
     step: Annotated[int, Field(1, ge=1)]
     step: int = 1
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.type, self.size, self.start, self.step, self.ambient_size, self.ambient_index))
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         for i in range(self.size):
@@ -261,6 +284,9 @@ class ParameterRangeInt(LineSegment):
             step=self.step,
         )
 
+    def to_dummy(self) -> DummyLineSegment:
+        return DummyLineSegment(name=self.name, type=self.type)
+
     def to_model(self) -> LineSegmentModel:
         return LineSegmentModel(
             name=self.name,
@@ -288,8 +314,11 @@ class ParameterRangeInt(LineSegment):
 class ParameterRangeFloat(LineSegment):
     type: Literal["float"]
     start: float
-    size: Annotated[int, Field(..., ge=1)]
+    size: int | None
     step: Annotated[float, Field(..., gt=0)]
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.type, self.size, self.start, self.step, self.ambient_size, self.ambient_index))
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         for i in range(self.size):
@@ -331,6 +360,9 @@ class ParameterRangeFloat(LineSegment):
             start=smaller.start,
             step=self.step,
         )
+
+    def to_dummy(self) -> DummyLineSegment:
+        return DummyLineSegment(name=self.name, type=self.type)
 
     def to_model(self) -> LineSegmentModel:
         return LineSegmentModel(

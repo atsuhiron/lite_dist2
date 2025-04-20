@@ -19,5 +19,5 @@ class BaseSuggestStrategy(metaclass=abc.ABCMeta):
         self.parameter_space = parameter_space
 
     @abc.abstractmethod
-    def suggest(self, trial_table: TrialTable, num: int | None) -> ParameterSpace:
+    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
         pass
