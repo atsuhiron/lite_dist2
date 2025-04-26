@@ -40,27 +40,27 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
 
     def _aligned_suggest(self, start: int, max_num: int) -> ParameterAlignedSpace:
         if self.parameter_space.is_infinite:
-            available_end, infinite_flag = self._generate_available_end_infinite(start)
+            available_next, infinite_flag = self._generate_available_next_infinite(start)
             if infinite_flag:
                 max_available_gen = self._infinite_available_generator(
-                    available_end,
+                    available_next,
                     self.parameter_space.lower_element_num_by_dim[0],
                 )
-                infinite_available_end = set()
-                for _end_index in max_available_gen:
-                    infinite_available_end.add(_end_index)
-                    if _end_index - start > max_num:
+                infinite_available_next = set()
+                for _next_index in max_available_gen:
+                    infinite_available_next.add(_next_index)
+                    if _next_index - start > max_num:
                         break
-                max_available_end = max(infinite_available_end)
+                max_available_next = max(infinite_available_next)
             else:
-                max_available_end: int = max(
-                    filter(lambda end_index: end_index - start <= max_num, available_end),
+                max_available_next: int = max(
+                    filter(lambda next_index: next_index - start <= max_num, available_next),
                 )
 
         else:
-            available_end = self._generate_available_end_finite(start)
-            max_available_end: int = max(
-                filter(lambda end_index: end_index - start <= max_num, available_end),
+            available_next = self._generate_available_next_finite(start)
+            max_available_next: int = max(
+                filter(lambda next_index: next_index - start <= max_num, available_next),
             )
 
         start_loom = self.parameter_space.loom_by_flatten_index(
@@ -68,7 +68,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
             self.parameter_space.lower_element_num_by_dim,
         )
         end_loom = self.parameter_space.loom_by_flatten_index(
-            max_available_end - 1,
+            max_available_next - 1,
             self.parameter_space.lower_element_num_by_dim,
         )
         start_and_sizes = [(s, e - s + 1) for s, e in zip(start_loom, end_loom, strict=True)]
@@ -95,7 +95,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         error_type = "both is None"
         raise LD2ParameterError(target_param, error_type)
 
-    def _generate_available_end_finite(self, flatten_index: int) -> tuple[int, ...]:
+    def _generate_available_next_finite(self, flatten_index: int) -> tuple[int, ...]:
         dims = self.parameter_space.get_dim
         reversed_dim_sizes = list(reversed(self.parameter_space.get_dimensional_sizes))
         lower_dims = self.parameter_space.lower_element_num_by_dim
@@ -126,7 +126,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
                 ticks.append(tick)
         return tuple(ticks)
 
-    def _generate_available_end_infinite(self, flatten_index: int) -> tuple[tuple[int, ...], bool]:
+    def _generate_available_next_infinite(self, flatten_index: int) -> tuple[tuple[int, ...], bool]:
         dims = self.parameter_space.get_dim
         reversed_dim_sizes = list(reversed(self.parameter_space.get_dimensional_sizes))
         lower_dims = self.parameter_space.lower_element_num_by_dim

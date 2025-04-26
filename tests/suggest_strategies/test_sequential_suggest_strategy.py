@@ -244,12 +244,12 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
     ],
 )
-def test_sequential_suggest_strategy_generate_available_end_finite(
+def test_sequential_suggest_strategy_generate_available_next_finite(
     strategy: SequentialSuggestStrategy,
     flatten_index: int,
     expected: tuple[int, ...],
 ) -> None:
-    actual = strategy._generate_available_end_finite(flatten_index)
+    actual = strategy._generate_available_next_finite(flatten_index)
     assert actual == expected
 
 
@@ -356,12 +356,12 @@ def test_sequential_suggest_strategy_generate_available_end_finite(
         ),
     ],
 )
-def test_sequential_suggest_strategy_generate_available_end_infinite(
+def test_sequential_suggest_strategy_generate_available_next_infinite(
     strategy: SequentialSuggestStrategy,
     flatten_index: int,
     expected: tuple[tuple[int, ...], bool],
 ) -> None:
-    actual = strategy._generate_available_end_infinite(flatten_index)
+    actual = strategy._generate_available_next_infinite(flatten_index)
     assert actual == expected
 
 

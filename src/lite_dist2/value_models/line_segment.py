@@ -252,7 +252,7 @@ class ParameterRangeInt(LineSegment):
             yield i, self.start + i * self.step
 
     def slice(self, start_index: int, size: int) -> ParameterRangeInt:
-        if size > self.size - start_index:
+        if (self.size is not None) and (size > self.size - start_index):
             msg = f"{size=}"
             raise LD2ParameterError(msg, "larger than ambient")
         return ParameterRangeInt(
