@@ -504,6 +504,115 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 check_lower_filling=True,
             ),
         ),
+        (  # 1D init infinite
+            SequentialSuggestStrategy(
+                suggest_parameter={"strict_aligned": False},
+                parameter_space=ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(
+                            name="x",
+                            type="int",
+                            size=None,
+                            start=0,
+                            ambient_size=None,
+                            ambient_index=0,
+                        ),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ),
+            TrialTable(
+                trials=[],
+                aggregated_parameter_space={-1: [], 0: []},
+            ),
+            3,
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="x", type="int", size=3, start=0, ambient_size=None, ambient_index=0),
+                ],
+                check_lower_filling=True,
+            ),
+        ),
+        (  # 1D continuing infinite
+            SequentialSuggestStrategy(
+                suggest_parameter={"strict_aligned": False},
+                parameter_space=ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(
+                            name="x",
+                            type="int",
+                            size=None,
+                            start=0,
+                            ambient_size=None,
+                            ambient_index=0,
+                        ),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ),
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="01",
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=3,
+                                    start=0,
+                                    ambient_size=None,
+                                    ambient_index=0,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                            ),
+                            Mapping(
+                                param=(ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                            ),
+                            Mapping(
+                                param=(ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                            ),
+                        ],
+                    ),
+                ],
+                aggregated_parameter_space={
+                    -1: [],
+                    0: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=3,
+                                    start=0,
+                                    ambient_size=None,
+                                    ambient_index=0,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                },
+            ),
+            3,
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(name="x", type="int", size=3, start=3, ambient_size=None, ambient_index=3),
+                ],
+                check_lower_filling=True,
+            ),
+        ),
         (  # 2D continuing
             SequentialSuggestStrategy(
                 suggest_parameter={"strict_aligned": False},

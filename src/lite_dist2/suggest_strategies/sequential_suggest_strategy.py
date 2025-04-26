@@ -49,7 +49,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
                 infinite_available_next = set()
                 for _next_index in max_available_gen:
                     infinite_available_next.add(_next_index)
-                    if _next_index - start > max_num:
+                    if _next_index - start >= max_num:
                         break
                 max_available_next = max(infinite_available_next)
             else:
