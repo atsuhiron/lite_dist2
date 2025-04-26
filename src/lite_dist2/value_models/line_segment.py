@@ -38,7 +38,7 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def grid(self) -> Generator[PrimitiveValueType, None, None]:
+    def grid(self) -> Generator[PrimitiveValueType, None, None]:  # TODO: 引数取って途中からスタートさせる
         pass
 
     @abc.abstractmethod

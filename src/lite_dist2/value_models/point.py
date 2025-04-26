@@ -103,5 +103,5 @@ class VectorValue(BaseModel, BasePointValue):
                 raise LD2ModelTypeError(value_type)
 
 
-type ParamType = list[ScalerValue]
+type ParamType = tuple[ScalerValue, ...]
 type ResultType = ScalerValue | VectorValue

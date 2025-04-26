@@ -224,10 +224,12 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
 
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         # TODO: type="vector" にも対応させる
-        return [
-            ScalerValue(type="scaler", value_type=ax.type, value=val, name=ax.name)
-            for val, ax in zip(values, self.axes, strict=True)
-        ]
+        return tuple(
+            [
+                ScalerValue(type="scaler", value_type=ax.type, value=val, name=ax.name)
+                for val, ax in zip(values, self.axes, strict=True)
+            ],
+        )
 
     def derived_by_same_ambient_space_with(self, other: ParameterSpace) -> bool:
         if not isinstance(other, ParameterAlignedSpace):
@@ -355,6 +357,12 @@ class ParameterJaggedSpace(ParameterSpace):
         self.parameters = parameters
         self.axes_info = axes_info
 
+    def __eq__(self, other: object) -> bool:
+        # for cache and test
+        if isinstance(other, ParameterJaggedSpace):
+            return (self.parameters == other.parameters) and (self.axes_info == other.axes_info)
+        return False
+
     def get_dim(self) -> int:
         return len(self.axes_info)
 
@@ -368,10 +376,12 @@ class ParameterJaggedSpace(ParameterSpace):
         raise NotImplementedError  # 到達しないはず??
 
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
-        return [
-            ScalerValue(type="scaler", value_type=ax.type, value=val, name=ax.name)
-            for val, ax in zip(values, self.axes_info, strict=True)
-        ]
+        return tuple(
+            [
+                ScalerValue(type="scaler", value_type=ax.type, value=val, name=ax.name)
+                for val, ax in zip(values, self.axes_info, strict=True)
+            ],
+        )
 
     def derived_by_same_ambient_space_with(self, other: ParameterSpace) -> bool:
         if isinstance(other, ParameterJaggedSpace):

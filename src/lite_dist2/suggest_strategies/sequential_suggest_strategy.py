@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING, Any
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.suggest_strategies import BaseSuggestStrategy
+from lite_dist2.value_models.space import (
+    ParameterJaggedSpace,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -12,9 +15,7 @@ if TYPE_CHECKING:
     from lite_dist2.study import TrialTable
     from lite_dist2.type_definitions import PrimitiveValueType
     from lite_dist2.value_models.space import (
-        FlattenSegment,
         ParameterAlignedSpace,
-        ParameterJaggedSpace,
         ParameterSpace,
     )
 
@@ -33,9 +34,9 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         capped_max_num = self._nullable_min(least_seg.size, max_num)
         start = least_seg.start
 
-        if self.strict_aligned:
+        if self.strict_aligned or self.parameter_space.get_dim == 1:
             return self._aligned_suggest(start, capped_max_num)
-        return self._jagged_suggest(capped_max_num)
+        return self._jagged_suggest(start, capped_max_num)
 
     def _aligned_suggest(self, start: int, max_num: int) -> ParameterAlignedSpace:
         if self.parameter_space.is_infinite:
@@ -67,28 +68,20 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
             self.parameter_space.lower_element_num_by_dim,
         )
         end_loom = self.parameter_space.loom_by_flatten_index(
-            max_available_end,
+            max_available_end - 1,
             self.parameter_space.lower_element_num_by_dim,
         )
-        start_and_sizes = [(s, e - s) for s, e in zip(start_loom, end_loom, strict=True)]
+        start_and_sizes = [(s, e - s + 1) for s, e in zip(start_loom, end_loom, strict=True)]
         return self.parameter_space.slice(start_and_sizes)
 
-    def _jagged_suggest(self, max_num: int) -> ParameterJaggedSpace:
+    def _jagged_suggest(self, start: int, max_num: int) -> ParameterJaggedSpace:
+        gen = itertools.islice(self.parameter_space.grid(), start, None)
         parameters = []
-        for i, param in enumerate(self.parameter_space.grid()):
+        for i, param in enumerate(gen):
             parameters.append(param)
             if i + 1 >= max_num:
                 break
         return ParameterJaggedSpace(parameters, self.parameter_space.get_dummy_info)
-
-    @staticmethod
-    def _find_current_tick_index(least_seg: FlattenSegment, ticks: tuple[int, ...]) -> tuple[int, bool]:
-        for i, tick in enumerate(ticks):
-            if least_seg.start > tick:
-                return i, False
-            if least_seg.start == tick:
-                return i, True
-        return len(ticks) - 1, True  # all done
 
     @staticmethod
     def _nullable_min(a: int | None, b: int | None) -> int:
