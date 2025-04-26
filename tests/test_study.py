@@ -62,14 +62,14 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                     result_value_type="float",
                     result=[
                         Mapping(
-                            param=[
+                            param=(
                                 ScalerValue(
                                     type="scaler",
                                     value_type="int",
                                     value="0x1",
                                     name="p1",
                                 ),
-                            ],
+                            ),
                             result=ScalerValue(
                                 type="scaler",
                                 value_type="float",

@@ -52,14 +52,14 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
             result_value_type="float",
             result=[
                 Mapping(
-                    param=[
+                    param=(
                         ScalerValue(
                             type="scaler",
                             value_type="int",
                             value="0x1",
                             name="x",
                         ),
-                    ],
+                    ),
                     result=ScalerValue(
                         type="scaler",
                         value_type="float",
@@ -114,14 +114,14 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
             result_value_type="int",
             result=[
                 Mapping(
-                    param=[
+                    param=(
                         ScalerValue(
                             type="scaler",
                             value_type="int",
                             value="0x1",
                             name="x",
                         ),
-                    ],
+                    ),
                     result=ScalerValue(
                         type="scaler",
                         value_type="int",
