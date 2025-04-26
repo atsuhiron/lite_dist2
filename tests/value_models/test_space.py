@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.value_models.line_segment import LineSegment, LineSegmentModel, ParameterRangeBool, ParameterRangeInt
 from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
+
+if TYPE_CHECKING:
+    from lite_dist2.type_definitions import PrimitiveValueType
 
 
 @pytest.mark.parametrize(
@@ -577,6 +584,61 @@ def test_parameter_aligned_space_model_loom_by_flatten_index(
     expected: tuple[int, ...],
 ) -> None:
     actual = ParameterAlignedSpace.loom_by_flatten_index(flatten_index, lower_element_num_by_dim)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("space", "expected"),
+    [
+        pytest.param(
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=5, ambient_index=0, ambient_size=5, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            [(0,), (1,), (2,), (3,), (4,)],
+            id="1D",
+        ),
+        pytest.param(
+            ParameterAlignedSpace(
+                axes=[
+                    ParameterRangeInt(type="int", size=5, ambient_index=0, ambient_size=5, start=0),
+                    ParameterRangeInt(type="int", size=4, ambient_index=0, ambient_size=4, start=0),
+                ],
+                check_lower_filling=True,
+            ),
+            [
+                (0, 0),
+                (0, 1),
+                (0, 2),
+                (0, 3),
+                (1, 0),
+                (1, 1),
+                (1, 2),
+                (1, 3),
+                (2, 0),
+                (2, 1),
+                (2, 2),
+                (2, 3),
+                (3, 0),
+                (3, 1),
+                (3, 2),
+                (3, 3),
+                (4, 0),
+                (4, 1),
+                (4, 2),
+                (4, 3),
+            ],
+            id="2D",
+        ),
+    ],
+)
+def test_parameter_aligned_space_model_grid(
+    space: ParameterAlignedSpace,
+    expected: list[tuple[PrimitiveValueType, ...]],
+) -> None:
+    actual = list(space.grid())
     assert actual == expected
 
 

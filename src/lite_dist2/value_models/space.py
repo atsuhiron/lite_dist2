@@ -18,6 +18,7 @@ from lite_dist2.value_models.line_segment import (
     ParameterRangeFloat,
     ParameterRangeInt,
 )
+from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product
 from lite_dist2.value_models.point import ParamType, ScalerValue
 
 if TYPE_CHECKING:
@@ -192,7 +193,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         return [axis.to_dummy() for axis in self.axes]
 
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
-        yield from itertools.product(*(axis.grid() for axis in self.axes))
+        yield from infinite_product(*(axis.grid() for axis in self.axes))
 
     def get_flatten_ambient_start_and_size(self) -> FlattenSegment:
         if not self.check_lower_filling:
@@ -212,7 +213,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         return -1
 
     def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
-        yield from itertools.product(*(axis.indexed_grid() for axis in self.axes))
+        yield from infinite_product(*(axis.indexed_grid() for axis in self.axes))
 
     def slice(self, start_and_sizes: list[tuple[int, int]]) -> ParameterAlignedSpace:
         if len(start_and_sizes) != self.get_dim:

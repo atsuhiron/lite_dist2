@@ -1,6 +1,9 @@
+import itertools
+from typing import Any
+
 import pytest
 
-from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
+from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product, remap_space, simplify
 from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeInt
 
 
@@ -315,3 +318,65 @@ def test_remap_space(
 ) -> None:
     actual = remap_space(aps, dim)
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("iterators", "max_num", "expected"),
+    [
+        (
+            (range(8),),
+            3,
+            [(0,), (1,), (2,)],
+        ),
+        (
+            (range(8), range(4)),
+            5,
+            [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0)],
+        ),
+        (
+            (itertools.count(0),),
+            3,
+            [(0,), (1,), (2,)],
+        ),
+        (
+            (itertools.count(0), range(4)),
+            5,
+            [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0)],
+        ),
+    ],
+)
+def test_infinite_product(iterators: tuple[iter, ...], max_num: int, expected: list[tuple[Any, ...]]) -> None:
+    actual = []
+    for item in infinite_product(*iterators):
+        actual.append(item)
+        if len(actual) >= max_num:
+            break
+    assert actual == expected
+
+
+def test_infinite_product_islice() -> None:
+    # noinspection PyTypeChecker
+    gen = infinite_product(*(itertools.count(0), (x for x in range(8))))
+    gen = itertools.islice(gen, 6, None)
+    item = next(gen)
+    assert item == (0, 6)
+    item = next(gen)
+    assert item == (0, 7)
+    item = next(gen)
+    assert item == (1, 0)
+    item = next(gen)
+    assert item == (1, 1)
+
+
+def test_infinite_product_enumerate_islice() -> None:
+    # noinspection PyTypeChecker
+    gen = infinite_product(*(itertools.count(0), (x for x in range(8))))
+    gen = enumerate(itertools.islice(gen, 6, None))
+    item = next(gen)
+    assert item == (0, (0, 6))
+    item = next(gen)
+    assert item == (1, (0, 7))
+    item = next(gen)
+    assert item == (2, (1, 0))
+    item = next(gen)
+    assert item == (3, (1, 1))

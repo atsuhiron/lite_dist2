@@ -1,7 +1,15 @@
+from __future__ import annotations
+
+import itertools
 from functools import reduce
+from typing import TYPE_CHECKING
 
 from lite_dist2.interfaces import Mergeable
-from lite_dist2.value_models.space import ParameterAlignedSpace
+
+if TYPE_CHECKING:
+    from collections.abc import Generator, Iterable
+
+    from lite_dist2.value_models.space import ParameterAlignedSpace
 
 
 def simplify[T: Mergeable](mergeables: list[T], *args: object) -> list[T]:
@@ -48,3 +56,22 @@ def remap_space(aps: list[ParameterAlignedSpace], dim: int) -> dict[int, list[Pa
         universal_dim = space.get_lower_not_universal_dim()
         remapped[universal_dim].append(space)
     return remapped
+
+
+def infinite_product[T](*iterators: tuple[Iterable[T], ...]) -> Generator[tuple[T, ...], None, None]:
+    if len(iterators) == 1:
+        for infinite_element in iterators[0]:
+            yield (infinite_element,)
+    else:
+        lowers_original = list(iterators[1:])
+        for infinite_element in iterators[0]:
+            lowers = []
+            _lowers_original = []
+            for lower_original in lowers_original:
+                _lower_original, lower = itertools.tee(lower_original)
+                _lowers_original.append(_lower_original)
+                lowers.append(lower)
+
+            for lower in itertools.product(*lowers):
+                yield infinite_element, *lower
+            lowers_original = _lowers_original

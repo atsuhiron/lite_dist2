@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 
 from lite_dist2.common import hex2float
@@ -9,6 +13,9 @@ from lite_dist2.value_models.line_segment import (
     ParameterRangeFloat,
     ParameterRangeInt,
 )
+
+if TYPE_CHECKING:
+    from lite_dist2.type_definitions import PrimitiveValueType
 
 
 @pytest.mark.parametrize(
@@ -269,6 +276,61 @@ def test_line_segment_slice_raise(line_segment: LineSegment, size: int) -> None:
     start_index = 0
     with pytest.raises(LD2ParameterError):
         _ = line_segment.slice(start_index, size)
+
+
+@pytest.mark.parametrize(
+    ("line_segment", "expected"),
+    [
+        pytest.param(
+            ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+            [False, True],
+            id="bool",
+        ),
+        pytest.param(
+            ParameterRangeInt(type="int", size=10, ambient_index=20, ambient_size=100, start=20, step=1),
+            [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+            id="int",
+        ),
+        pytest.param(
+            ParameterRangeFloat(type="float", size=5, ambient_index=40, ambient_size=100, start=20.0, step=0.5),
+            [20.0, 20.5, 21.0, 21.5, 22.0],
+            id="float",
+        ),
+    ],
+)
+def test_line_segment_grid_finite(line_segment: LineSegment, expected: list[PrimitiveValueType]) -> None:
+    actual = list(line_segment.grid())
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("line_segment", "max_num", "expected"),
+    [
+        pytest.param(
+            ParameterRangeInt(type="int", size=None, ambient_index=20, ambient_size=None, start=20, step=1),
+            5,
+            [20, 21, 22, 23, 24],
+            id="int",
+        ),
+        pytest.param(
+            ParameterRangeFloat(type="float", size=None, ambient_index=40, ambient_size=None, start=20.0, step=0.5),
+            5,
+            [20.0, 20.5, 21.0, 21.5, 22.0],
+            id="float",
+        ),
+    ],
+)
+def test_line_segment_grid_infinite(
+    line_segment: LineSegment,
+    max_num: int,
+    expected: list[PrimitiveValueType],
+) -> None:
+    actual = []
+    for item in line_segment.grid():
+        actual.append(item)
+        if len(actual) >= max_num:
+            break
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

@@ -1016,6 +1016,107 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 check_lower_filling=True,
             ),
         ),
+        (  # 2D continuing infinite
+            SequentialSuggestStrategy(
+                suggest_parameter={"strict_aligned": False},
+                parameter_space=ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(
+                            name="x",
+                            type="int",
+                            size=None,
+                            start=0,
+                            ambient_size=None,
+                            ambient_index=0,
+                        ),
+                        ParameterRangeInt(
+                            name="y",
+                            type="int",
+                            size=4,
+                            start=0,
+                            ambient_size=4,
+                            ambient_index=0,
+                        ),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ),
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="01",
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[(0, 0), (0, 1), (0, 2)],
+                            axes_info=[
+                                DummyLineSegment(name="x", type="int"),
+                                DummyLineSegment(name="y", type="int"),
+                            ],
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                            ),
+                        ],
+                    ),
+                ],
+                aggregated_parameter_space={
+                    -1: [],
+                    0: [],
+                    1: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=1,
+                                    start=0,
+                                    ambient_size=None,
+                                    ambient_index=0,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=3,
+                                    start=0,
+                                    ambient_size=4,
+                                    ambient_index=0,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                },
+            ),
+            4,
+            ParameterJaggedSpace(
+                parameters=[(0, 3), (1, 0), (1, 1), (1, 2)],
+                axes_info=[
+                    DummyLineSegment(name="x", type="int"),
+                    DummyLineSegment(name="y", type="int"),
+                ],
+            ),
+        ),
     ],
 )
 def test_sequential_suggest_strategy_suggest(
