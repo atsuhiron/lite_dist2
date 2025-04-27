@@ -6,6 +6,7 @@ from lite_dist2.trial_table import TrialTable
 from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.point import ScalerValue
 from lite_dist2.value_models.space import ParameterAlignedSpace
+from tests.const import DT
 
 
 @pytest.mark.parametrize(
@@ -64,6 +65,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -137,6 +140,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -170,6 +175,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                     ),
                     Trial(
                         study_id="01",
+                        trial_id="02",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -256,6 +263,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -299,6 +308,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                     ),
                     Trial(
                         study_id="01",
+                        trial_id="02",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -420,6 +431,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -463,6 +476,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpace
                     ),
                     Trial(
                         study_id="01",
+                        trial_id="02",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
 
+from lite_dist2.common import int2hex, publish_timestamp
 from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
@@ -90,13 +91,17 @@ class Study:
 
     def suggest_next_trial(self, num: int | None) -> Trial:
         parameter_sub_space = self.suggest_strategy.suggest(self.trial_table, num)
-        return Trial(
+        trial = Trial(
             study_id=self.study_id,
+            trial_id=self._publish_trial_id(),
+            timestamp=publish_timestamp(),
             trial_status=TrialStatus.running,
             parameter_space=parameter_sub_space,
             result_type=self.result_type,
             result_value_type=self.result_value_type,
         )
+        self.trial_table.register(trial)
+        return trial
 
     def to_model(self) -> StudyModel:
         return StudyModel(
@@ -109,6 +114,9 @@ class Study:
             result_value_type=self.result_value_type,
             trial_table=self.trial_table.to_model(),
         )
+
+    def _publish_trial_id(self) -> str:
+        return f"{self.study_id}-{int2hex(self.trial_table.count_trial())}"
 
     @staticmethod
     def from_model(study_model: StudyModel) -> Study:

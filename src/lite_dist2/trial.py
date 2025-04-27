@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
@@ -25,13 +26,15 @@ class Mapping(BaseModel):
 
 
 class TrialStatus(str, Enum):
-    not_exec = "not_exec"
+    declined = "declined"
     running = "running"
     done = "done"
 
 
 class TrialModel(BaseModel):
     study_id: str
+    trial_id: str
+    timestamp: datetime
     trial_status: TrialStatus
     parameter_space: ParameterAlignedSpaceModel | ParameterJaggedSpaceModel
     result_type: Literal["scaler", "vector"]
@@ -43,6 +46,8 @@ class Trial:
     def __init__(
         self,
         study_id: str,
+        trial_id: str,
+        timestamp: datetime,
         trial_status: TrialStatus,
         parameter_space: ParameterSpace,
         result_type: Literal["scaler", "vector"],
@@ -50,6 +55,8 @@ class Trial:
         result: list[Mapping] | None = None,
     ) -> None:
         self.study_id = study_id
+        self.trial_id = trial_id
+        self.timestamp = timestamp
         self.trial_status = trial_status
         self.parameter_space = parameter_space
         self.result_type = result_type
@@ -79,6 +86,8 @@ class Trial:
     def to_model(self) -> TrialModel:
         return TrialModel(
             study_id=self.study_id,
+            trial_id=self.trial_id,
+            timestamp=self.timestamp,
             trial_status=self.trial_status,
             parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
@@ -97,6 +106,8 @@ class Trial:
                 raise LD2UndefinedError(model.parameter_space.type)
         return Trial(
             study_id=model.study_id,
+            trial_id=model.trial_id,
+            timestamp=model.timestamp,
             trial_status=model.trial_status,
             parameter_space=parameter_space,
             result_type=model.result_type,

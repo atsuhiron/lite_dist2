@@ -6,6 +6,7 @@ from lite_dist2.trial_table import TrialTableModel
 from lite_dist2.value_models.line_segment import LineSegmentModel
 from lite_dist2.value_models.point import ScalerValue
 from lite_dist2.value_models.space import ParameterAlignedSpaceModel
+from tests.const import DT
 
 
 @pytest.mark.parametrize(
@@ -47,6 +48,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                     trials=[
                         TrialModel(
                             study_id="01",
+                            trial_id="01",
+                            timestamp=DT,
                             trial_status=TrialStatus.done,
                             parameter_space=ParameterAlignedSpaceModel(
                                 type="aligned",
@@ -101,6 +104,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                         ),
                         TrialModel(
                             study_id="01",
+                            trial_id="01",
+                            timestamp=DT,
                             trial_status=TrialStatus.running,
                             parameter_space=ParameterAlignedSpaceModel(
                                 type="aligned",

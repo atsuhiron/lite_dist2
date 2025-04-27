@@ -7,6 +7,7 @@ from lite_dist2.trial_table import TrialTable
 from lite_dist2.value_models.line_segment import DummyLineSegment, ParameterRangeInt
 from lite_dist2.value_models.point import ScalerValue
 from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterJaggedSpace, ParameterSpace
+from tests.const import DT
 
 
 @pytest.mark.parametrize(
@@ -445,6 +446,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -554,6 +557,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -628,6 +633,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
@@ -715,6 +722,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
@@ -751,6 +760,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     ),
                     Trial(
                         study_id="01",
+                        trial_id="02",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(1, 1), (1, 2), (1, 3)],
@@ -859,6 +870,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -909,6 +922,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     ),
                     Trial(
                         study_id="01",
+                        trial_id="02",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -1045,6 +1060,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 trials=[
                     Trial(
                         study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],

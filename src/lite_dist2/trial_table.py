@@ -27,12 +27,18 @@ class TrialTable:
         self.trials = trials
         self.aggregated_parameter_space = aggregated_parameter_space
 
-    def count(self) -> int:
+    def register(self, trial: Trial) -> None:
+        self.trials.append(trial)
+
+    def count_grid(self) -> int:
         if self.aggregated_parameter_space is None:
             return 0
         return sum(
             sum(space.get_total for space in spaces) for spaces in list(self.aggregated_parameter_space.values())
         )
+
+    def count_trial(self) -> int:
+        return len(self.trials)
 
     def simplify_aps(self) -> None:
         if not self._try_init_aps():

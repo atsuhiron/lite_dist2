@@ -4,6 +4,7 @@ from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.value_models.line_segment import LineSegmentModel
 from lite_dist2.value_models.point import ScalerValue
 from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJaggedSpaceModel
+from tests.const import DT
 
 
 @pytest.mark.parametrize(
@@ -11,6 +12,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
     [
         TrialModel(
             study_id="my_study_id0",
+            trial_id="01",
+            timestamp=DT,
             trial_status=TrialStatus.done,
             parameter_space=ParameterAlignedSpaceModel(
                 type="aligned",
@@ -32,6 +35,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
         ),
         TrialModel(
             study_id="my_study_id1",
+            trial_id="01",
+            timestamp=DT,
             trial_status=TrialStatus.done,
             parameter_space=ParameterAlignedSpaceModel(
                 type="aligned",
@@ -71,6 +76,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
         ),
         TrialModel(
             study_id="my_study_id2",
+            trial_id="02",
+            timestamp=DT,
             trial_status=TrialStatus.done,
             parameter_space=ParameterJaggedSpaceModel(
                 type="jagged",
@@ -93,6 +100,8 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
         ),
         TrialModel(
             study_id="my_study_id3",
+            trial_id="01",
+            timestamp=DT,
             trial_status=TrialStatus.done,
             parameter_space=ParameterJaggedSpaceModel(
                 type="jagged",

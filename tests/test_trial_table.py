@@ -6,6 +6,7 @@ from lite_dist2.trial_table import TrialTable
 from lite_dist2.value_models.line_segment import LineSegmentModel, ParameterRangeInt
 from lite_dist2.value_models.point import ScalerValue
 from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
+from tests.const import DT
 
 
 @pytest.mark.parametrize(
@@ -511,11 +512,11 @@ def test_trial_table_find_least_division(
         ),
     ],
 )
-def test_trial_table_count(
+def test_trial_table_count_grid(
     table: TrialTable,
     expected: int,
 ) -> None:
-    actual = table.count()
+    actual = table.count_grid()
     assert actual == expected
 
 
@@ -530,6 +531,8 @@ def test_trial_table_count(
             trials=[
                 TrialModel(
                     study_id="some_study",
+                    trial_id="01",
+                    timestamp=DT,
                     trial_status=TrialStatus.running,
                     parameter_space=ParameterAlignedSpaceModel(
                         type="aligned",
@@ -555,6 +558,8 @@ def test_trial_table_count(
             trials=[
                 TrialModel(
                     study_id="some_study",
+                    trial_id="01",
+                    timestamp=DT,
                     trial_status=TrialStatus.running,
                     parameter_space=ParameterAlignedSpaceModel(
                         type="aligned",
