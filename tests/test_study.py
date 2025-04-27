@@ -23,7 +23,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                         LineSegmentModel(
                             name="x",
                             type="int",
-                            size=100,
+                            size="0x64",
                             step=1,
                             start="0x0",
                             ambient_size="0x64",
@@ -32,7 +32,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                         LineSegmentModel(
                             name="y",
                             type="int",
-                            size=100,
+                            size="0x64",
                             step=1,
                             start="0x0",
                             ambient_size="0x64",
@@ -54,7 +54,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                                     LineSegmentModel(
                                         name="x",
                                         type="int",
-                                        size=1,
+                                        size="0x1",
                                         step=1,
                                         start="0x0",
                                         ambient_size="0x64",
@@ -63,7 +63,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                                     LineSegmentModel(
                                         name="y",
                                         type="int",
-                                        size=2,
+                                        size="0x2",
                                         step=1,
                                         start="0x0",
                                         ambient_size="0x64",
@@ -108,7 +108,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                                     LineSegmentModel(
                                         name="x",
                                         type="int",
-                                        size=1,
+                                        size="0x1",
                                         step=1,
                                         start="0x0",
                                         ambient_size="0x64",
@@ -117,7 +117,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                                     LineSegmentModel(
                                         name="y",
                                         type="int",
-                                        size=2,
+                                        size="0x2",
                                         step=1,
                                         start="0x2",
                                         ambient_size="0x64",
@@ -139,7 +139,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                                     LineSegmentModel(
                                         name="x",
                                         type="int",
-                                        size=1,
+                                        size="0x1",
                                         step=1,
                                         start="0x0",
                                         ambient_size="0x64",
@@ -148,7 +148,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel
                                     LineSegmentModel(
                                         name="y",
                                         type="int",
-                                        size=2,
+                                        size="0x2",
                                         step=1,
                                         start="0x0",
                                         ambient_size="0x64",

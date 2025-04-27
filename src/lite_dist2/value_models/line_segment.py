@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class LineSegmentModel(BaseModel):
     name: str | None = None
     type: Literal["bool", "int", "float"]
-    size: int
+    size: str
     step: int | str
     start: bool | str
     ambient_index: str
@@ -138,7 +138,7 @@ class DummyLineSegment(LineSegment):
         return LineSegmentModel(
             name=self.name,
             type=self.type,
-            size=self.size,
+            size=int2hex(self.size),
             step=self.get_step(),
             start="0x0",
             ambient_index="0x0",
@@ -214,7 +214,7 @@ class ParameterRangeBool(LineSegment):
             name=self.name,
             type=self.type,
             start=self.start,
-            size=self.size,
+            size=int2hex(self.size),
             step=self.step,
             ambient_index=int2hex(self.ambient_index),
             ambient_size=int2hex(self.ambient_size),
@@ -225,7 +225,7 @@ class ParameterRangeBool(LineSegment):
         return ParameterRangeBool(
             name=line_segment_model.name,
             type="bool",
-            size=line_segment_model.size,
+            size=hex2int(line_segment_model.size),
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
             start=line_segment_model.start,
@@ -296,7 +296,7 @@ class ParameterRangeInt(LineSegment):
             name=self.name,
             type=self.type,
             start=int2hex(self.start),
-            size=self.size,
+            size=int2hex(self.size),
             step=self.step,
             ambient_index=int2hex(self.ambient_index),
             ambient_size=int2hex(self.ambient_size),
@@ -307,7 +307,7 @@ class ParameterRangeInt(LineSegment):
         return ParameterRangeInt(
             name=line_segment_model.name,
             type="int",
-            size=line_segment_model.size,
+            size=hex2int(line_segment_model.size),
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
             start=hex2int(line_segment_model.start),
@@ -377,7 +377,7 @@ class ParameterRangeFloat(LineSegment):
             name=self.name,
             type=self.type,
             start=float2hex(self.start),
-            size=self.size,
+            size=int2hex(self.size),
             step=float2hex(self.step),
             ambient_index=int2hex(self.ambient_index),
             ambient_size=int2hex(self.ambient_size),
@@ -388,7 +388,7 @@ class ParameterRangeFloat(LineSegment):
         return ParameterRangeFloat(
             name=line_segment_model.name,
             type="float",
-            size=line_segment_model.size,
+            size=hex2int(line_segment_model.size),
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
             start=hex2float(line_segment_model.start),

@@ -651,7 +651,7 @@ def test_parameter_aligned_space_model_grid(
                 LineSegmentModel(
                     name="x",
                     type="float",
-                    size=10,
+                    size="0xa",
                     step="0x1.0000000000000p+1",
                     start="-0x1.4000000000000p+2",
                     ambient_size="0x14",
@@ -660,7 +660,7 @@ def test_parameter_aligned_space_model_grid(
                 LineSegmentModel(
                     name="y",
                     type="int",
-                    size=10,
+                    size="0xa",
                     step=2,
                     start="-0x5",
                     ambient_size="0x14",
@@ -669,7 +669,7 @@ def test_parameter_aligned_space_model_grid(
                 LineSegmentModel(
                     name="z",
                     type="bool",
-                    size=2,
+                    size="0x2",
                     step=1,
                     start=False,
                     ambient_index="0x0",
@@ -684,7 +684,7 @@ def test_parameter_aligned_space_model_grid(
                 LineSegmentModel(
                     name="x",
                     type="float",
-                    size=1,
+                    size="0x1",
                     step="0x1.0000000000000p+1",
                     start="-0x1.4000000000000p+2",
                     ambient_size="0x14",
@@ -693,7 +693,7 @@ def test_parameter_aligned_space_model_grid(
                 LineSegmentModel(
                     name="y",
                     type="int",
-                    size=1,
+                    size="0x1",
                     step=2,
                     start="-0x5",
                     ambient_size="0x14",
@@ -702,7 +702,7 @@ def test_parameter_aligned_space_model_grid(
                 LineSegmentModel(
                     name="z",
                     type="bool",
-                    size=2,
+                    size="0x2",
                     step=1,
                     start=False,
                     ambient_index="0x0",

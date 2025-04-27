@@ -18,7 +18,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
                     LineSegmentModel(
                         name="x",
                         type="bool",
-                        size=2,
+                        size="0x2",
                         step=1,
                         start=False,
                         ambient_index="0x0",
@@ -39,7 +39,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
                     LineSegmentModel(
                         name="x",
                         type="int",
-                        size=2,
+                        size="0x2",
                         step=1,
                         start="0x0",
                         ambient_index="0x0",
@@ -78,7 +78,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
                     LineSegmentModel(
                         name="x",
                         type="int",
-                        size=1,
+                        size="0x1",
                         start="0x0",
                         step=1,
                         ambient_index="0x0",
@@ -100,7 +100,7 @@ from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJ
                     LineSegmentModel(
                         name="x",
                         type="int",
-                        size=1,
+                        size="0x1",
                         start="0x0",
                         step=1,
                         ambient_index="0x0",

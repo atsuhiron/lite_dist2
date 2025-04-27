@@ -536,7 +536,7 @@ def test_trial_table_count(
                         axes=[
                             LineSegmentModel(
                                 type="int",
-                                size=10,
+                                size="0xa",
                                 step=1,
                                 start="0x0",
                                 ambient_index="0x0",
@@ -561,7 +561,7 @@ def test_trial_table_count(
                         axes=[
                             LineSegmentModel(
                                 type="int",
-                                size=10,
+                                size="0xa",
                                 step=1,
                                 start="0x0",
                                 ambient_index="0x0",

@@ -336,8 +336,23 @@ def test_line_segment_grid_infinite(
 @pytest.mark.parametrize(
     "model",
     [
-        LineSegmentModel(name="x", type="bool", size=2, step=1, start=False, ambient_index="0x0", ambient_size="0x2"),
-        LineSegmentModel(type="bool", size=2, step=1, start=False, ambient_index="0x0", ambient_size="0x2"),
+        LineSegmentModel(
+            name="x",
+            type="bool",
+            size="0x2",
+            step=1,
+            start=False,
+            ambient_index="0x0",
+            ambient_size="0x2",
+        ),
+        LineSegmentModel(
+            type="bool",
+            size="0x2",
+            step=1,
+            start=False,
+            ambient_index="0x0",
+            ambient_size="0x2",
+        ),
     ],
 )
 def test_line_segment_model_bool_to_model_from_model(model: LineSegmentModel) -> None:
@@ -349,8 +364,23 @@ def test_line_segment_model_bool_to_model_from_model(model: LineSegmentModel) ->
 @pytest.mark.parametrize(
     "model",
     [
-        LineSegmentModel(name="x", type="int", size=10, step=1, start="0x0", ambient_index="0x0", ambient_size="0x64"),
-        LineSegmentModel(type="int", size=10, step=1, start="0x0", ambient_index="0x0", ambient_size="0x64"),
+        LineSegmentModel(
+            name="x",
+            type="int",
+            size="0xa",
+            step=1,
+            start="0x0",
+            ambient_index="0x0",
+            ambient_size="0x64",
+        ),
+        LineSegmentModel(
+            type="int",
+            size="0xa",
+            step=1,
+            start="0x0",
+            ambient_index="0x0",
+            ambient_size="0x64",
+        ),
     ],
 )
 def test_line_segment_model_int_to_model_from_model(model: LineSegmentModel) -> None:
@@ -365,7 +395,7 @@ def test_line_segment_model_int_to_model_from_model(model: LineSegmentModel) -> 
         LineSegmentModel(
             name="x",
             type="float",
-            size=10,
+            size="0xa",
             step="0x1.0p-1",
             start="0x0.0p+0",
             ambient_index="0x0",
@@ -373,7 +403,7 @@ def test_line_segment_model_int_to_model_from_model(model: LineSegmentModel) -> 
         ),
         LineSegmentModel(
             type="float",
-            size=10,
+            size="0xa",
             step="0x1.0p-1",
             start="0x0.0p+0",
             ambient_index="0x0",
