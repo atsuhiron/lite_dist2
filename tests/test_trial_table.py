@@ -16,6 +16,7 @@ from tests.const import DT
             TrialTable(
                 trials=[],  # ここでは使わないので空
                 aggregated_parameter_space=None,
+                timeout_minutes=1,
             ),
             100,
             FlattenSegment(0, None),
@@ -25,6 +26,7 @@ from tests.const import DT
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
+                timeout_minutes=1,
             ),
             100,
             FlattenSegment(0, None),
@@ -51,6 +53,7 @@ from tests.const import DT
                     ],
                     0: [],
                 },
+                timeout_minutes=1,
             ),
             10,
             FlattenSegment(10, 0),
@@ -77,6 +80,7 @@ from tests.const import DT
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             None,
             FlattenSegment(10, None),
@@ -116,6 +120,7 @@ from tests.const import DT
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             10,
             FlattenSegment(10, 40),
@@ -155,6 +160,7 @@ from tests.const import DT
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             None,
             FlattenSegment(10, 40),
@@ -192,6 +198,7 @@ from tests.const import DT
                     0: [],
                     1: [],
                 },
+                timeout_minutes=1,
             ),
             100,
             FlattenSegment(100, 0),
@@ -253,6 +260,7 @@ from tests.const import DT
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             100,
             FlattenSegment(5, 5),
@@ -276,6 +284,7 @@ def test_trial_table_find_least_division(
             TrialTable(
                 trials=[],  # ここでは使わないので空
                 aggregated_parameter_space=None,
+                timeout_minutes=1,
             ),
             0,
             id="Empty_aps=None",
@@ -284,6 +293,7 @@ def test_trial_table_find_least_division(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
+                timeout_minutes=1,
             ),
             0,
             id="Empty",
@@ -309,6 +319,7 @@ def test_trial_table_find_least_division(
                     ],
                     0: [],
                 },
+                timeout_minutes=1,
             ),
             10,
             id="Universal 1D",
@@ -334,6 +345,7 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             10,
             id="Infinite 1D",
@@ -372,6 +384,7 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             20,
             id="Segmented 1D",
@@ -410,6 +423,7 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             20,
             id="Infinite segmented 1D",
@@ -446,6 +460,7 @@ def test_trial_table_find_least_division(
                     0: [],
                     1: [],
                 },
+                timeout_minutes=1,
             ),
             100,
             id="Universal 2D",
@@ -506,6 +521,7 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             15,
             id="Segmented 2D",
@@ -526,6 +542,7 @@ def test_trial_table_count_grid(
         TrialTableModel(
             trials=[],
             aggregated_parameter_space=None,
+            timeout_minutes=1,
         ),
         TrialTableModel(
             trials=[
@@ -553,6 +570,7 @@ def test_trial_table_count_grid(
                 ),
             ],
             aggregated_parameter_space=None,
+            timeout_minutes=1,
         ),
         TrialTableModel(
             trials=[
@@ -598,6 +616,7 @@ def test_trial_table_count_grid(
                 ),
             ],
             aggregated_parameter_space=None,
+            timeout_minutes=1,
         ),
     ],
 )

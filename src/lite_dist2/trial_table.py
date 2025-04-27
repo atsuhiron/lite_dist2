@@ -4,6 +4,7 @@ import itertools
 
 from pydantic import BaseModel
 
+from lite_dist2.common import DEFAULT_TIMEOUT_MINUTE
 from lite_dist2.trial import Trial, TrialModel
 from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
 from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
@@ -12,10 +13,11 @@ from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace,
 class TrialTableModel(BaseModel):
     trials: list[TrialModel]
     aggregated_parameter_space: dict[int, list[ParameterAlignedSpaceModel]] | None
+    timeout_minutes: int
 
     @staticmethod
     def create_empty() -> TrialTableModel:
-        return TrialTableModel(trials=[], aggregated_parameter_space=None)
+        return TrialTableModel(trials=[], aggregated_parameter_space=None, timeout_minutes=DEFAULT_TIMEOUT_MINUTE)
 
 
 class TrialTable:
@@ -23,9 +25,11 @@ class TrialTable:
         self,
         trials: list[Trial],
         aggregated_parameter_space: dict[int, list[ParameterAlignedSpace]] | None,
+        timeout_minutes: int,
     ) -> None:
         self.trials = trials
         self.aggregated_parameter_space = aggregated_parameter_space
+        self.timeout_minutes = timeout_minutes
 
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
@@ -93,6 +97,7 @@ class TrialTable:
         return TrialTableModel(
             trials=[trial.to_model() for trial in self.trials],
             aggregated_parameter_space=aps,
+            timeout_minutes=self.timeout_minutes,
         )
 
     @staticmethod
@@ -104,4 +109,8 @@ class TrialTable:
                 d: [ParameterAlignedSpace.from_model(space) for space in spaces]
                 for d, spaces in model.aggregated_parameter_space.items()
             }
-        return TrialTable(trials=[Trial.from_model(trial) for trial in model.trials], aggregated_parameter_space=aps)
+        return TrialTable(
+            trials=[Trial.from_model(trial) for trial in model.trials],
+            aggregated_parameter_space=aps,
+            timeout_minutes=model.timeout_minutes,
+        )

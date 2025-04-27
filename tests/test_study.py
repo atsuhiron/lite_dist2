@@ -164,6 +164,7 @@ from tests.const import DT
                             ),
                         ],
                     },
+                    timeout_minutes=1,
                 ),
             ),
             id="full_definition",

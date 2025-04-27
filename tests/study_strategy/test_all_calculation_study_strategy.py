@@ -17,6 +17,7 @@ from tests.const import DT
             TrialTable(
                 trials=[],
                 aggregated_parameter_space=None,
+                timeout_minutes=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -42,6 +43,7 @@ from tests.const import DT
                     -1: [],
                     0: [],
                 },
+                timeout_minutes=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -117,6 +119,7 @@ from tests.const import DT
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -240,6 +243,7 @@ from tests.const import DT
                         ),
                     ],
                 },
+                timeout_minutes=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -400,6 +404,7 @@ from tests.const import DT
                     ],
                     1: [],
                 },
+                timeout_minutes=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -547,6 +552,7 @@ from tests.const import DT
                     0: [],
                     1: [],
                 },
+                timeout_minutes=1,
             ),
             ParameterAlignedSpace(
                 axes=[
