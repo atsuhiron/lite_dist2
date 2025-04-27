@@ -5,11 +5,12 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel, Field
 
 from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
+from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.trial import Trial, TrialStatus
 from lite_dist2.trial_table import TrialTable, TrialTableModel
 from lite_dist2.type_definitions import PrimitiveValueType
-from lite_dist2.value_models.point import ResultType
 from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 if TYPE_CHECKING:
@@ -19,12 +20,12 @@ if TYPE_CHECKING:
 
 class StudyStrategyModel(BaseModel):
     type: Literal["all_calculation", "find_exact", "minimize"]
-    target_value: ResultType | None
+    study_strategy_param: StudyStrategyParam | None
 
-    def create_strategy(self, parameter_space: ParameterAlignedSpace) -> BaseStudyStrategy:
+    def create_strategy(self) -> BaseStudyStrategy:
         match self.type:
             case "all_calculation":
-                raise NotImplementedError
+                return AllCalculationStudyStrategy(self.study_strategy_param)
             case "find_exact":
                 raise NotImplementedError
             case "minimize":
@@ -35,7 +36,7 @@ class StudyStrategyModel(BaseModel):
 
 class SuggestStrategyModel(BaseModel):
     type: Literal["sequential", "random", "designated"]
-    parameter: dict[str, PrimitiveValueType | str] | None = None
+    parameter: dict[str, PrimitiveValueType | str] = Field(default_factory=dict)
 
     def create_strategy(self, parameter_space: ParameterAlignedSpace) -> BaseSuggestStrategy:
         match self.type:
@@ -81,7 +82,7 @@ class Study:
         self.result_value_type = result_value_type
         self.trial_table = trial_table
 
-        self.study_strategy = study_strategy_model.create_strategy(self.parameter_space)
+        self.study_strategy = study_strategy_model.create_strategy()
         self.suggest_strategy = suggest_strategy_model.create_strategy(self.parameter_space)
 
     def is_done(self) -> bool:
