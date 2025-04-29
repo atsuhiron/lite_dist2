@@ -103,6 +103,9 @@ class Study:
         self.trial_table.register(trial)
         return trial
 
+    def receipt_trial(self, trial: Trial) -> None:
+        self.trial_table.receipt_trial(trial.trial_id, trial.result)
+
     def to_model(self) -> StudyModel:
         return StudyModel(
             study_id=self.study_id,

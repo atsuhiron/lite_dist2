@@ -30,6 +30,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         self.strict_aligned = self.suggest_parameter.get("strict_aligned", False)
 
     def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
+        # TODO: running の範囲を除外する
         least_seg = trial_table.find_least_division(self.parameter_space.get_total)
         capped_max_num = self._nullable_min(least_seg.size, max_num)
         start = least_seg.start

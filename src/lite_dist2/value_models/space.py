@@ -3,6 +3,7 @@ from __future__ import annotations
 import abc
 import functools
 import itertools
+from collections import defaultdict
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 
 
 class ParameterSpace(metaclass=abc.ABCMeta):
+    @functools.cached_property
     @abc.abstractmethod
     def get_dim(self) -> int:
         pass
@@ -48,6 +50,10 @@ class ParameterSpace(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def derived_by_same_ambient_space_with(self, other: ParameterSpace) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def to_aligned_list(self) -> list[ParameterAlignedSpace]:
         pass
 
     @abc.abstractmethod
@@ -307,6 +313,9 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
 
         return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
 
+    def to_aligned_list(self) -> list[ParameterAlignedSpace]:
+        return [self]
+
     def to_model(self) -> ParameterAlignedSpaceModel:
         return ParameterAlignedSpaceModel(
             type="aligned",
@@ -388,6 +397,15 @@ class ParameterJaggedSpace(ParameterSpace):
         if isinstance(other, ParameterJaggedSpace):
             return self.axes_info == other.axes_info
         return False
+
+    def to_aligned_list(self) -> list[ParameterAlignedSpace]:
+        space_by_line = defaultdict(list)
+        # TODO: 実装する
+
+        spaces = []
+        for v in space_by_line.values():
+            spaces.extend(v)
+        return spaces
 
     def to_model(self) -> ParameterJaggedSpaceModel:
         return ParameterJaggedSpaceModel(

@@ -5,7 +5,8 @@ import itertools
 from pydantic import BaseModel
 
 from lite_dist2.common import DEFAULT_TIMEOUT_MINUTE
-from lite_dist2.trial import Trial, TrialModel
+from lite_dist2.expections import LD2ParameterError
+from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
 from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
 
@@ -34,6 +35,31 @@ class TrialTable:
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
 
+    def receipt_trial(self, receipted_trial_id: str, result: list[Mapping] | None) -> None:
+        if result is None:
+            # Do nothing
+            return
+
+        for trial in reversed(self.trials):
+            if trial.trial_id != receipted_trial_id:
+                continue
+            if trial.trial_status == TrialStatus.done:
+                p = "receipted_trial_id"
+                t = f"Cannot override result of done trial(id={receipted_trial_id})"
+                raise LD2ParameterError(p, t)
+
+            # Normal
+            trial.result = result
+            trial.trial_status = TrialStatus.done
+            self.aggregated_parameter_space[self.trials[0].parameter_space.get_dim - 1].extend(
+                trial.parameter_space.to_aligned_list(),
+            )
+            return
+
+        p = "receipted_trial_id"
+        t = f"Not found trial that id={receipted_trial_id}"
+        raise LD2ParameterError(p, t)
+
     def count_grid(self) -> int:
         if self.aggregated_parameter_space is None:
             return 0
@@ -48,7 +74,7 @@ class TrialTable:
         if not self._try_init_aps():
             return
 
-        dim = self.trials[0].parameter_space.get_dim()
+        dim = self.trials[0].parameter_space.get_dim
         remapped_spaces = []
         for d in reversed(range(dim)):
             simplified = simplify(self.aggregated_parameter_space[d], d)
@@ -85,7 +111,7 @@ class TrialTable:
         if self.aggregated_parameter_space is not None and len(self.aggregated_parameter_space) > 0:
             return True
         if len(self.trials) > 0:
-            self.aggregated_parameter_space = {i: [] for i in range(-1, self.trials[0].parameter_space.get_dim())}
+            self.aggregated_parameter_space = {i: [] for i in range(-1, self.trials[0].parameter_space.get_dim)}
             return True
         return False
 
