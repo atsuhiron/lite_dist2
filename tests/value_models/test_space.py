@@ -289,14 +289,14 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=102, start=101),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=102, start=101, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -306,15 +306,15 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
                     ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=100),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -324,14 +324,14 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                     ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=100),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                     ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=100),
                 ],
                 check_lower_filling=False,
@@ -342,15 +342,15 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100),
+                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -360,13 +360,13 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -376,13 +376,13 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -392,13 +392,13 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -408,13 +408,13 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -424,14 +424,14 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
@@ -442,14 +442,14 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
@@ -460,14 +460,14 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
@@ -478,14 +478,14 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
@@ -513,20 +513,20 @@ def test_parameter_aligned_space_can_merge(
         (  # adjacency
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             0,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0),
+                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -534,14 +534,14 @@ def test_parameter_aligned_space_can_merge(
         (  # filled y
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x"),
+                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
@@ -549,7 +549,7 @@ def test_parameter_aligned_space_can_merge(
             0,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, name="x"),
+                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, name="x", ambient_size=None),
                     ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,

@@ -4,9 +4,14 @@ from lite_dist2.expections import LD2ParameterError
 from lite_dist2.study import TrialTableModel
 from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.trial_table import TrialTable
-from lite_dist2.value_models.line_segment import LineSegmentModel, ParameterRangeInt
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel, ParameterRangeInt
 from lite_dist2.value_models.point import ScalerValue
-from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.space import (
+    FlattenSegment,
+    ParameterAlignedSpace,
+    ParameterAlignedSpaceModel,
+    ParameterJaggedSpace,
+)
 from tests.const import DT
 
 
@@ -1463,6 +1468,378 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
             ),
             id="aligned normal",
         ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="s01",
+                        trial_id="t01",
+                        timestamp=DT,
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[(0, 0)],
+                            ambient_indices=[(0, 0)],
+                            axes_info=[
+                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
+                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                            ],
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x0",
+                                        name="x",
+                                    ),
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x0",
+                                        name="y",
+                                    ),
+                                ),
+                                result=ScalerValue(
+                                    type="scaler",
+                                    value_type="int",
+                                    value="0x0",
+                                    name="p2",
+                                ),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t02",
+                        timestamp=DT,
+                        trial_status=TrialStatus.running,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[(0, 1)],
+                            ambient_indices=[(0, 1)],
+                            axes_info=[
+                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
+                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                            ],
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=None,
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t03",
+                        timestamp=DT,
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[(0, 2)],
+                            ambient_indices=[(0, 2)],
+                            axes_info=[
+                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
+                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                            ],
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x0",
+                                        name="x",
+                                    ),
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x2",
+                                        name="y",
+                                    ),
+                                ),
+                                result=ScalerValue(
+                                    type="scaler",
+                                    value_type="int",
+                                    value="0x2",
+                                    name="p2",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+                aggregated_parameter_space={
+                    -1: [],
+                    0: [],
+                    1: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=6,
+                                    start=0,
+                                    name="x",
+                                ),
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=6,
+                                    start=0,
+                                    name="y",
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=6,
+                                    start=0,
+                                    name="x",
+                                ),
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=2,
+                                    ambient_size=6,
+                                    start=2,
+                                    name="y",
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                },
+                timeout_minutes=1,
+            ),
+            "t02",
+            [
+                Mapping(
+                    param=(
+                        ScalerValue(
+                            type="scaler",
+                            value_type="int",
+                            value="0x0",
+                            name="x",
+                        ),
+                        ScalerValue(
+                            type="scaler",
+                            value_type="int",
+                            value="0x1",
+                            name="y",
+                        ),
+                    ),
+                    result=ScalerValue(
+                        type="scaler",
+                        value_type="int",
+                        value="0x1",
+                        name="p2",
+                    ),
+                ),
+            ],
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="s01",
+                        trial_id="t01",
+                        timestamp=DT,
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[(0, 0)],
+                            ambient_indices=[(0, 0)],
+                            axes_info=[
+                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
+                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                            ],
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x0",
+                                        name="x",
+                                    ),
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x0",
+                                        name="y",
+                                    ),
+                                ),
+                                result=ScalerValue(
+                                    type="scaler",
+                                    value_type="int",
+                                    value="0x0",
+                                    name="p2",
+                                ),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t02",
+                        timestamp=DT,
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[(0, 1)],
+                            ambient_indices=[(0, 1)],
+                            axes_info=[
+                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
+                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                            ],
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x0",
+                                        name="x",
+                                    ),
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x1",
+                                        name="y",
+                                    ),
+                                ),
+                                result=ScalerValue(
+                                    type="scaler",
+                                    value_type="int",
+                                    value="0x1",
+                                    name="p2",
+                                ),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t03",
+                        timestamp=DT,
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[(0, 2)],
+                            ambient_indices=[(0, 2)],
+                            axes_info=[
+                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
+                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                            ],
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x0",
+                                        name="x",
+                                    ),
+                                    ScalerValue(
+                                        type="scaler",
+                                        value_type="int",
+                                        value="0x2",
+                                        name="y",
+                                    ),
+                                ),
+                                result=ScalerValue(
+                                    type="scaler",
+                                    value_type="int",
+                                    value="0x2",
+                                    name="p2",
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+                aggregated_parameter_space={
+                    -1: [],
+                    0: [],
+                    1: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=6,
+                                    start=0,
+                                    name="x",
+                                ),
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=6,
+                                    start=0,
+                                    name="y",
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=6,
+                                    start=0,
+                                    name="x",
+                                ),
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=2,
+                                    ambient_size=6,
+                                    start=2,
+                                    name="y",
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=6,
+                                    start=0,
+                                    name="x",
+                                ),
+                                ParameterRangeInt(
+                                    type="int",
+                                    size=1,
+                                    ambient_index=1,
+                                    ambient_size=6,
+                                    start=1,
+                                    name="y",
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                },
+                timeout_minutes=1,
+            ),
+            id="jagged normal",
+        ),
     ],
 )
 def test_trial_table_receipt_trial(
@@ -1478,6 +1855,7 @@ def test_trial_table_receipt_trial(
     assert actual_model.aggregated_parameter_space == expected_model.aggregated_parameter_space
 
 
+# noinspection SpellCheckingInspection
 def test_trial_table_receipt_trial_raise_override_done_trial() -> None:
     trial_table = TrialTable(
         trials=[
@@ -1536,6 +1914,7 @@ def test_trial_table_receipt_trial_raise_override_done_trial() -> None:
         trial_table.receipt_trial("t01", result)
 
 
+# noinspection SpellCheckingInspection
 def test_trial_table_receipt_trial_raise_not_found_trial() -> None:
     trial_table = TrialTable(
         trials=[],

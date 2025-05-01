@@ -31,16 +31,16 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
 
     def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
         # TODO: running の範囲を除外する
-        least_seg = trial_table.find_least_division(self.parameter_space.get_total)
+        least_seg = trial_table.find_least_division(self.parameter_space.total)
         capped_max_num = self._nullable_min(least_seg.size, max_num)
         start = least_seg.start
 
-        if self.strict_aligned or self.parameter_space.get_dim == 1:
+        if self.strict_aligned or self.parameter_space.dim == 1:
             return self._aligned_suggest(start, capped_max_num)
         return self._jagged_suggest(start, capped_max_num)
 
     def _aligned_suggest(self, start: int, max_num: int) -> ParameterAlignedSpace:
-        if self.parameter_space.is_infinite:
+        if self.parameter_space.is_infinite():
             available_next, infinite_flag = self._generate_available_next_infinite(start)
             if infinite_flag:
                 max_available_gen = self._infinite_available_generator(
@@ -76,13 +76,18 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         return self.parameter_space.slice(start_and_sizes)
 
     def _jagged_suggest(self, start: int, max_num: int) -> ParameterJaggedSpace:
-        gen = itertools.islice(self.parameter_space.grid(), start, None)
+        gen = itertools.islice(self.parameter_space.indexed_grid(), start, None)
         parameters = []
-        for i, param in enumerate(gen):
+        ambient_indices = []
+        for i, ai_param in enumerate(gen):
+            ambient_index = tuple(aip[0] for aip in ai_param)
+            param = tuple(aip[1] for aip in ai_param)
+
             parameters.append(param)
+            ambient_indices.append(ambient_index)
             if i + 1 >= max_num:
                 break
-        return ParameterJaggedSpace(parameters, self.parameter_space.get_dummy_info)
+        return ParameterJaggedSpace(parameters, ambient_indices, self.parameter_space.dummy_info)
 
     @staticmethod
     def _nullable_min(a: int | None, b: int | None) -> int:
@@ -97,13 +102,13 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         raise LD2ParameterError(target_param, error_type)
 
     def _generate_available_next_finite(self, flatten_index: int) -> tuple[int, ...]:
-        dims = self.parameter_space.get_dim
-        reversed_dim_sizes = list(reversed(self.parameter_space.get_dimensional_sizes))
+        dims = self.parameter_space.dim
+        reversed_dim_sizes = list(reversed(self.parameter_space.dimensional_sizes))
         lower_dims = self.parameter_space.lower_element_num_by_dim
         reversed_loomed_indices = list(reversed(self.parameter_space.loom_by_flatten_index(flatten_index, lower_dims)))
 
-        total = self.parameter_space.get_total
-        if self.parameter_space.is_infinite:
+        total = self.parameter_space.total
+        if self.parameter_space.is_infinite():
             msg = "Cannot use this method on infinite space"
             raise LD2InvalidSpaceError(msg)
         reversed_lower_dims = [*list(reversed(lower_dims)), total]
@@ -128,12 +133,12 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         return tuple(ticks)
 
     def _generate_available_next_infinite(self, flatten_index: int) -> tuple[tuple[int, ...], bool]:
-        dims = self.parameter_space.get_dim
-        reversed_dim_sizes = list(reversed(self.parameter_space.get_dimensional_sizes))
+        dims = self.parameter_space.dim
+        reversed_dim_sizes = list(reversed(self.parameter_space.dimensional_sizes))
         lower_dims = self.parameter_space.lower_element_num_by_dim
         reversed_loomed_indices = list(reversed(self.parameter_space.loom_by_flatten_index(flatten_index, lower_dims)))
 
-        if not self.parameter_space.is_infinite:
+        if not self.parameter_space.is_infinite():
             msg = "Cannot use this method on finite space"
             raise LD2InvalidSpaceError(msg)
 

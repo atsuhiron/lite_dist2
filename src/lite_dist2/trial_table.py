@@ -51,7 +51,7 @@ class TrialTable:
             # Normal
             trial.result = result
             trial.trial_status = TrialStatus.done
-            self.aggregated_parameter_space[self.trials[0].parameter_space.get_dim - 1].extend(
+            self.aggregated_parameter_space[self.trials[0].parameter_space.get_dim() - 1].extend(
                 trial.parameter_space.to_aligned_list(),
             )
             return
@@ -63,9 +63,7 @@ class TrialTable:
     def count_grid(self) -> int:
         if self.aggregated_parameter_space is None:
             return 0
-        return sum(
-            sum(space.get_total for space in spaces) for spaces in list(self.aggregated_parameter_space.values())
-        )
+        return sum(sum(space.total for space in spaces) for spaces in list(self.aggregated_parameter_space.values()))
 
     def count_trial(self) -> int:
         return len(self.trials)
@@ -74,7 +72,7 @@ class TrialTable:
         if not self._try_init_aps():
             return
 
-        dim = self.trials[0].parameter_space.get_dim
+        dim = self.trials[0].parameter_space.get_dim()
         remapped_spaces = []
         for d in reversed(range(dim)):
             simplified = simplify(self.aggregated_parameter_space[d], d)
@@ -111,7 +109,7 @@ class TrialTable:
         if self.aggregated_parameter_space is not None and len(self.aggregated_parameter_space) > 0:
             return True
         if len(self.trials) > 0:
-            self.aggregated_parameter_space = {i: [] for i in range(-1, self.trials[0].parameter_space.get_dim)}
+            self.aggregated_parameter_space = {i: [] for i in range(-1, self.trials[0].parameter_space.get_dim())}
             return True
         return False
 

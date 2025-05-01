@@ -27,7 +27,8 @@ from tests.const import DT
             3,
             ParameterJaggedSpace(
                 parameters=[(0,), (1,), (2,)],
-                axes_info=[DummyLineSegment(name="x", type="int")],
+                ambient_indices=[(0,), (1,), (2,)],
+                axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
             ),
         ),
         (
@@ -44,7 +45,8 @@ from tests.const import DT
             3,
             ParameterJaggedSpace(
                 parameters=[(3,), (4,), (5,)],
-                axes_info=[DummyLineSegment(name="x", type="int")],
+                ambient_indices=[(3,), (4,), (5,)],
+                axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
             ),
         ),
         (
@@ -61,7 +63,8 @@ from tests.const import DT
             3,
             ParameterJaggedSpace(
                 parameters=[(4,), (5,)],
-                axes_info=[DummyLineSegment(name="x", type="int")],
+                ambient_indices=[(4,), (5,)],
+                axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
             ),
         ),
         (
@@ -79,7 +82,11 @@ from tests.const import DT
             3,
             ParameterJaggedSpace(
                 parameters=[(0, 0), (0, 1), (0, 2)],
-                axes_info=[DummyLineSegment(name="x", type="int"), DummyLineSegment(name="y", type="int")],
+                ambient_indices=[(0, 0), (0, 1), (0, 2)],
+                axes_info=[
+                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="y", type="int", ambient_size=6, step=1),
+                ],
             ),
         ),
         (
@@ -97,7 +104,11 @@ from tests.const import DT
             3,
             ParameterJaggedSpace(
                 parameters=[(0, 5), (1, 0), (1, 1)],
-                axes_info=[DummyLineSegment(name="x", type="int"), DummyLineSegment(name="y", type="int")],
+                ambient_indices=[(0, 5), (1, 0), (1, 1)],
+                axes_info=[
+                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="y", type="int", ambient_size=6, step=1),
+                ],
             ),
         ),
     ],
@@ -642,9 +653,10 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
+                            ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int"),
-                                DummyLineSegment(name="y", type="int"),
+                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                             ],
                         ),
                         result_type="scaler",
@@ -706,9 +718,10 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             4,
             ParameterJaggedSpace(
                 parameters=[(0, 3), (1, 0), (1, 1), (1, 2)],
+                ambient_indices=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int"),
-                    DummyLineSegment(name="y", type="int"),
+                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                 ],
             ),
         ),
@@ -732,9 +745,10 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
+                            ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int"),
-                                DummyLineSegment(name="y", type="int"),
+                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                             ],
                         ),
                         result_type="scaler",
@@ -770,9 +784,10 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(1, 1), (1, 2), (1, 3)],
+                            ambient_indices=[(1, 1), (1, 2), (1, 3)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int"),
-                                DummyLineSegment(name="y", type="int"),
+                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                             ],
                         ),
                         result_type="scaler",
@@ -855,9 +870,10 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             4,
             ParameterJaggedSpace(
                 parameters=[(0, 3), (1, 0)],
+                ambient_indices=[(0, 3), (1, 0)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int"),
-                    DummyLineSegment(name="y", type="int"),
+                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                 ],
             ),
         ),
@@ -1072,9 +1088,10 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_status=TrialStatus.done,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
+                            ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int"),
-                                DummyLineSegment(name="y", type="int"),
+                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                             ],
                         ),
                         result_type="scaler",
@@ -1136,9 +1153,10 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             4,
             ParameterJaggedSpace(
                 parameters=[(0, 3), (1, 0), (1, 1), (1, 2)],
+                ambient_indices=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int"),
-                    DummyLineSegment(name="y", type="int"),
+                    DummyLineSegment(name="x", type="int", ambient_size=None, step=1),
+                    DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                 ],
             ),
         ),

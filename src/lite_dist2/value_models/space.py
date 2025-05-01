@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
+from lite_dist2.common import hex2int, int2hex
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError, LD2TypeError, LD2UndefinedError
 from lite_dist2.interfaces import Mergeable
 from lite_dist2.type_definitions import PrimitiveValueType
@@ -27,7 +28,6 @@ if TYPE_CHECKING:
 
 
 class ParameterSpace(metaclass=abc.ABCMeta):
-    @functools.cached_property
     @abc.abstractmethod
     def get_dim(self) -> int:
         pass
@@ -150,7 +150,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
                 raise LD2InvalidSpaceError(msg)
 
         for i, axis in enumerate(self.axes):
-            if i == self.get_dim - 1:
+            if i == self.dim - 1:
                 continue
             if min_filled_dim == -1 and axis.size != 1:
                 # No axis is universal
@@ -161,14 +161,23 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
                 raise LD2InvalidSpaceError(msg)
 
     @functools.cached_property
+    def dim(self) -> int:
+        return self.get_dim()
+
     def get_dim(self) -> int:
-        return len(self.get_dimensional_sizes)
+        return len(self.dimensional_sizes)
 
     @functools.cached_property
+    def dimensional_sizes(self) -> tuple[int, ...]:
+        return self.get_dimensional_sizes()
+
     def get_dimensional_sizes(self) -> tuple[int, ...]:
         return tuple(axis.size for axis in self.axes)
 
     @functools.cached_property
+    def total(self) -> int | None:
+        return self.get_total()
+
     def get_total(self) -> int | None:
         t = 1
         for axis in self.axes:
@@ -179,6 +188,9 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
 
     @functools.cached_property
     def lower_element_num_by_dim(self) -> tuple[int, ...]:
+        return self.get_lower_element_num_by_dim()
+
+    def get_lower_element_num_by_dim(self) -> tuple[int, ...]:
         # ambient_sizes = (a, b, c, d) -> lower_element_num_by_dim = (bcd, cd, d, 1)
         return tuple(
             list(
@@ -190,11 +202,13 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
             )[::-1],
         )
 
-    @functools.cached_property
     def is_infinite(self) -> bool:
-        return self.get_total is None
+        return self.total is None
 
     @functools.cached_property
+    def dummy_info(self) -> list[DummyLineSegment]:
+        return self.get_dummy_info()
+
     def get_dummy_info(self) -> list[DummyLineSegment]:
         return [axis.to_dummy() for axis in self.axes]
 
@@ -208,12 +222,12 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
 
         lower_element_num_by_dim = self.lower_element_num_by_dim
         flatten_index = 0
-        for di in range(self.get_dim):
+        for di in range(self.dim):
             flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
-        return FlattenSegment(flatten_index, self.get_total)
+        return FlattenSegment(flatten_index, self.total)
 
     def get_lower_not_universal_dim(self) -> int:
-        for i in reversed(range(self.get_dim)):
+        for i in reversed(range(self.dim)):
             if not self.axes[i].is_universal():
                 return i
         return -1
@@ -222,11 +236,11 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         yield from infinite_product(*(axis.indexed_grid() for axis in self.axes))
 
     def slice(self, start_and_sizes: list[tuple[int, int]]) -> ParameterAlignedSpace:
-        if len(start_and_sizes) != self.get_dim:
+        if len(start_and_sizes) != self.dim:
             msg = "start_and_sizes"
             raise LD2ParameterError(msg, "different size to axes")
 
-        axes = [self.axes[i].slice(*start_and_sizes[i]) for i in range(self.get_dim)]
+        axes = [self.axes[i].slice(*start_and_sizes[i]) for i in range(self.dim)]
         return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
 
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
@@ -301,7 +315,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
             raise LD2TypeError(name, int, type(args[0]))
 
         axes = []
-        for d in range(self.get_dim):
+        for d in range(self.dim):
             if d != target_dim:
                 # 浅層次元か深層次元: 同じはずなのでそのままコピー
                 axes.append(self.axes[d])
@@ -359,12 +373,19 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
 class ParameterJaggedSpaceModel(BaseModel):
     type: Literal["jagged"]
     parameters: list[tuple[PrimitiveValueType, ...]]
+    ambient_indices: list[tuple[str, ...]]
     axes_info: list[LineSegmentModel]
 
 
 class ParameterJaggedSpace(ParameterSpace):
-    def __init__(self, parameters: list[tuple[PrimitiveValueType, ...]], axes_info: list[DummyLineSegment]) -> None:
+    def __init__(
+        self,
+        parameters: list[tuple[PrimitiveValueType, ...]],
+        ambient_indices: list[tuple[int, ...]],
+        axes_info: list[DummyLineSegment],
+    ) -> None:
         self.parameters = parameters
+        self.ambient_indices = ambient_indices
         self.axes_info = axes_info
 
     def __eq__(self, other: object) -> bool:
@@ -399,9 +420,43 @@ class ParameterJaggedSpace(ParameterSpace):
         return False
 
     def to_aligned_list(self) -> list[ParameterAlignedSpace]:
-        space_by_line = defaultdict(list)
-        # TODO: 実装する
+        segment_types: list[type[LineSegment]] = []
+        for dummy in self.axes_info:
+            match dummy.type:
+                case "bool":
+                    segment_types.append(ParameterRangeBool)
+                case "int":
+                    segment_types.append(ParameterRangeInt)
+                case "float":
+                    segment_types.append(ParameterRangeFloat)
+                case _:
+                    raise LD2UndefinedError(dummy.type)
 
+        space_by_line = defaultdict(list)
+        for ambient_index, param in zip(self.ambient_indices, self.parameters, strict=True):
+            space_by_line[ambient_index[1:]].append(
+                ParameterAlignedSpace(
+                    axes=[
+                        lst(
+                            type=axis_info.type,
+                            name=axis_info.name,
+                            start=p,
+                            size=1,
+                            step=axis_info.step,
+                            ambient_index=amb_idx,
+                            ambient_size=axis_info.ambient_size,
+                        )
+                        for lst, axis_info, p, amb_idx in zip(
+                            segment_types,
+                            self.axes_info,
+                            param,
+                            ambient_index,
+                            strict=True,
+                        )
+                    ],
+                    check_lower_filling=True,
+                ),
+            )
         spaces = []
         for v in space_by_line.values():
             spaces.extend(v)
@@ -411,6 +466,7 @@ class ParameterJaggedSpace(ParameterSpace):
         return ParameterJaggedSpaceModel(
             type="jagged",
             parameters=self.parameters,
+            ambient_indices=[tuple(int2hex(idx) for idx in amb_idx) for amb_idx in self.ambient_indices],
             axes_info=[axis.to_model() for axis in self.axes_info],
         )
 
@@ -426,5 +482,6 @@ class ParameterJaggedSpace(ParameterSpace):
 
         return ParameterJaggedSpace(
             parameters=model.parameters,
+            ambient_indices=[tuple(hex2int(idx) for idx in amb_idx) for amb_idx in model.ambient_indices],
             axes_info=axes_info,
         )

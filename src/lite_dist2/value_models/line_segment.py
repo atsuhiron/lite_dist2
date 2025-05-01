@@ -30,8 +30,10 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
     name: str | None = None
     type: Literal["bool", "int", "float"]
     size: int | None
+    step: int | str
+    start: bool | str
     ambient_index: int
-    ambient_size: int | None = None
+    ambient_size: int | None
 
     @abc.abstractmethod
     def __hash__(self) -> int:
@@ -103,9 +105,10 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
 class DummyLineSegment(LineSegment):
     name: str
     type: Literal["bool", "int", "float"]
+    step: int | float
+    start: Literal[0] = 0
     size: Literal[1] = 1
     ambient_index: Literal[0] = 0
-    ambient_size: Literal[1] = 1
 
     def __hash__(self) -> int:
         return hash((self.name, self.type, self.size, self.ambient_size, self.ambient_index))
@@ -151,6 +154,8 @@ class DummyLineSegment(LineSegment):
         return DummyLineSegment(
             name=line_segment_model.name,
             type=line_segment_model.type,
+            step=line_segment_model.step,
+            ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
         )
 
 
@@ -207,7 +212,12 @@ class ParameterRangeBool(LineSegment):
         )
 
     def to_dummy(self) -> DummyLineSegment:
-        return DummyLineSegment(name=self.name, type=self.type)
+        return DummyLineSegment(
+            name=self.name,
+            type=self.type,
+            step=self.step,
+            ambient_size=self.ambient_size,
+        )
 
     def to_model(self) -> LineSegmentModel:
         return LineSegmentModel(
@@ -289,7 +299,12 @@ class ParameterRangeInt(LineSegment):
         )
 
     def to_dummy(self) -> DummyLineSegment:
-        return DummyLineSegment(name=self.name, type=self.type)
+        return DummyLineSegment(
+            name=self.name,
+            type=self.type,
+            step=self.step,
+            ambient_size=self.ambient_size,
+        )
 
     def to_model(self) -> LineSegmentModel:
         return LineSegmentModel(
@@ -370,7 +385,12 @@ class ParameterRangeFloat(LineSegment):
         )
 
     def to_dummy(self) -> DummyLineSegment:
-        return DummyLineSegment(name=self.name, type=self.type)
+        return DummyLineSegment(
+            name=self.name,
+            type=self.type,
+            step=self.step,
+            ambient_size=self.ambient_size,
+        )
 
     def to_model(self) -> LineSegmentModel:
         return LineSegmentModel(
