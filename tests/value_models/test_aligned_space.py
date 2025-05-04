@@ -231,7 +231,7 @@ def test_parameter_aligned_space_model_lower_element_num_by_dim(
     space: ParameterAlignedSpace,
     expected: tuple[int, ...],
 ) -> None:
-    actual = space.lower_element_num_by_dim
+    actual = space.lower_element_num_by_dim()
     assert actual == expected
 
 

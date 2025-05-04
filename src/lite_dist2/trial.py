@@ -13,7 +13,7 @@ from lite_dist2.value_models.point import ParamType, ResultType, ScalerValue, Ve
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import RawParamType, RawResultType
-    from lite_dist2.value_models.base_space import ParameterSpace
+    from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
 
 
 class Mapping(BaseModel):
@@ -69,6 +69,11 @@ class Trial:
 
     def set_result(self, mappings: list[Mapping]) -> None:
         self.result = mappings
+
+    def get_running_segments(self) -> list[FlattenSegment]:
+        if self.trial_status == TrialStatus.running:
+            return self.parameter_space.get_flatten_ambient_start_and_size_list()
+        return []
 
     def _create_result_value(self, raw_result: RawResultType) -> ResultType:
         match self.result_type:

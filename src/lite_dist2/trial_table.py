@@ -88,12 +88,15 @@ class TrialTable:
         if self.aggregated_parameter_space is None:
             return FlattenSegment(0, None)
 
-        flatten_segments = [
+        aps_segments = [
             space.get_flatten_ambient_start_and_size()
             for spaces in self.aggregated_parameter_space.values()
             for space in spaces
         ]
-        merged = simplify(flatten_segments)
+
+        running_segments = simplify([segment for trial in self.trials for segment in trial.get_running_segments()])
+
+        merged = simplify(aps_segments + running_segments)
         match len(merged):
             case 0:
                 return FlattenSegment(0, None)

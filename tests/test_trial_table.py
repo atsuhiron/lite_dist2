@@ -15,7 +15,7 @@ from tests.const import DT
 @pytest.mark.parametrize(
     ("table", "total_num", "expected"),
     [
-        pytest.param(  # Empty
+        pytest.param(
             TrialTable(
                 trials=[],  # ここでは使わないので空
                 aggregated_parameter_space=None,
@@ -23,9 +23,9 @@ from tests.const import DT
             ),
             100,
             FlattenSegment(0, None),
-            id="Empty",
+            id="Empty (None aps)",
         ),
-        pytest.param(  # Empty
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
@@ -35,7 +35,7 @@ from tests.const import DT
             FlattenSegment(0, None),
             id="Empty",
         ),
-        pytest.param(  # Universal 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -62,7 +62,7 @@ from tests.const import DT
             FlattenSegment(10, 0),
             id="Universal 1D",
         ),
-        pytest.param(  # Infinite 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -89,7 +89,7 @@ from tests.const import DT
             FlattenSegment(10, None),
             id="Infinite 1D",
         ),
-        pytest.param(  # Segmented 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -129,7 +129,7 @@ from tests.const import DT
             FlattenSegment(10, 40),
             id="Segmented 1D",
         ),
-        pytest.param(  # Infinite segmented 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -169,7 +169,7 @@ from tests.const import DT
             FlattenSegment(10, 40),
             id="Infinite segmented 1D",
         ),
-        pytest.param(  # Universal 2D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -207,7 +207,7 @@ from tests.const import DT
             FlattenSegment(100, 0),
             id="Universal 2D",
         ),
-        pytest.param(  # Segmented 2D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -269,6 +269,537 @@ from tests.const import DT
             FlattenSegment(5, 5),
             id="Segmented 2D",
         ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="s01",
+                        trial_id="t01",
+                        timestamp=DT,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[
+                                (1, 0),
+                                (1, 1),
+                                (1, 2),
+                                (1, 3),
+                                (1, 4),
+                                (1, 5),
+                                (1, 6),
+                                (1, 7),
+                                (1, 8),
+                                (1, 9),
+                            ],
+                            ambient_indices=[
+                                (1, 0),
+                                (1, 1),
+                                (1, 2),
+                                (1, 3),
+                                (1, 4),
+                                (1, 5),
+                                (1, 6),
+                                (1, 7),
+                                (1, 8),
+                                (1, 9),
+                            ],
+                            axes_info=[
+                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                            ],
+                        ),
+                        trial_status=TrialStatus.done,
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xa", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xb", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xc", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xd", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xe", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x5", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xf", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x6", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x10", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x7", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x11", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x8", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x12", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x9", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x13", name="p"),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t02",
+                        timestamp=DT,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[
+                                (0, 0),
+                                (0, 1),
+                                (0, 2),
+                                (0, 3),
+                                (0, 4),
+                            ],
+                            ambient_indices=[
+                                (0, 0),
+                                (0, 1),
+                                (0, 2),
+                                (0, 3),
+                                (0, 4),
+                            ],
+                            axes_info=[
+                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                            ],
+                        ),
+                        trial_status=TrialStatus.done,
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x0", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x1", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x2", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x3", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x4", name="p"),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t03",
+                        timestamp=DT,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[
+                                (0, 5),
+                                (0, 6),
+                                (0, 7),
+                                (0, 8),
+                                (0, 9),
+                            ],
+                            ambient_indices=[
+                                (0, 5),
+                                (0, 6),
+                                (0, 7),
+                                (0, 8),
+                                (0, 9),
+                            ],
+                            axes_info=[
+                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                            ],
+                        ),
+                        trial_status=TrialStatus.running,
+                        result_type="scaler",
+                        result_value_type="int",
+                    ),
+                ],
+                aggregated_parameter_space={
+                    -1: [],
+                    0: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=1,
+                                    ambient_index=1,
+                                    ambient_size=10,
+                                    start=1,
+                                    step=1,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=10,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                    start=0,
+                                    step=1,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                    1: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                    start=0,
+                                    step=1,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=5,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                    start=0,
+                                    step=1,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                },
+                timeout_minutes=1,
+            ),
+            100,
+            FlattenSegment(20, None),
+            id="Infinite jagged running 2D",
+        ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="s01",
+                        trial_id="t01",
+                        timestamp=DT,
+                        parameter_space=ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    step=1,
+                                    size=1,
+                                    start=1,
+                                    ambient_index=1,
+                                    ambient_size=10,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    step=1,
+                                    size=10,
+                                    start=0,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        trial_status=TrialStatus.done,
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xa", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xb", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xc", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xd", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xe", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x5", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0xf", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x6", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x10", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x7", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x11", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x8", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x12", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x9", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x13", name="p"),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t02",
+                        timestamp=DT,
+                        parameter_space=ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    step=1,
+                                    size=1,
+                                    start=0,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    step=1,
+                                    size=5,
+                                    start=0,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        trial_status=TrialStatus.done,
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x0", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x1", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x2", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x3", name="p"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x4", name="p"),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t03",
+                        timestamp=DT,
+                        parameter_space=ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    step=1,
+                                    size=1,
+                                    start=0,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    step=1,
+                                    size=5,
+                                    start=5,
+                                    ambient_index=5,
+                                    ambient_size=10,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        trial_status=TrialStatus.running,
+                        result_type="scaler",
+                        result_value_type="int",
+                    ),
+                ],
+                aggregated_parameter_space={
+                    -1: [],
+                    0: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=1,
+                                    ambient_index=1,
+                                    ambient_size=10,
+                                    start=1,
+                                    step=1,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=10,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                    start=0,
+                                    step=1,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                    1: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=1,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                    start=0,
+                                    step=1,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=5,
+                                    ambient_index=0,
+                                    ambient_size=10,
+                                    start=0,
+                                    step=1,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                },
+                timeout_minutes=1,
+            ),
+            100,
+            FlattenSegment(20, None),
+            id="Infinite aligned running 2D",
+        ),
     ],
 )
 def test_trial_table_find_least_division(
@@ -283,7 +814,7 @@ def test_trial_table_find_least_division(
 @pytest.mark.parametrize(
     ("table", "expected"),
     [
-        pytest.param(  # Empty
+        pytest.param(
             TrialTable(
                 trials=[],  # ここでは使わないので空
                 aggregated_parameter_space=None,
@@ -292,7 +823,7 @@ def test_trial_table_find_least_division(
             0,
             id="Empty_aps=None",
         ),
-        pytest.param(  # Empty
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
@@ -301,7 +832,7 @@ def test_trial_table_find_least_division(
             0,
             id="Empty",
         ),
-        pytest.param(  # Universal 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -327,7 +858,7 @@ def test_trial_table_find_least_division(
             10,
             id="Universal 1D",
         ),
-        pytest.param(  # Infinite 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -353,7 +884,7 @@ def test_trial_table_find_least_division(
             10,
             id="Infinite 1D",
         ),
-        pytest.param(  # Segmented 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -392,7 +923,7 @@ def test_trial_table_find_least_division(
             20,
             id="Segmented 1D",
         ),
-        pytest.param(  # Infinite segmented 1D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -431,7 +962,7 @@ def test_trial_table_find_least_division(
             20,
             id="Infinite segmented 1D",
         ),
-        pytest.param(  # Universal 2D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -468,7 +999,7 @@ def test_trial_table_find_least_division(
             100,
             id="Universal 2D",
         ),
-        pytest.param(  # Segmented 2D
+        pytest.param(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import abc
+import itertools
 from typing import TYPE_CHECKING
 
 from lite_dist2.expections import LD2InvalidSpaceError
 from lite_dist2.interfaces import Mergeable
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Generator, Sequence
 
     from lite_dist2.type_definitions import PrimitiveValueType
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
@@ -45,14 +46,38 @@ class ParameterSpace(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
+    def lower_element_num_by_dim(self) -> tuple[int, ...]:
+        pass
+
+    @abc.abstractmethod
+    def get_flatten_ambient_start_and_size_list(self) -> list[FlattenSegment]:
+        pass
+
+    @abc.abstractmethod
     def to_model(self) -> ParameterAlignedSpaceModel | ParameterJaggedSpaceModel:
         pass
+
+    @staticmethod
+    def get_lower_element_num_by_dim(ambient_sizes: Sequence[int]) -> tuple[int, ...]:
+        # ambient_sizes = (a, b, c, d) -> lower_element_num_by_dim = (bcd, cd, d, 1)
+        return tuple(
+            list(
+                itertools.accumulate(
+                    ambient_sizes[1:][::-1],
+                    lambda x, y: x * y,
+                    initial=1,
+                ),
+            )[::-1],
+        )
 
 
 class FlattenSegment(Mergeable):
     def __init__(self, start: int, size: int | None) -> None:
         self.start = start
         self.size = size
+
+    def __repr__(self) -> str:
+        return f"{FlattenSegment.__name__}(start={self.start}, size={self.size})"
 
     def __eq__(self, other: FlattenSegment) -> bool:
         if isinstance(other, FlattenSegment):

@@ -9,7 +9,7 @@ from lite_dist2.common import hex2int, int2hex
 from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
 from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
-from lite_dist2.value_models.base_space import ParameterSpace
+from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
 from lite_dist2.value_models.line_segment import (
     DummyLineSegment,
     LineSegment,
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 class ParameterJaggedSpaceModel(BaseModel):
     type: Literal["jagged"]
-    parameters: list[tuple[PrimitiveValueType, ...]]
+    parameters: list[tuple[PrimitiveValueType, ...]]  # TODO: これだめでは?
     ambient_indices: list[tuple[str, ...]]
     axes_info: list[LineSegmentModel]
 
@@ -115,6 +115,17 @@ class ParameterJaggedSpace(ParameterSpace):
         for v in space_by_line.values():
             spaces.extend(v)
         return spaces
+
+    def lower_element_num_by_dim(self) -> tuple[int, ...]:
+        return self.get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes_info])
+
+    def get_flatten_ambient_start_and_size_list(self) -> list[FlattenSegment]:
+        lower_element_num_by_dim = self.lower_element_num_by_dim()
+        flatten_segments = []
+        for amb_idx in self.ambient_indices:
+            flatten_index = sum(d * lower for d, lower in zip(amb_idx, lower_element_num_by_dim, strict=True))
+            flatten_segments.append(FlattenSegment(flatten_index, 1))
+        return flatten_segments
 
     def to_model(self) -> ParameterJaggedSpaceModel:
         return ParameterJaggedSpaceModel(

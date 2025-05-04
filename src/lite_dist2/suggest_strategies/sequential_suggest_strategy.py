@@ -28,7 +28,6 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         self.strict_aligned = self.suggest_parameter.get("strict_aligned", False)
 
     def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
-        # TODO: running の範囲を除外する
         least_seg = trial_table.find_least_division(self.parameter_space.total)
         capped_max_num = self._nullable_min(least_seg.size, max_num)
         start = least_seg.start
@@ -43,7 +42,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
             if infinite_flag:
                 max_available_gen = self._infinite_available_generator(
                     available_next,
-                    self.parameter_space.lower_element_num_by_dim[0],
+                    self.parameter_space.lower_element_num_by_dim()[0],
                 )
                 infinite_available_next = set()
                 for _next_index in max_available_gen:
@@ -64,11 +63,11 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
 
         start_loom = self.parameter_space.loom_by_flatten_index(
             start,
-            self.parameter_space.lower_element_num_by_dim,
+            self.parameter_space.lower_element_num_by_dim(),
         )
         end_loom = self.parameter_space.loom_by_flatten_index(
             max_available_next - 1,
-            self.parameter_space.lower_element_num_by_dim,
+            self.parameter_space.lower_element_num_by_dim(),
         )
         start_and_sizes = [(s, e - s + 1) for s, e in zip(start_loom, end_loom, strict=True)]
         return self.parameter_space.slice(start_and_sizes)
@@ -102,7 +101,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
     def _generate_available_next_finite(self, flatten_index: int) -> tuple[int, ...]:
         dims = self.parameter_space.dim
         reversed_dim_sizes = list(reversed(self.parameter_space.dimensional_sizes))
-        lower_dims = self.parameter_space.lower_element_num_by_dim
+        lower_dims = self.parameter_space.lower_element_num_by_dim()
         reversed_loomed_indices = list(reversed(self.parameter_space.loom_by_flatten_index(flatten_index, lower_dims)))
 
         total = self.parameter_space.total
@@ -133,7 +132,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
     def _generate_available_next_infinite(self, flatten_index: int) -> tuple[tuple[int, ...], bool]:
         dims = self.parameter_space.dim
         reversed_dim_sizes = list(reversed(self.parameter_space.dimensional_sizes))
-        lower_dims = self.parameter_space.lower_element_num_by_dim
+        lower_dims = self.parameter_space.lower_element_num_by_dim()
         reversed_loomed_indices = list(reversed(self.parameter_space.loom_by_flatten_index(flatten_index, lower_dims)))
 
         if not self.parameter_space.is_infinite():

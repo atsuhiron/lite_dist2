@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import functools
-import itertools
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
@@ -109,21 +108,8 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
             t *= axis.size
         return t
 
-    @functools.cached_property
     def lower_element_num_by_dim(self) -> tuple[int, ...]:
-        return self.get_lower_element_num_by_dim()
-
-    def get_lower_element_num_by_dim(self) -> tuple[int, ...]:
-        # ambient_sizes = (a, b, c, d) -> lower_element_num_by_dim = (bcd, cd, d, 1)
-        return tuple(
-            list(
-                itertools.accumulate(
-                    [axis.ambient_size for axis in self.axes][1:][::-1],
-                    lambda x, y: x * y,
-                    initial=1,
-                ),
-            )[::-1],
-        )
+        return self.get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes])
 
     def is_infinite(self) -> bool:
         return self.total is None
@@ -143,11 +129,14 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
             msg = "Cannot get flatten info. Because check_lower_filling of this space is False."
             raise LD2InvalidSpaceError(msg)
 
-        lower_element_num_by_dim = self.lower_element_num_by_dim
+        lower_element_num_by_dim = self.lower_element_num_by_dim()
         flatten_index = 0
         for di in range(self.dim):
             flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
         return FlattenSegment(flatten_index, self.total)
+
+    def get_flatten_ambient_start_and_size_list(self) -> list[FlattenSegment]:
+        return [self.get_flatten_ambient_start_and_size()]
 
     def get_lower_not_universal_dim(self) -> int:
         for i in reversed(range(self.dim)):

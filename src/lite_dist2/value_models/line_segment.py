@@ -145,7 +145,7 @@ class DummyLineSegment(LineSegment):
             step=self.get_step(),
             start="0x0",
             ambient_index="0x0",
-            ambient_size="0x1",
+            ambient_size=int2hex(self.ambient_size),
             is_dummy=True,
         )
 
