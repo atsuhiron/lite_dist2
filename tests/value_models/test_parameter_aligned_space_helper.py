@@ -3,8 +3,9 @@ from typing import Any
 
 import pytest
 
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
+from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product, remap_space, simplify
-from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterRangeInt
 
 
 @pytest.mark.parametrize(

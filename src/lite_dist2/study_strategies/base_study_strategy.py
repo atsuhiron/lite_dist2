@@ -9,7 +9,7 @@ from lite_dist2.value_models.point import ResultType
 
 if TYPE_CHECKING:
     from lite_dist2.study import TrialTable
-    from lite_dist2.value_models.space import ParameterAlignedSpace
+    from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
 class StudyStrategyParam(BaseModel):

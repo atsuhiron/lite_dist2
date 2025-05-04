@@ -1,17 +1,14 @@
 from __future__ import annotations
 
-import abc
 import functools
 import itertools
-from collections import defaultdict
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
-from lite_dist2.common import hex2int, int2hex
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError, LD2TypeError, LD2UndefinedError
 from lite_dist2.interfaces import Mergeable
-from lite_dist2.type_definitions import PrimitiveValueType
+from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
 from lite_dist2.value_models.line_segment import (
     DummyLineSegment,
     LineSegment,
@@ -26,81 +23,7 @@ from lite_dist2.value_models.point import ParamType, ScalerValue
 if TYPE_CHECKING:
     from collections.abc import Generator
 
-
-class ParameterSpace(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def get_dim(self) -> int:
-        pass
-
-    @abc.abstractmethod
-    def get_total(self) -> int:
-        pass
-
-    @abc.abstractmethod
-    def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
-        pass
-
-    @abc.abstractmethod
-    def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
-        pass
-
-    @abc.abstractmethod
-    def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
-        pass
-
-    @abc.abstractmethod
-    def derived_by_same_ambient_space_with(self, other: ParameterSpace) -> bool:
-        pass
-
-    @abc.abstractmethod
-    def to_aligned_list(self) -> list[ParameterAlignedSpace]:
-        pass
-
-    @abc.abstractmethod
-    def to_model(self) -> ParameterAlignedSpaceModel | ParameterJaggedSpaceModel:
-        pass
-
-
-class FlattenSegment(Mergeable):
-    def __init__(self, start: int, size: int | None) -> None:
-        self.start = start
-        self.size = size
-
-    def __eq__(self, other: FlattenSegment) -> bool:
-        if isinstance(other, FlattenSegment):
-            return (self.start == other.start) and (self.size == other.size)
-        return False
-
-    def get_start_index(self, *_: object) -> int:
-        return self.start
-
-    def can_merge(self, other: FlattenSegment, *_: object) -> bool:
-        if self.start < other.start:
-            smaller = self
-            larger = other
-        else:
-            smaller = other
-            larger = self
-
-        if smaller.size is None:
-            return False
-
-        return smaller.start + smaller.size >= larger.start
-
-    def merge(self, other: FlattenSegment, *_: object) -> FlattenSegment:
-        if self.start < other.start:
-            smaller = self
-            larger = other
-        else:
-            smaller = other
-            larger = self
-        return FlattenSegment(smaller.start, smaller.size + larger.start)
-
-    def next_start_index(self) -> int:
-        if self.size is None:
-            msg = "Cannot get next start index because size of this segment is None"
-            raise LD2InvalidSpaceError(msg)
-        return self.start + self.size
+    from lite_dist2.type_definitions import PrimitiveValueType
 
 
 class ParameterAlignedSpaceModel(BaseModel):
@@ -368,120 +291,3 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
             axes.append(axis)
 
         return ParameterAlignedSpace(axes=axes, check_lower_filling=space_model.check_lower_filling)
-
-
-class ParameterJaggedSpaceModel(BaseModel):
-    type: Literal["jagged"]
-    parameters: list[tuple[PrimitiveValueType, ...]]
-    ambient_indices: list[tuple[str, ...]]
-    axes_info: list[LineSegmentModel]
-
-
-class ParameterJaggedSpace(ParameterSpace):
-    def __init__(
-        self,
-        parameters: list[tuple[PrimitiveValueType, ...]],
-        ambient_indices: list[tuple[int, ...]],
-        axes_info: list[DummyLineSegment],
-    ) -> None:
-        self.parameters = parameters
-        self.ambient_indices = ambient_indices
-        self.axes_info = axes_info
-
-    def __eq__(self, other: object) -> bool:
-        # for cache and test
-        if isinstance(other, ParameterJaggedSpace):
-            return (self.parameters == other.parameters) and (self.axes_info == other.axes_info)
-        return False
-
-    def get_dim(self) -> int:
-        return len(self.axes_info)
-
-    def get_total(self) -> int:
-        return len(self.parameters)
-
-    def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
-        yield from self.parameters
-
-    def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
-        raise NotImplementedError  # 到達しないはず??
-
-    def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
-        return tuple(
-            [
-                ScalerValue(type="scaler", value_type=ax.type, value=val, name=ax.name)
-                for val, ax in zip(values, self.axes_info, strict=True)
-            ],
-        )
-
-    def derived_by_same_ambient_space_with(self, other: ParameterSpace) -> bool:
-        if isinstance(other, ParameterJaggedSpace):
-            return self.axes_info == other.axes_info
-        return False
-
-    def to_aligned_list(self) -> list[ParameterAlignedSpace]:
-        segment_types: list[type[LineSegment]] = []
-        for dummy in self.axes_info:
-            match dummy.type:
-                case "bool":
-                    segment_types.append(ParameterRangeBool)
-                case "int":
-                    segment_types.append(ParameterRangeInt)
-                case "float":
-                    segment_types.append(ParameterRangeFloat)
-                case _:
-                    raise LD2UndefinedError(dummy.type)
-
-        space_by_line = defaultdict(list)
-        for ambient_index, param in zip(self.ambient_indices, self.parameters, strict=True):
-            space_by_line[ambient_index[1:]].append(
-                ParameterAlignedSpace(
-                    axes=[
-                        lst(
-                            type=axis_info.type,
-                            name=axis_info.name,
-                            start=p,
-                            size=1,
-                            step=axis_info.step,
-                            ambient_index=amb_idx,
-                            ambient_size=axis_info.ambient_size,
-                        )
-                        for lst, axis_info, p, amb_idx in zip(
-                            segment_types,
-                            self.axes_info,
-                            param,
-                            ambient_index,
-                            strict=True,
-                        )
-                    ],
-                    check_lower_filling=True,
-                ),
-            )
-        spaces = []
-        for v in space_by_line.values():
-            spaces.extend(v)
-        return spaces
-
-    def to_model(self) -> ParameterJaggedSpaceModel:
-        return ParameterJaggedSpaceModel(
-            type="jagged",
-            parameters=self.parameters,
-            ambient_indices=[tuple(int2hex(idx) for idx in amb_idx) for amb_idx in self.ambient_indices],
-            axes_info=[axis.to_model() for axis in self.axes_info],
-        )
-
-    @staticmethod
-    def from_model(model: ParameterJaggedSpaceModel) -> ParameterJaggedSpace:
-        axes_info = []
-        for axis in model.axes_info:
-            if not axis.is_dummy:
-                param = f"{LineSegmentModel.__name__}.type"
-                msg = f"An axis of {ParameterJaggedSpace.__name__} is only allowed dummy axis."
-                raise LD2ParameterError(param, msg)
-            axes_info.append(DummyLineSegment.from_model(axis))
-
-        return ParameterJaggedSpace(
-            parameters=model.parameters,
-            ambient_indices=[tuple(hex2int(idx) for idx in amb_idx) for amb_idx in model.ambient_indices],
-            axes_info=axes_info,
-        )

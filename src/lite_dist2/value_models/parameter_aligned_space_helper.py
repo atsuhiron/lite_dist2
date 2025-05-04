@@ -9,7 +9,7 @@ from lite_dist2.interfaces import Mergeable
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
 
-    from lite_dist2.value_models.space import ParameterAlignedSpace
+    from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
 def simplify[T: Mergeable](mergeables: list[T], *args: object) -> list[T]:

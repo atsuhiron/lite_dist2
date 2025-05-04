@@ -7,8 +7,9 @@ from pydantic import BaseModel
 from lite_dist2.common import DEFAULT_TIMEOUT_MINUTE
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
-from lite_dist2.value_models.space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 
 class TrialTableModel(BaseModel):

@@ -1,9 +1,10 @@
 import pytest
 
 from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
+from lite_dist2.value_models.jagged_space import ParameterJaggedSpaceModel
 from lite_dist2.value_models.line_segment import LineSegmentModel
 from lite_dist2.value_models.point import ScalerValue
-from lite_dist2.value_models.space import ParameterAlignedSpaceModel, ParameterJaggedSpaceModel
 from tests.const import DT
 
 

@@ -1,6 +1,6 @@
 from lite_dist2.study_strategies import BaseStudyStrategy
 from lite_dist2.trial_table import TrialTable
-from lite_dist2.value_models.space import ParameterAlignedSpace
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
 class AllCalculationStudyStrategy(BaseStudyStrategy):

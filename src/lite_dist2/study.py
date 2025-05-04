@@ -12,7 +12,7 @@ from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.trial import Trial, TrialStatus
 from lite_dist2.trial_table import TrialTable, TrialTableModel
 from lite_dist2.type_definitions import PrimitiveValueType
-from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 if TYPE_CHECKING:
     from lite_dist2.study_strategies import BaseStudyStrategy

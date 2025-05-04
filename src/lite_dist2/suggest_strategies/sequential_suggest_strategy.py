@@ -5,16 +5,14 @@ from typing import TYPE_CHECKING, Any
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.suggest_strategies import BaseSuggestStrategy
-from lite_dist2.value_models.space import (
-    ParameterJaggedSpace,
-)
+from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
 
 if TYPE_CHECKING:
     from collections.abc import Generator
 
     from lite_dist2.study import TrialTable
     from lite_dist2.type_definitions import PrimitiveValueType
-    from lite_dist2.value_models.space import (
+    from lite_dist2.value_models.aligned_space import (
         ParameterAlignedSpace,
         ParameterSpace,
     )

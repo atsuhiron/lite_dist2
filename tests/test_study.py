@@ -3,9 +3,9 @@ import pytest
 from lite_dist2.study import Study, StudyModel, StudyStrategyModel, SuggestStrategyModel
 from lite_dist2.trial import Mapping, TrialModel, TrialStatus
 from lite_dist2.trial_table import TrialTableModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
 from lite_dist2.value_models.line_segment import LineSegmentModel
 from lite_dist2.value_models.point import ScalerValue
-from lite_dist2.value_models.space import ParameterAlignedSpaceModel
 from tests.const import DT
 
 

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from lite_dist2.study import TrialTable
     from lite_dist2.type_definitions import PrimitiveValueType
-    from lite_dist2.value_models.space import ParameterAlignedSpace, ParameterSpace
+    from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterSpace
 
 
 class BaseSuggestStrategy(metaclass=abc.ABCMeta):
