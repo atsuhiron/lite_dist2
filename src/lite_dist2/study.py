@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
@@ -86,11 +87,14 @@ class Study:
         self.study_strategy = study_strategy_model.create_strategy()
         self.suggest_strategy = suggest_strategy_model.create_strategy(self.parameter_space)
 
+        self._table_lock = threading.Lock()
+
     def is_done(self) -> bool:
         return self.study_strategy.is_done(self.trial_table, self.parameter_space)
 
     def suggest_next_trial(self, num: int | None) -> Trial:
-        parameter_sub_space = self.suggest_strategy.suggest(self.trial_table, num)
+        with self._table_lock:
+            parameter_sub_space = self.suggest_strategy.suggest(self.trial_table, num)
         trial = Trial(
             study_id=self.study_id,
             trial_id=self._publish_trial_id(),
@@ -104,7 +108,8 @@ class Study:
         return trial
 
     def receipt_trial(self, trial: Trial) -> None:
-        self.trial_table.receipt_trial(trial.trial_id, trial.result)
+        with self._table_lock:
+            self.trial_table.receipt_trial(trial.trial_id, trial.result)
 
     def to_model(self) -> StudyModel:
         return StudyModel(
