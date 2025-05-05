@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
-from lite_dist2.common import hex2int, int2hex
+from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
 from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
-from lite_dist2.type_definitions import PrimitiveValueType
+from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
 from lite_dist2.value_models.line_segment import (
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 class ParameterJaggedSpaceModel(BaseModel):
     type: Literal["jagged"]
-    parameters: list[tuple[PrimitiveValueType, ...]]  # TODO: これだめでは?
+    parameters: list[tuple[PortableValueType, ...]]
     ambient_indices: list[tuple[str, ...]]
     axes_info: list[LineSegmentModel]
 
@@ -130,7 +130,7 @@ class ParameterJaggedSpace(ParameterSpace):
     def to_model(self) -> ParameterJaggedSpaceModel:
         return ParameterJaggedSpaceModel(
             type="jagged",
-            parameters=self.parameters,
+            parameters=[tuple(self._primitive_to_portable(p) for p in primitive) for primitive in self.parameters],
             ambient_indices=[tuple(int2hex(idx) for idx in amb_idx) for amb_idx in self.ambient_indices],
             axes_info=[axis.to_model() for axis in self.axes_info],
         )
@@ -146,7 +146,33 @@ class ParameterJaggedSpace(ParameterSpace):
             axes_info.append(DummyLineSegment.from_model(axis))
 
         return ParameterJaggedSpace(
-            parameters=model.parameters,
+            parameters=[
+                tuple(ParameterJaggedSpace._portable_to_primitive(p) for p in port) for port in model.parameters
+            ],
             ambient_indices=[tuple(hex2int(idx) for idx in amb_idx) for amb_idx in model.ambient_indices],
             axes_info=axes_info,
         )
+
+    @staticmethod
+    def _primitive_to_portable(primitive: PrimitiveValueType) -> PortableValueType:
+        match primitive:
+            case bool():
+                return primitive
+            case int():
+                return int2hex(primitive)
+            case float():
+                return float2hex(primitive)
+            case _:
+                raise LD2UndefinedError(str(type(primitive)))
+
+    @staticmethod
+    def _portable_to_primitive(portable: PortableValueType) -> PrimitiveValueType:
+        match portable:
+            case bool():
+                return portable
+            case str() if "p" in portable:
+                return hex2float(portable)
+            case str() if portable.startswith("0x"):
+                return hex2int(portable)
+            case _:
+                raise LD2UndefinedError(str(type(portable)))
