@@ -8,19 +8,18 @@ from pydantic import BaseModel, Field
 from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.interfaces import Mergeable
+from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-
-    from lite_dist2.type_definitions import PrimitiveValueType
 
 
 class LineSegmentModel(BaseModel):
     name: str | None = None
     type: Literal["bool", "int", "float"]
     size: str
-    step: int | str
-    start: bool | str
+    step: int | str  # TODO: これも怪しい
+    start: PortableValueType
     ambient_index: str
     ambient_size: str | None = None
     is_dummy: bool = False
@@ -31,7 +30,7 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
     type: Literal["bool", "int", "float"]
     size: int | None
     step: int | str
-    start: bool | str
+    start: PrimitiveValueType
     ambient_index: int
     ambient_size: int | None
 

@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
 from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.type_definitions import PortableValueType
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -32,7 +33,7 @@ class BasePointValue(metaclass=abc.ABCMeta):
 class ScalerValue(BaseModel, BasePointValue):
     type: Literal["scaler"]
     value_type: Literal["bool", "int", "float"]
-    value: bool | str
+    value: PortableValueType
     name: str | None = None
 
     def numerize(self) -> PrimitiveValueType:
@@ -69,7 +70,7 @@ class ScalerValue(BaseModel, BasePointValue):
 class VectorValue(BaseModel, BasePointValue):
     type: Literal["vector"]
     value_type: Literal["bool", "int", "float"]
-    values: list[bool | str]
+    values: list[PortableValueType]
     name: str | None = None
 
     def numerize(self) -> list[PrimitiveValueType]:
