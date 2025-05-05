@@ -1,6 +1,7 @@
 import pytest
 
 from lite_dist2.expections import LD2ParameterError
+from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.suggest_strategies.sequential_suggest_strategy import SequentialSuggestStrategy
 from lite_dist2.trial import Mapping, Trial, TrialStatus
 from lite_dist2.trial_table import TrialTable
@@ -17,7 +18,7 @@ from tests.const import DT
     [
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -35,7 +36,7 @@ from tests.const import DT
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -53,7 +54,7 @@ from tests.const import DT
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -71,7 +72,7 @@ from tests.const import DT
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=3, start=0, ambient_size=6, ambient_index=0),
@@ -93,7 +94,7 @@ from tests.const import DT
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=3, start=0, ambient_size=6, ambient_index=0),
@@ -130,7 +131,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
     [
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},  # 使わない
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),  # 使わない
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -143,7 +144,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -156,7 +157,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=7, start=0, ambient_size=7, ambient_index=0),
@@ -170,7 +171,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=7, start=0, ambient_size=7, ambient_index=0),
@@ -184,7 +185,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=7, start=0, ambient_size=7, ambient_index=0),
@@ -198,7 +199,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
@@ -213,7 +214,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
@@ -228,7 +229,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
@@ -243,7 +244,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
@@ -272,7 +273,7 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
     [
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
@@ -285,7 +286,7 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
@@ -298,7 +299,7 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
@@ -312,7 +313,7 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
@@ -326,7 +327,7 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
@@ -340,7 +341,7 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
@@ -355,7 +356,7 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
         ),
         (
             SequentialSuggestStrategy(
-                suggest_parameter={},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
@@ -425,7 +426,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
     [
         (  # 1D init
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": False},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -448,7 +449,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
         ),
         (  # 1D continuing
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": False},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -524,7 +525,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
         ),
         (  # 1D init infinite
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": False},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(
@@ -554,7 +555,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
         ),
         (  # 1D continuing infinite
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": False},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(
@@ -637,7 +638,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
         ),
         (  # 2D continuing
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": False},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -729,7 +730,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
         ),
         (  # 2D striping
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": False},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -881,7 +882,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
         ),
         (  # 2D striping force aligned
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": True},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
@@ -1058,7 +1059,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
         ),
         (  # 2D continuing infinite
             SequentialSuggestStrategy(
-                suggest_parameter={"strict_aligned": False},
+                suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(

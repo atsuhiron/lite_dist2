@@ -5,13 +5,14 @@ from typing import TYPE_CHECKING, Any
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.suggest_strategies import BaseSuggestStrategy
+from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyModel
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
 
 if TYPE_CHECKING:
     from collections.abc import Generator
 
     from lite_dist2.study import TrialTable
-    from lite_dist2.type_definitions import PrimitiveValueType
+    from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
     from lite_dist2.value_models.aligned_space import (
         ParameterAlignedSpace,
         ParameterSpace,
@@ -21,11 +22,11 @@ if TYPE_CHECKING:
 class SequentialSuggestStrategy(BaseSuggestStrategy):
     def __init__(
         self,
-        suggest_parameter: dict[str, PrimitiveValueType | str],
+        suggest_parameter: SuggestStrategyParam,
         parameter_space: ParameterAlignedSpace,
     ) -> None:
         super().__init__(suggest_parameter, parameter_space)
-        self.strict_aligned = self.suggest_parameter.get("strict_aligned", False)
+        self.strict_aligned = self.suggest_parameter.strict_aligned
 
     def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
         least_seg = trial_table.find_least_division(self.parameter_space.total)
@@ -170,3 +171,9 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         last_v = init[-1]
         for i in itertools.count(1):
             yield last_v + ratio * i
+
+    def to_model(self) -> SuggestStrategyModel:
+        return SuggestStrategyModel(
+            type="sequential",
+            parameter=self.suggest_parameter,
+        )

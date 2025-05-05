@@ -7,49 +7,16 @@ from pydantic import BaseModel, Field
 
 from lite_dist2.common import int2hex, publish_timestamp
 from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
-from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
-from lite_dist2.suggest_strategies import SequentialSuggestStrategy
+from lite_dist2.suggest_strategies import SequentialSuggestStrategy, SuggestStrategyModel
 from lite_dist2.trial import Trial, TrialStatus
 from lite_dist2.trial_table import TrialTable, TrialTableModel
-from lite_dist2.type_definitions import PrimitiveValueType
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 if TYPE_CHECKING:
     from lite_dist2.study_strategies import BaseStudyStrategy
     from lite_dist2.suggest_strategies import BaseSuggestStrategy
-
-
-class StudyStrategyModel(BaseModel):
-    type: Literal["all_calculation", "find_exact", "minimize"]
-    study_strategy_param: StudyStrategyParam | None
-
-    def create_strategy(self) -> BaseStudyStrategy:
-        match self.type:
-            case "all_calculation":
-                return AllCalculationStudyStrategy(self.study_strategy_param)
-            case "find_exact":
-                raise NotImplementedError
-            case "minimize":
-                raise NotImplementedError
-            case _:
-                raise LD2ModelTypeError(self.type)
-
-
-class SuggestStrategyModel(BaseModel):
-    type: Literal["sequential", "random", "designated"]
-    parameter: dict[str, PrimitiveValueType | str] = Field(default_factory=dict)
-
-    def create_strategy(self, parameter_space: ParameterAlignedSpace) -> BaseSuggestStrategy:
-        match self.type:
-            case "sequential":
-                return SequentialSuggestStrategy(self.parameter, parameter_space)
-            case "random":
-                raise NotImplementedError
-            case "designated":
-                raise NotImplementedError
-            case _:
-                raise LD2ModelTypeError(self.type)
 
 
 class StudyModel(BaseModel):
@@ -68,8 +35,8 @@ class Study:
         self,
         study_id: str,
         name: str,
-        study_strategy_model: StudyStrategyModel,
-        suggest_strategy_model: SuggestStrategyModel,
+        study_strategy: BaseStudyStrategy,
+        suggest_strategy: BaseSuggestStrategy,
         parameter_space: ParameterAlignedSpace,
         result_type: Literal["scaler", "vector"],
         result_value_type: Literal["bool", "int", "float"],
@@ -77,15 +44,12 @@ class Study:
     ) -> None:
         self.study_id = study_id
         self.name = name
-        self.study_strategy_model = study_strategy_model
-        self.suggest_strategy_model = suggest_strategy_model
+        self.study_strategy = study_strategy
+        self.suggest_strategy = suggest_strategy
         self.parameter_space = parameter_space
         self.result_type = result_type
         self.result_value_type = result_value_type
         self.trial_table = trial_table
-
-        self.study_strategy = study_strategy_model.create_strategy()
-        self.suggest_strategy = suggest_strategy_model.create_strategy(self.parameter_space)
 
         self._table_lock = threading.Lock()
 
@@ -115,8 +79,8 @@ class Study:
         return StudyModel(
             study_id=self.study_id,
             name=self.name,
-            study_strategy=self.study_strategy_model,
-            suggest_strategy=self.suggest_strategy_model,
+            study_strategy=self.study_strategy.to_model(),
+            suggest_strategy=self.suggest_strategy.to_model(),
             parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
@@ -127,13 +91,38 @@ class Study:
         return f"{self.study_id}-{int2hex(self.trial_table.count_trial())}"
 
     @staticmethod
+    def _create_study_strategy(model: StudyStrategyModel) -> BaseStudyStrategy:
+        match model.type:
+            case "all_calculation":
+                return AllCalculationStudyStrategy(model.study_strategy_param)
+            case "find_exact":
+                raise NotImplementedError
+            case "minimize":
+                raise NotImplementedError
+            case _:
+                raise LD2ModelTypeError(model.type)
+
+    @staticmethod
+    def _create_suggest_strategy(model: SuggestStrategyModel, space: ParameterAlignedSpace) -> BaseSuggestStrategy:
+        match model.type:
+            case "sequential":
+                return SequentialSuggestStrategy(model.parameter, space)
+            case "random":
+                raise NotImplementedError
+            case "designated":
+                raise NotImplementedError
+            case _:
+                raise LD2ModelTypeError(model.type)
+
+    @staticmethod
     def from_model(study_model: StudyModel) -> Study:
+        parameter_space = ParameterAlignedSpace.from_model(study_model.parameter_space)
         return Study(
             study_id=study_model.study_id,
             name=study_model.name,
-            study_strategy_model=study_model.study_strategy,
-            suggest_strategy_model=study_model.suggest_strategy,
-            parameter_space=ParameterAlignedSpace.from_model(study_model.parameter_space),
+            study_strategy=Study._create_study_strategy(study_model.study_strategy),
+            suggest_strategy=Study._create_suggest_strategy(study_model.suggest_strategy, parameter_space),
+            parameter_space=parameter_space,
             result_type=study_model.result_type,
             result_value_type=study_model.result_value_type,
             trial_table=TrialTable.from_model(study_model.trial_table),

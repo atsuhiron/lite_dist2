@@ -1,6 +1,7 @@
 import pytest
 
 from lite_dist2.study import Study, StudyModel, StudyStrategyModel, SuggestStrategyModel
+from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.trial import Mapping, TrialModel, TrialStatus
 from lite_dist2.trial_table import TrialTableModel
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
@@ -17,7 +18,10 @@ from tests.const import DT
                 study_id="01",
                 name="s1",
                 study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
-                suggest_strategy=SuggestStrategyModel(type="sequential"),
+                suggest_strategy=SuggestStrategyModel(
+                    type="sequential",
+                    parameter=SuggestStrategyParam(strict_aligned=True),
+                ),
                 parameter_space=ParameterAlignedSpaceModel(
                     type="aligned",
                     axes=[

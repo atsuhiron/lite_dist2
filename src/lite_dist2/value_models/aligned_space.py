@@ -268,6 +268,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
                 msg = f"An axis of {ParameterAlignedSpace.__name__} is not allowed dummy axis."
                 raise LD2ParameterError(param, msg)
 
+            # TODO: LineSegment 側に持たせる
             match axis_model.type:
                 case "bool":
                     axis = ParameterRangeBool.from_model(axis_model)

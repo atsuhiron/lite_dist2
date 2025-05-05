@@ -1,1 +1,1 @@
-from .base_study_strategy import BaseStudyStrategy
+from .base_study_strategy import BaseStudyStrategy, StudyStrategyModel

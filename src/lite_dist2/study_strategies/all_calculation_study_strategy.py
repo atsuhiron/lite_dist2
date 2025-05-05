@@ -1,11 +1,23 @@
-from lite_dist2.study_strategies import BaseStudyStrategy
-from lite_dist2.trial_table import TrialTable
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
+
+if TYPE_CHECKING:
+    from lite_dist2.trial_table import TrialTable
+    from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
 class AllCalculationStudyStrategy(BaseStudyStrategy):
     def is_done(self, trial_table: TrialTable, parameter_space: ParameterAlignedSpace) -> bool:
         return trial_table.count_grid() == parameter_space.total
+
+    def to_model(self) -> StudyStrategyModel:
+        return StudyStrategyModel(
+            type="all_calculation",
+            study_strategy_param=self.study_strategy_param,
+        )
 
     @staticmethod
     def can_merge() -> bool:
