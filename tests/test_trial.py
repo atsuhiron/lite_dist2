@@ -2,10 +2,134 @@ import pytest
 
 from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
-from lite_dist2.value_models.jagged_space import ParameterJaggedSpaceModel
-from lite_dist2.value_models.line_segment import LineSegmentModel
-from lite_dist2.value_models.point import ScalerValue
+from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel
+from lite_dist2.value_models.point import ResultType, ScalerValue, VectorValue
 from tests.const import DT
+
+_dummy_space = ParameterJaggedSpace(
+    parameters=[(0, 1)],
+    ambient_indices=[(0, 1)],
+    axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
+)
+
+
+@pytest.mark.parametrize(
+    ("trial", "target", "expected"),
+    [
+        pytest.param(
+            Trial(
+                study_id="s01",
+                trial_id="t01",
+                timestamp=DT,
+                trial_status=TrialStatus.running,
+                parameter_space=_dummy_space,
+                result_type="scaler",
+                result_value_type="int",
+                result=[
+                    Mapping(
+                        param=(ScalerValue(type="scaler", value_type="int", value="0x0"),),
+                        result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                    ),
+                    Mapping(
+                        param=(ScalerValue(type="scaler", value_type="int", value="0x1"),),
+                        result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                    ),
+                ],
+            ),
+            ScalerValue(type="scaler", value_type="int", value="0x66"),
+            None,
+            id="not found: running",
+        ),
+        pytest.param(
+            Trial(
+                study_id="s01",
+                trial_id="t01",
+                timestamp=DT,
+                trial_status=TrialStatus.done,
+                parameter_space=_dummy_space,
+                result_type="scaler",
+                result_value_type="int",
+                result=None,
+            ),
+            ScalerValue(type="scaler", value_type="int", value="0x66"),
+            None,
+            id="not found: none result",
+        ),
+        pytest.param(
+            Trial(
+                study_id="s01",
+                trial_id="t01",
+                timestamp=DT,
+                trial_status=TrialStatus.done,
+                parameter_space=_dummy_space,
+                result_type="scaler",
+                result_value_type="int",
+                result=[],
+            ),
+            ScalerValue(type="scaler", value_type="int", value="0x66"),
+            None,
+            id="not found: empty result",
+        ),
+        pytest.param(
+            Trial(
+                study_id="s01",
+                trial_id="t01",
+                timestamp=DT,
+                trial_status=TrialStatus.done,
+                parameter_space=_dummy_space,
+                result_type="scaler",
+                result_value_type="int",
+                result=[
+                    Mapping(
+                        param=(ScalerValue(type="scaler", value_type="int", value="0x0"),),
+                        result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                    ),
+                    Mapping(
+                        param=(ScalerValue(type="scaler", value_type="int", value="0x1"),),
+                        result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                    ),
+                ],
+            ),
+            ScalerValue(type="scaler", value_type="int", value="0x66"),
+            Mapping(
+                param=(ScalerValue(type="scaler", value_type="int", value="0x0"),),
+                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+            ),
+            id="found: scaler",
+        ),
+        pytest.param(
+            Trial(
+                study_id="s01",
+                trial_id="t01",
+                timestamp=DT,
+                trial_status=TrialStatus.done,
+                parameter_space=_dummy_space,
+                result_type="vector",
+                result_value_type="int",
+                result=[
+                    Mapping(
+                        param=(ScalerValue(type="scaler", value_type="int", value="0x0"),),
+                        result=VectorValue(type="vector", value_type="int", values=["0x66", "0x2328"]),
+                    ),
+                    Mapping(
+                        param=(ScalerValue(type="scaler", value_type="int", value="0x1"),),
+                        result=VectorValue(type="vector", value_type="int", values=["0x67", "0x2329"]),
+                    ),
+                ],
+            ),
+            VectorValue(type="vector", value_type="int", values=["0x66", "0x2328"]),
+            Mapping(
+                param=(ScalerValue(type="scaler", value_type="int", value="0x0"),),
+                result=VectorValue(type="vector", value_type="int", values=["0x66", "0x2328"]),
+            ),
+            id="found: vector",
+        ),
+    ],
+)
+def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Mapping | None) -> None:
+    actual = trial.find_target_value(target)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

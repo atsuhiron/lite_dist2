@@ -84,6 +84,18 @@ class Trial:
             case _:
                 raise LD2ModelTypeError(self.result_type)
 
+    def find_target_value(self, target_value: ResultType) -> Mapping | None:
+        # find_exact 用
+        if not self.result:
+            return None
+        if self.trial_status != TrialStatus.done:
+            return None
+
+        for mapping in self.result:
+            if mapping.result == target_value:
+                return mapping
+        return None
+
     def to_model(self) -> TrialModel:
         return TrialModel(
             study_id=self.study_id,

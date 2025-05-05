@@ -9,6 +9,7 @@ from lite_dist2.common import int2hex, publish_timestamp
 from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
+from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy, SuggestStrategyModel
 from lite_dist2.trial import Trial, TrialStatus
 from lite_dist2.trial_table import TrialTable, TrialTableModel
@@ -96,7 +97,7 @@ class Study:
             case "all_calculation":
                 return AllCalculationStudyStrategy(model.study_strategy_param)
             case "find_exact":
-                raise NotImplementedError
+                return FindExactStudyStrategy(model.study_strategy_param)
             case "minimize":
                 raise NotImplementedError
             case _:

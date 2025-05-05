@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
@@ -10,6 +11,9 @@ from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
+
+if TYPE_CHECKING:
+    from lite_dist2.value_models.point import ResultType
 
 
 class TrialTableModel(BaseModel):
@@ -116,6 +120,15 @@ class TrialTable:
             self.aggregated_parameter_space = {i: [] for i in range(-1, self.trials[0].parameter_space.get_dim())}
             return True
         return False
+
+    def find_target_value(self, target_value: ResultType) -> Mapping | None:
+        # find_exact 用
+        # NOTE: 並列処理してもよい
+        for trial in self.trials:
+            finding = trial.find_target_value(target_value)
+            if finding:
+                return finding
+        return None
 
     def to_model(self) -> TrialTableModel:
         if self.aggregated_parameter_space is None:
