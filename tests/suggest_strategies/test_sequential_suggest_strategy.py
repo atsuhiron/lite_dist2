@@ -424,7 +424,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
 @pytest.mark.parametrize(
     ("strategy", "trial_table", "max_num", "expected"),
     [
-        (  # 1D init
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
@@ -446,8 +446,9 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 ],
                 check_lower_filling=True,
             ),
+            id="1D init",
         ),
-        (  # 1D continuing
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
@@ -522,8 +523,9 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 ],
                 check_lower_filling=True,
             ),
+            id="1D continuing",
         ),
-        (  # 1D init infinite
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
@@ -552,8 +554,9 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 ],
                 check_lower_filling=True,
             ),
+            id="1D init infinite",
         ),
-        (  # 1D continuing infinite
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
@@ -635,8 +638,9 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 ],
                 check_lower_filling=True,
             ),
+            id="1D continuing infinite",
         ),
-        (  # 2D continuing
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
@@ -727,8 +731,9 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                 ],
             ),
+            id="2D continuing",
         ),
-        (  # 2D striping
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
@@ -879,8 +884,9 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                 ],
             ),
+            id="2D striping",
         ),
-        (  # 2D striping force aligned
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
@@ -1056,8 +1062,9 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 ],
                 check_lower_filling=True,
             ),
+            id="2D striping force aligned",
         ),
-        (  # 2D continuing infinite
+        pytest.param(
             SequentialSuggestStrategy(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
@@ -1162,6 +1169,134 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
                 ],
             ),
+            id="2D continuing infinite",
+        ),
+        pytest.param(
+            SequentialSuggestStrategy(
+                suggest_parameter=SuggestStrategyParam(strict_aligned=True),
+                parameter_space=ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+                        ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ),
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="01",
+                        trial_id="01",
+                        timestamp=DT,
+                        trial_status=TrialStatus.done,
+                        parameter_space=ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=2,
+                                    start=0,
+                                    ambient_size=2,
+                                    ambient_index=0,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=2,
+                                    start=0,
+                                    ambient_size=2,
+                                    ambient_index=0,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        result_type="scaler",
+                        result_value_type="int",
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                            ),
+                        ],
+                    ),
+                ],
+                aggregated_parameter_space={
+                    -1: [],
+                    0: [
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=1,
+                                    start=0,
+                                    ambient_size=2,
+                                    ambient_index=0,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=2,
+                                    start=0,
+                                    ambient_size=2,
+                                    ambient_index=0,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                        ParameterAlignedSpace(
+                            axes=[
+                                ParameterRangeInt(
+                                    name="x",
+                                    type="int",
+                                    size=1,
+                                    start=1,
+                                    ambient_size=2,
+                                    ambient_index=1,
+                                ),
+                                ParameterRangeInt(
+                                    name="y",
+                                    type="int",
+                                    size=2,
+                                    start=0,
+                                    ambient_size=2,
+                                    ambient_index=0,
+                                ),
+                            ],
+                            check_lower_filling=True,
+                        ),
+                    ],
+                    1: [],
+                },
+                timeout_minutes=1,
+            ),
+            4,
+            None,
+            id="2D full",
         ),
     ],
 )
@@ -1169,7 +1304,7 @@ def test_sequential_suggest_strategy_suggest(
     strategy: SequentialSuggestStrategy,
     trial_table: TrialTable,
     max_num: int,
-    expected: ParameterSpace,
+    expected: ParameterSpace | None,
 ) -> None:
     actual = strategy.suggest(trial_table, max_num)
     assert actual == expected

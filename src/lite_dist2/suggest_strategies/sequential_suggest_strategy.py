@@ -30,6 +30,8 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
 
     def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace | None:
         least_seg = trial_table.find_least_division(self.parameter_space.total)
+        if least_seg.size == 0:
+            return None
         capped_max_num = self._nullable_min(least_seg.size, max_num)
         start = least_seg.start
 
@@ -37,7 +39,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
             return self._aligned_suggest(start, capped_max_num)
         return self._jagged_suggest(start, capped_max_num)
 
-    def _aligned_suggest(self, start: int, max_num: int) -> ParameterAlignedSpace | None:
+    def _aligned_suggest(self, start: int, max_num: int) -> ParameterAlignedSpace:
         if self.parameter_space.is_infinite():
             available_next, infinite_flag = self._generate_available_next_infinite(start)
             if infinite_flag:
@@ -58,9 +60,6 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
 
         else:
             available_next = self._generate_available_next_finite(start)
-            if len(available_next) == 0:
-                return None
-
             max_available_next: int = max(
                 filter(lambda next_index: next_index - start <= max_num, available_next),
             )
