@@ -25,6 +25,11 @@ class FindExactStudyStrategy(BaseStudyStrategy):
     def _find(self, trial_table: TrialTable) -> Mapping | None:
         return trial_table.find_target_value(self.study_strategy_param.target_value)
 
+    def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
+        if not self.found_mapping:
+            self.found_mapping = self._find(trial_table)
+        return [self.found_mapping]
+
     def to_model(self) -> StudyStrategyModel:
         return StudyStrategyModel(
             type="find_exact",

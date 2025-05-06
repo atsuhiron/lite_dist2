@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
 
-from lite_dist2.common import int2hex, publish_timestamp
+from lite_dist2.common import JST, int2hex, publish_timestamp
 from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.study_storage import StudyStorage
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
@@ -32,7 +33,7 @@ class StudyModel(BaseModel):
     study_id: str
     name: str | None
     status: StudyStatus
-    timestamp: datetime
+    registered_timestamp: datetime
     study_strategy: StudyStrategyModel
     suggest_strategy: SuggestStrategyModel
     parameter_space: ParameterAlignedSpaceModel
@@ -47,7 +48,7 @@ class Study:
         study_id: str,
         name: str,
         status: StudyStatus,
-        timestamp: datetime,
+        registered_timestamp: datetime,
         study_strategy: BaseStudyStrategy,
         suggest_strategy: BaseSuggestStrategy,
         parameter_space: ParameterAlignedSpace,
@@ -58,7 +59,7 @@ class Study:
         self.study_id = study_id
         self.name = name
         self.status = status
-        self.timestamp = timestamp
+        self.registered_timestamp = registered_timestamp
         self.study_strategy = study_strategy
         self.suggest_strategy = suggest_strategy
         self.parameter_space = parameter_space
@@ -105,12 +106,23 @@ class Study:
         with self._table_lock:
             self.trial_table.receipt_trial(trial.trial_id, trial.result)
 
+    def to_storage(self) -> StudyStorage:
+        return StudyStorage(
+            study_id=self.study_id,
+            name=self.name,
+            registered_timestamp=self.registered_timestamp,
+            done_timestamp=datetime.now(tz=JST),
+            result_type=self.result_type,
+            result_value_type=self.result_value_type,
+            result=self.study_strategy.extract_mappings(self.trial_table),
+        )
+
     def to_model(self) -> StudyModel:
         return StudyModel(
             study_id=self.study_id,
             name=self.name,
             status=self.status,
-            timestamp=self.timestamp,
+            registered_timestamp=self.registered_timestamp,
             study_strategy=self.study_strategy.to_model(),
             suggest_strategy=self.suggest_strategy.to_model(),
             parameter_space=self.parameter_space.to_model(),
@@ -153,7 +165,7 @@ class Study:
             study_id=study_model.study_id,
             name=study_model.name,
             status=study_model.status,
-            timestamp=study_model.timestamp,
+            registered_timestamp=study_model.registered_timestamp,
             study_strategy=Study._create_study_strategy(study_model.study_strategy),
             suggest_strategy=Study._create_suggest_strategy(study_model.suggest_strategy, parameter_space),
             parameter_space=parameter_space,

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
 
 if TYPE_CHECKING:
+    from lite_dist2.trial import Mapping
     from lite_dist2.trial_table import TrialTable
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
@@ -12,6 +13,12 @@ if TYPE_CHECKING:
 class AllCalculationStudyStrategy(BaseStudyStrategy):
     def is_done(self, trial_table: TrialTable, parameter_space: ParameterAlignedSpace) -> bool:
         return trial_table.count_grid() == parameter_space.total
+
+    def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
+        mappings = []
+        for trial in trial_table.trials:
+            mappings.extend(trial.result or [])
+        return mappings
 
     def to_model(self) -> StudyStrategyModel:
         return StudyStrategyModel(

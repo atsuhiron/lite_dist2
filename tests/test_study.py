@@ -22,7 +22,7 @@ from tests.const import DT
                 study_id="01",
                 name="s1",
                 status=StudyStatus.running,
-                timestamp=DT,
+                registered_timestamp=DT,
                 study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
@@ -215,7 +215,7 @@ def test_study_suggest_receipt_single_thread() -> None:
         study_id="s01",
         name="synchronous_test",
         status=StudyStatus.running,
-        timestamp=DT,
+        registered_timestamp=DT,
         study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
         suggest_strategy=SequentialSuggestStrategy(
             suggest_parameter=SuggestStrategyParam(strict_aligned=True),
@@ -278,7 +278,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
         study_id="s01",
         name="synchronous_test",
         status=StudyStatus.running,
-        timestamp=DT,
+        registered_timestamp=DT,
         study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
         suggest_strategy=SequentialSuggestStrategy(
             suggest_parameter=SuggestStrategyParam(strict_aligned=True),
