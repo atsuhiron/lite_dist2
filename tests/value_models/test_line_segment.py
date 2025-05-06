@@ -287,7 +287,7 @@ def test_line_segment_slice_raise(line_segment: LineSegment, size: int) -> None:
             id="bool",
         ),
         pytest.param(
-            ParameterRangeInt(type="int", size=10, ambient_index=20, ambient_size=100, start=20, step=1),
+            ParameterRangeInt(type="int", size=10, ambient_index=40, ambient_size=100, start=20, step=1),
             [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
             id="int",
         ),
@@ -327,6 +327,64 @@ def test_line_segment_grid_infinite(
 ) -> None:
     actual = []
     for item in line_segment.grid():
+        actual.append(item)
+        if len(actual) >= max_num:
+            break
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("line_segment", "expected"),
+    [
+        pytest.param(
+            ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
+            [(0, False), (1, True)],
+            id="bool",
+        ),
+        pytest.param(
+            ParameterRangeInt(type="int", size=10, ambient_index=40, ambient_size=100, start=20, step=1),
+            [(40, 20), (41, 21), (42, 22), (43, 23), (44, 24), (45, 25), (46, 26), (47, 27), (48, 28), (49, 29)],
+            id="int",
+        ),
+        pytest.param(
+            ParameterRangeFloat(type="float", size=5, ambient_index=40, ambient_size=100, start=20.0, step=0.5),
+            [(40, 20.0), (41, 20.5), (42, 21.0), (43, 21.5), (44, 22.0)],
+            id="float",
+        ),
+    ],
+)
+def test_line_segment_indexed_grid_finite(
+    line_segment: LineSegment,
+    expected: list[tuple[int, PrimitiveValueType]],
+) -> None:
+    actual = list(line_segment.indexed_grid())
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("line_segment", "max_num", "expected"),
+    [
+        pytest.param(
+            ParameterRangeInt(type="int", size=None, ambient_index=40, ambient_size=None, start=20, step=1),
+            5,
+            [(40, 20), (41, 21), (42, 22), (43, 23), (44, 24)],
+            id="int",
+        ),
+        pytest.param(
+            ParameterRangeFloat(type="float", size=None, ambient_index=40, ambient_size=None, start=20.0, step=0.5),
+            5,
+            [(40, 20.0), (41, 20.5), (42, 21.0), (43, 21.5), (44, 22.0)],
+            id="float",
+        ),
+    ],
+)
+def test_line_segment_indexed_grid_infinite(
+    line_segment: LineSegment,
+    max_num: int,
+    expected: list[tuple[int, PrimitiveValueType]],
+) -> None:
+    actual = []
+    for item in line_segment.indexed_grid():
         actual.append(item)
         if len(actual) >= max_num:
             break

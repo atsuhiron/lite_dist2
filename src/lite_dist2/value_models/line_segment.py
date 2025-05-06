@@ -39,11 +39,11 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def grid(self, start_index: int = 0) -> Generator[PrimitiveValueType, None, None]:
+    def grid(self) -> Generator[PrimitiveValueType, None, None]:
         pass
 
     @abc.abstractmethod
-    def indexed_grid(self, start_index: int = 0) -> Generator[tuple[int, PrimitiveValueType], None, None]:
+    def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
         pass
 
     @abc.abstractmethod
@@ -169,13 +169,13 @@ class ParameterRangeBool(LineSegment):
     def __hash__(self) -> int:
         return hash((self.name, self.type, self.size, self.start, self.step, self.ambient_size, self.ambient_index))
 
-    def grid(self, start_index: int = 0) -> Generator[PrimitiveValueType, None, None]:
-        for i in range(start_index, self.size):
+    def grid(self) -> Generator[PrimitiveValueType, None, None]:
+        for i in range(self.size):
             yield bool(int(self.start) + i)
 
-    def indexed_grid(self, start_index: int = 0) -> Generator[tuple[int, PrimitiveValueType], None, None]:
-        for i in range(start_index, self.size):
-            yield i, bool(int(self.start) + i)
+    def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
+        for i in range(self.size):
+            yield i + self.ambient_index, bool(int(self.start) + i)
 
     def slice(self, start_index: int, size: int) -> ParameterRangeBool:
         if size > self.size - start_index:
@@ -252,16 +252,16 @@ class ParameterRangeInt(LineSegment):
     def __hash__(self) -> int:
         return hash((self.name, self.type, self.size, self.start, self.step, self.ambient_size, self.ambient_index))
 
-    def grid(self, start_index: int = 0) -> Generator[PrimitiveValueType, None, None]:
-        i = start_index
+    def grid(self) -> Generator[PrimitiveValueType, None, None]:
+        i = 0
         while self.size is None or i < self.size:
             yield self.start + i * self.step
             i += 1
 
-    def indexed_grid(self, start_index: int = 0) -> Generator[tuple[int, PrimitiveValueType], None, None]:
-        i = start_index
+    def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
+        i = 0
         while self.size is None or i < self.size:
-            yield i, self.start + i * self.step
+            yield i + self.ambient_index, self.start + i * self.step
             i += 1
 
     def slice(self, start_index: int, size: int) -> ParameterRangeInt:
@@ -338,16 +338,16 @@ class ParameterRangeFloat(LineSegment):
     def __hash__(self) -> int:
         return hash((self.name, self.type, self.size, self.start, self.step, self.ambient_size, self.ambient_index))
 
-    def grid(self, start_index: int = 0) -> Generator[PrimitiveValueType, None, None]:
-        i = start_index
+    def grid(self) -> Generator[PrimitiveValueType, None, None]:
+        i = 0
         while self.size is None or i < self.size:
             yield self.start + i * self.step
             i += 1
 
-    def indexed_grid(self, start_index: int = 0) -> Generator[tuple[int, PrimitiveValueType], None, None]:
-        i = start_index
+    def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
+        i = 0
         while self.size is None or i < self.size:
-            yield i, self.start + i * self.step
+            yield i + self.ambient_index, self.start + i * self.step
             i += 1
 
     def slice(self, start_index: int, size: int) -> ParameterRangeFloat:
