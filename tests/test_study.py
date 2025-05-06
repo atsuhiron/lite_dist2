@@ -2,7 +2,7 @@ import threading
 
 import pytest
 
-from lite_dist2.study import Study, StudyModel, StudyStrategyModel, SuggestStrategyModel
+from lite_dist2.study import Study, StudyModel, StudyStatus, StudyStrategyModel, SuggestStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
@@ -21,6 +21,8 @@ from tests.const import DT
             StudyModel(
                 study_id="01",
                 name="s1",
+                status=StudyStatus.running,
+                timestamp=DT,
                 study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
@@ -212,6 +214,8 @@ def test_study_suggest_receipt_single_thread() -> None:
     study = Study(
         study_id="s01",
         name="synchronous_test",
+        status=StudyStatus.running,
+        timestamp=DT,
         study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
         suggest_strategy=SequentialSuggestStrategy(
             suggest_parameter=SuggestStrategyParam(strict_aligned=True),
@@ -273,6 +277,8 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
     study = Study(
         study_id="s01",
         name="synchronous_test",
+        status=StudyStatus.running,
+        timestamp=DT,
         study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
         suggest_strategy=SequentialSuggestStrategy(
             suggest_parameter=SuggestStrategyParam(strict_aligned=True),

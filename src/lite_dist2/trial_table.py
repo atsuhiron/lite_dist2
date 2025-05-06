@@ -40,6 +40,9 @@ class TrialTable:
     def is_not_defined_aps(self) -> bool:
         return self.aggregated_parameter_space is None
 
+    def is_empty(self) -> bool:
+        return self.is_not_defined_aps() or len(self.trials) == 0
+
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
 

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import threading
+from datetime import datetime
+from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
@@ -20,9 +22,17 @@ if TYPE_CHECKING:
     from lite_dist2.suggest_strategies import BaseSuggestStrategy
 
 
+class StudyStatus(str, Enum):
+    reserved = "reserved"
+    running = "running"
+    done = "done"
+
+
 class StudyModel(BaseModel):
     study_id: str
-    name: str
+    name: str | None
+    status: StudyStatus
+    timestamp: datetime
     study_strategy: StudyStrategyModel
     suggest_strategy: SuggestStrategyModel
     parameter_space: ParameterAlignedSpaceModel
@@ -36,6 +46,8 @@ class Study:
         self,
         study_id: str,
         name: str,
+        status: StudyStatus,
+        timestamp: datetime,
         study_strategy: BaseStudyStrategy,
         suggest_strategy: BaseSuggestStrategy,
         parameter_space: ParameterAlignedSpace,
@@ -45,6 +57,8 @@ class Study:
     ) -> None:
         self.study_id = study_id
         self.name = name
+        self.status = status
+        self.timestamp = timestamp
         self.study_strategy = study_strategy
         self.suggest_strategy = suggest_strategy
         self.parameter_space = parameter_space
@@ -53,6 +67,15 @@ class Study:
         self.trial_table = trial_table
 
         self._table_lock = threading.Lock()
+
+    def update_status(self) -> None:
+        if self.trial_table.is_empty():
+            self.status = StudyStatus.reserved
+            return
+        if self.is_done():
+            self.status = StudyStatus.done
+            return
+        self.status = StudyStatus.running
 
     def is_done(self) -> bool:
         return self.study_strategy.is_done(self.trial_table, self.parameter_space)
@@ -86,6 +109,8 @@ class Study:
         return StudyModel(
             study_id=self.study_id,
             name=self.name,
+            status=self.status,
+            timestamp=self.timestamp,
             study_strategy=self.study_strategy.to_model(),
             suggest_strategy=self.suggest_strategy.to_model(),
             parameter_space=self.parameter_space.to_model(),
@@ -127,6 +152,8 @@ class Study:
         return Study(
             study_id=study_model.study_id,
             name=study_model.name,
+            status=study_model.status,
+            timestamp=study_model.timestamp,
             study_strategy=Study._create_study_strategy(study_model.study_strategy),
             suggest_strategy=Study._create_suggest_strategy(study_model.suggest_strategy, parameter_space),
             parameter_space=parameter_space,
