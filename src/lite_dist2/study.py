@@ -57,22 +57,28 @@ class Study:
     def is_done(self) -> bool:
         return self.study_strategy.is_done(self.trial_table, self.parameter_space)
 
-    def suggest_next_trial(self, num: int | None) -> Trial:
+    def suggest_next_trial(self, num: int | None) -> Trial | None:
         with self._table_lock:
             parameter_sub_space = self.suggest_strategy.suggest(self.trial_table, num)
-        trial = Trial(
-            study_id=self.study_id,
-            trial_id=self._publish_trial_id(),
-            timestamp=publish_timestamp(),
-            trial_status=TrialStatus.running,
-            parameter_space=parameter_sub_space,
-            result_type=self.result_type,
-            result_value_type=self.result_value_type,
-        )
-        self.trial_table.register(trial)
+            if parameter_sub_space is None:
+                return None
+
+            trial = Trial(
+                study_id=self.study_id,
+                trial_id=self._publish_trial_id(),
+                timestamp=publish_timestamp(),
+                trial_status=TrialStatus.running,
+                parameter_space=parameter_sub_space,
+                result_type=self.result_type,
+                result_value_type=self.result_value_type,
+            )
+            self.trial_table.register(trial)
         return trial
 
     def receipt_trial(self, trial: Trial) -> None:
+        if self.trial_table.is_not_defined_aps():
+            self.trial_table.init_aps(trial)
+
         with self._table_lock:
             self.trial_table.receipt_trial(trial.trial_id, trial.result)
 

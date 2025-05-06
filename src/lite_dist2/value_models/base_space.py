@@ -107,7 +107,7 @@ class FlattenSegment(Mergeable):
         else:
             smaller = other
             larger = self
-        return FlattenSegment(smaller.start, smaller.size + larger.start)
+        return FlattenSegment(smaller.start, smaller.size + larger.size)
 
     def next_start_index(self) -> int:
         if self.size is None:

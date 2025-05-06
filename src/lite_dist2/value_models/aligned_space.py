@@ -159,7 +159,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         # TODO: type="vector" にも対応させる
         return tuple(
             [
-                ScalerValue(type="scaler", value_type=ax.type, value=val, name=ax.name)
+                ScalerValue.create_from_numeric(val, ax.type, ax.name)
                 for val, ax in zip(values, self.axes, strict=True)
             ],
         )

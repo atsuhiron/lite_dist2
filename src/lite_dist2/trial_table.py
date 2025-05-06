@@ -37,6 +37,9 @@ class TrialTable:
         self.aggregated_parameter_space = aggregated_parameter_space
         self.timeout_minutes = timeout_minutes
 
+    def is_not_defined_aps(self) -> bool:
+        return self.aggregated_parameter_space is None
+
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
 
@@ -74,7 +77,7 @@ class TrialTable:
         return len(self.trials)
 
     def simplify_aps(self) -> None:
-        if not self._try_init_aps():
+        if self.aggregated_parameter_space is None:
             return
 
         dim = self.trials[0].parameter_space.get_dim()
@@ -113,13 +116,8 @@ class TrialTable:
                 start = merged[0].next_start_index()
                 return FlattenSegment(start, merged[1].get_start_index() - start)
 
-    def _try_init_aps(self) -> bool:
-        if self.aggregated_parameter_space is not None and len(self.aggregated_parameter_space) > 0:
-            return True
-        if len(self.trials) > 0:
-            self.aggregated_parameter_space = {i: [] for i in range(-1, self.trials[0].parameter_space.get_dim())}
-            return True
-        return False
+    def init_aps(self, trial: Trial) -> None:
+        self.aggregated_parameter_space = {i: [] for i in range(-1, trial.parameter_space.get_dim())}
 
     def find_target_value(self, target_value: ResultType) -> Mapping | None:
         # find_exact 用

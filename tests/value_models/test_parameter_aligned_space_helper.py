@@ -4,6 +4,7 @@ from typing import Any
 import pytest
 
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
+from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product, remap_space, simplify
 
@@ -243,12 +244,33 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
         ),
     ],
 )
-def test_simplify_table_by_dim(
+def test_simplify(
     sub_spaces: list[ParameterAlignedSpace],
     target_dim: int,
     expected: list[ParameterAlignedSpace],
 ) -> None:
     actual = simplify(sub_spaces, target_dim)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("segments", "expected"),
+    [
+        pytest.param(
+            [
+                FlattenSegment(0, 5),
+                FlattenSegment(5, 5),
+                FlattenSegment(10, 5),
+            ],
+            [
+                FlattenSegment(0, 15),
+            ],
+            id="continuing 3",
+        ),
+    ],
+)
+def test_simplify_simple_flatten(segments: list[FlattenSegment], expected: list[FlattenSegment]) -> None:
+    actual = simplify(segments)
     assert actual == expected
 
 

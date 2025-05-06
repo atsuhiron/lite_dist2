@@ -1,11 +1,15 @@
+import threading
+
 import pytest
 
 from lite_dist2.study import Study, StudyModel, StudyStrategyModel, SuggestStrategyModel
+from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
+from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.trial import Mapping, TrialModel, TrialStatus
-from lite_dist2.trial_table import TrialTableModel
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
-from lite_dist2.value_models.line_segment import LineSegmentModel
+from lite_dist2.trial_table import TrialTable, TrialTableModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.line_segment import LineSegmentModel, ParameterRangeFloat
 from lite_dist2.value_models.point import ScalerValue
 from tests.const import DT
 
@@ -179,3 +183,135 @@ def test_study_to_model_from_model(model: StudyModel) -> None:
     study = Study.from_model(model)
     reconstructed = study.to_model()
     assert model == reconstructed
+
+
+def test_study_suggest_receipt_single_thread() -> None:
+    _parameter_space = ParameterAlignedSpace(
+        axes=[
+            ParameterRangeFloat(
+                name="x",
+                type="float",
+                size=20,
+                step=0.5,
+                start=0.0,
+                ambient_index=0,
+                ambient_size=20,
+            ),
+            ParameterRangeFloat(
+                name="y",
+                type="float",
+                size=20,
+                step=0.5,
+                start=0.0,
+                ambient_index=0,
+                ambient_size=20,
+            ),
+        ],
+        check_lower_filling=True,
+    )
+    study = Study(
+        study_id="s01",
+        name="synchronous_test",
+        study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
+        suggest_strategy=SequentialSuggestStrategy(
+            suggest_parameter=SuggestStrategyParam(strict_aligned=True),
+            parameter_space=_parameter_space,
+        ),
+        parameter_space=_parameter_space,
+        result_type="scaler",
+        result_value_type="float",
+        trial_table=TrialTable(trials=[], aggregated_parameter_space=None, timeout_minutes=2),
+    )
+
+    def contract_and_submit() -> None:
+        # trial 取得
+        trial = study.suggest_next_trial(num=5)
+        if trial is None:
+            return
+
+        # 結果書き込み
+        raw_mappings = []
+        for parameter in trial.parameter_space.grid():
+            dummy_result = 0.5
+            raw_mappings.append((parameter, dummy_result))
+        trial.set_result(trial.convert_mappings_from(raw_mappings))
+
+        # trial 送信
+        study.receipt_trial(trial)
+
+    while not study.is_done():
+        contract_and_submit()
+
+    expected_trial_num = 80  # 20*20/5
+    assert study.trial_table.count_trial() == expected_trial_num
+
+
+def test_study_suggest_receipt_multi_threads_synchronous() -> None:
+    _parameter_space = ParameterAlignedSpace(
+        axes=[
+            ParameterRangeFloat(
+                name="x",
+                type="float",
+                size=20,
+                step=0.5,
+                start=0.0,
+                ambient_index=0,
+                ambient_size=20,
+            ),
+            ParameterRangeFloat(
+                name="y",
+                type="float",
+                size=20,
+                step=0.5,
+                start=0.0,
+                ambient_index=0,
+                ambient_size=20,
+            ),
+        ],
+        check_lower_filling=True,
+    )
+    study = Study(
+        study_id="s01",
+        name="synchronous_test",
+        study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
+        suggest_strategy=SequentialSuggestStrategy(
+            suggest_parameter=SuggestStrategyParam(strict_aligned=True),
+            parameter_space=_parameter_space,
+        ),
+        parameter_space=_parameter_space,
+        result_type="scaler",
+        result_value_type="float",
+        trial_table=TrialTable(trials=[], aggregated_parameter_space=None, timeout_minutes=2),
+    )
+
+    def contract_and_submit() -> None:
+        # trial 取得
+        trial = study.suggest_next_trial(num=5)
+
+        # 結果書き込み
+        raw_mappings = []
+        for parameter in trial.parameter_space.grid():
+            dummy_result = 0.5
+            raw_mappings.append((parameter, dummy_result))
+        trial.set_result(trial.convert_mappings_from(raw_mappings))
+
+        # trial 送信
+        study.receipt_trial(trial)
+
+    # スレッドを複数作成
+
+    num_threads = 10
+    while not study.is_done():
+        threads = []
+        for i in range(num_threads):
+            thread = threading.Thread(target=contract_and_submit, name=f"Thread-{i + 1}")
+            threads.append(thread)
+
+        for thread in threads:
+            thread.start()
+
+        for thread in threads:
+            thread.join()
+
+    expected_trial_num = 80  # 20*20/5
+    assert study.trial_table.count_trial() == expected_trial_num

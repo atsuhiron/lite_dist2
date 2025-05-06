@@ -28,7 +28,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         super().__init__(suggest_parameter, parameter_space)
         self.strict_aligned = self.suggest_parameter.strict_aligned
 
-    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
+    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace | None:
         least_seg = trial_table.find_least_division(self.parameter_space.total)
         capped_max_num = self._nullable_min(least_seg.size, max_num)
         start = least_seg.start
@@ -37,7 +37,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
             return self._aligned_suggest(start, capped_max_num)
         return self._jagged_suggest(start, capped_max_num)
 
-    def _aligned_suggest(self, start: int, max_num: int) -> ParameterAlignedSpace:
+    def _aligned_suggest(self, start: int, max_num: int) -> ParameterAlignedSpace | None:
         if self.parameter_space.is_infinite():
             available_next, infinite_flag = self._generate_available_next_infinite(start)
             if infinite_flag:
@@ -58,6 +58,9 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
 
         else:
             available_next = self._generate_available_next_finite(start)
+            if len(available_next) == 0:
+                return None
+
             max_available_next: int = max(
                 filter(lambda next_index: next_index - start <= max_num, available_next),
             )
@@ -73,7 +76,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         start_and_sizes = [(s, e - s + 1) for s, e in zip(start_loom, end_loom, strict=True)]
         return self.parameter_space.slice(start_and_sizes)
 
-    def _jagged_suggest(self, start: int, max_num: int) -> ParameterJaggedSpace:
+    def _jagged_suggest(self, start: int, max_num: int) -> ParameterJaggedSpace | None:
         gen = itertools.islice(self.parameter_space.indexed_grid(), start, None)
         parameters = []
         ambient_indices = []
@@ -85,6 +88,9 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
             ambient_indices.append(ambient_index)
             if i + 1 >= max_num:
                 break
+
+        if len(parameters) == 0:
+            return None
         return ParameterJaggedSpace(parameters, ambient_indices, self.parameter_space.dummy_info)
 
     @staticmethod
