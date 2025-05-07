@@ -37,8 +37,3 @@ class BaseStudyStrategy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def to_model(self) -> StudyStrategyModel:
         pass
-
-    @staticmethod
-    @abc.abstractmethod
-    def can_merge() -> bool:
-        pass

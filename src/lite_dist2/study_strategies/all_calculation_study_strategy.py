@@ -28,7 +28,3 @@ class AllCalculationStudyStrategy(BaseStudyStrategy):
             type="all_calculation",
             study_strategy_param=self.study_strategy_param,
         )
-
-    @staticmethod
-    def can_merge() -> bool:
-        return True

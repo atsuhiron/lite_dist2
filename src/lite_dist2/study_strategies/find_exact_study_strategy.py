@@ -37,7 +37,3 @@ class FindExactStudyStrategy(BaseStudyStrategy):
             type="find_exact",
             study_strategy_param=self.study_strategy_param,
         )
-
-    @staticmethod
-    def can_merge() -> bool:
-        return False
