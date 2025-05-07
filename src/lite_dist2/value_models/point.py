@@ -20,6 +20,10 @@ class BasePointValue(metaclass=abc.ABCMeta):
     def numerize(self) -> PrimitiveValueType | list[PrimitiveValueType]:
         pass
 
+    @abc.abstractmethod
+    def equal_to(self, other: BasePointValue) -> bool:
+        pass
+
     @staticmethod
     @abc.abstractmethod
     def create_from_numeric(
@@ -46,6 +50,11 @@ class ScalerValue(BaseModel, BasePointValue):
                 return hex2float(self.value)
             case _:
                 raise LD2ModelTypeError(self.type)
+
+    def equal_to(self, other: BasePointValue) -> bool:
+        if not isinstance(other, ScalerValue):
+            return False
+        return self.value_type == other.value_type and self.value == other.value
 
     @staticmethod
     def create_from_numeric(
@@ -83,6 +92,11 @@ class VectorValue(BaseModel, BasePointValue):
                 return [hex2float(v) for v in self.values]
             case _:
                 raise LD2ModelTypeError(self.type)
+
+    def equal_to(self, other: BasePointValue) -> bool:
+        if not isinstance(other, VectorValue):
+            return False
+        return self.value_type == other.value_type and self.values == other.values
 
     @staticmethod
     def create_from_numeric(

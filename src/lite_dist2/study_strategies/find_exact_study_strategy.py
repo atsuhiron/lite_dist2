@@ -28,6 +28,8 @@ class FindExactStudyStrategy(BaseStudyStrategy):
     def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
         if not self.found_mapping:
             self.found_mapping = self._find(trial_table)
+        if not self.found_mapping:
+            return []
         return [self.found_mapping]
 
     def to_model(self) -> StudyStrategyModel:

@@ -8,12 +8,27 @@ from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.point import ScalerValue
 from tests.const import DT
 
+_DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
+    axes=[
+        ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+        ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+    ],
+    check_lower_filling=True,
+)
+_DUMMY_APS = {-1: [], 0: [], 1: []}
+_TRIAL_ARGS = {
+    "study_id": "s01",
+    "timestamp": DT,
+    "parameter_space": _DUMMY_PARAMETER_SPACE,
+    "result_type": "scalar",
+    "result_value_type": "int",
+}
+
 
 @pytest.mark.parametrize(
-    ("strategy", "trial_table", "parameter_space", "expected"),
+    ("trial_table", "parameter_space", "expected"),
     [
         pytest.param(
-            AllCalculationStudyStrategy(study_strategy_param=None),
             TrialTable(
                 trials=[],
                 aggregated_parameter_space=None,
@@ -36,7 +51,6 @@ from tests.const import DT
             id="init not defined",
         ),
         pytest.param(
-            AllCalculationStudyStrategy(study_strategy_param=None),
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={
@@ -62,29 +76,11 @@ from tests.const import DT
             id="init",
         ),
         pytest.param(
-            AllCalculationStudyStrategy(study_strategy_param=None),
             TrialTable(
                 trials=[
                     Trial(
-                        study_id="01",
-                        trial_id="01",
-                        timestamp=DT,
+                        trial_id="t01",
                         trial_status=TrialStatus.done,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=3,
-                                    start=0,
-                                    ambient_size=6,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scaler",
-                        result_value_type="int",
                         result=[
                             Mapping(
                                 param=(ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),),
@@ -99,6 +95,7 @@ from tests.const import DT
                                 result=ScalerValue(type="scaler", value_type="int", value="0x66"),
                             ),
                         ],
+                        **_TRIAL_ARGS,
                     ),
                 ],
                 aggregated_parameter_space={
@@ -138,29 +135,11 @@ from tests.const import DT
             id="continuing",
         ),
         pytest.param(
-            AllCalculationStudyStrategy(study_strategy_param=None),
             TrialTable(
                 trials=[
                     Trial(
-                        study_id="01",
-                        trial_id="01",
-                        timestamp=DT,
+                        trial_id="t01",
                         trial_status=TrialStatus.done,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=3,
-                                    start=0,
-                                    ambient_size=6,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scaler",
-                        result_value_type="int",
                         result=[
                             Mapping(
                                 param=(ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),),
@@ -175,27 +154,11 @@ from tests.const import DT
                                 result=ScalerValue(type="scaler", value_type="int", value="0x66"),
                             ),
                         ],
+                        **_TRIAL_ARGS,
                     ),
                     Trial(
-                        study_id="01",
-                        trial_id="02",
-                        timestamp=DT,
+                        trial_id="t02",
                         trial_status=TrialStatus.done,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=3,
-                                    start=3,
-                                    ambient_size=6,
-                                    ambient_index=3,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scaler",
-                        result_value_type="int",
                         result=[
                             Mapping(
                                 param=(ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),),
@@ -210,6 +173,7 @@ from tests.const import DT
                                 result=ScalerValue(type="scaler", value_type="int", value="0x69"),
                             ),
                         ],
+                        **_TRIAL_ARGS,
                     ),
                 ],
                 aggregated_parameter_space={
@@ -262,37 +226,11 @@ from tests.const import DT
             id="done 1D",
         ),
         pytest.param(
-            AllCalculationStudyStrategy(study_strategy_param=None),
             TrialTable(
                 trials=[
                     Trial(
-                        study_id="01",
                         trial_id="01",
-                        timestamp=DT,
                         trial_status=TrialStatus.done,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=1,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scaler",
-                        result_value_type="int",
                         result=[
                             Mapping(
                                 param=(
@@ -309,35 +247,11 @@ from tests.const import DT
                                 result=ScalerValue(type="scaler", value_type="int", value="0x65"),
                             ),
                         ],
+                        **_TRIAL_ARGS,
                     ),
                     Trial(
-                        study_id="01",
                         trial_id="02",
-                        timestamp=DT,
                         trial_status=TrialStatus.done,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=1,
-                                    start=1,
-                                    ambient_size=2,
-                                    ambient_index=1,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scaler",
-                        result_value_type="int",
                         result=[
                             Mapping(
                                 param=(
@@ -354,6 +268,7 @@ from tests.const import DT
                                 result=ScalerValue(type="scaler", value_type="int", value="0x67"),
                             ),
                         ],
+                        **_TRIAL_ARGS,
                     ),
                 ],
                 aggregated_parameter_space={
@@ -431,37 +346,11 @@ from tests.const import DT
             id="done 2D not aggregated",
         ),
         pytest.param(
-            AllCalculationStudyStrategy(study_strategy_param=None),
             TrialTable(
                 trials=[
                     Trial(
-                        study_id="01",
                         trial_id="01",
-                        timestamp=DT,
                         trial_status=TrialStatus.done,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=1,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scaler",
-                        result_value_type="int",
                         result=[
                             Mapping(
                                 param=(
@@ -478,35 +367,11 @@ from tests.const import DT
                                 result=ScalerValue(type="scaler", value_type="int", value="0x65"),
                             ),
                         ],
+                        **_TRIAL_ARGS,
                     ),
                     Trial(
-                        study_id="01",
                         trial_id="02",
-                        timestamp=DT,
                         trial_status=TrialStatus.done,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=1,
-                                    start=1,
-                                    ambient_size=2,
-                                    ambient_index=1,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scaler",
-                        result_value_type="int",
                         result=[
                             Mapping(
                                 param=(
@@ -523,6 +388,7 @@ from tests.const import DT
                                 result=ScalerValue(type="scaler", value_type="int", value="0x67"),
                             ),
                         ],
+                        **_TRIAL_ARGS,
                     ),
                 ],
                 aggregated_parameter_space={
@@ -581,10 +447,213 @@ from tests.const import DT
     ],
 )
 def test_all_calculation_study_strategy_is_done(
-    strategy: AllCalculationStudyStrategy,
     trial_table: TrialTable,
     parameter_space: ParameterAlignedSpace,
     expected: bool,
 ) -> None:
+    strategy = AllCalculationStudyStrategy(study_strategy_param=None)
     actual = strategy.is_done(trial_table, parameter_space)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("trial_table", "expected"),
+    [
+        pytest.param(
+            TrialTable(
+                trials=[],
+                aggregated_parameter_space=_DUMMY_APS,
+                timeout_minutes=1,
+            ),
+            [],
+            id="Empty",
+        ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        trial_id="t01",
+                        trial_status=TrialStatus.done,
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
+                    ),
+                ],
+                aggregated_parameter_space=_DUMMY_APS,
+                timeout_minutes=1,
+            ),
+            [
+                Mapping(
+                    param=(
+                        ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                    ),
+                    result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                ),
+            ],
+            id="Single trial, single map",
+        ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        trial_id="t01",
+                        trial_status=TrialStatus.done,
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
+                    ),
+                    Trial(
+                        trial_id="t02",
+                        trial_status=TrialStatus.done,
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x69"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x6a"),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
+                    ),
+                ],
+                aggregated_parameter_space=_DUMMY_APS,
+                timeout_minutes=1,
+            ),
+            [
+                Mapping(
+                    param=(
+                        ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                    ),
+                    result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                ),
+                Mapping(
+                    param=(
+                        ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
+                        ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                    ),
+                    result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                ),
+                Mapping(
+                    param=(
+                        ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),
+                        ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                    ),
+                    result=ScalerValue(type="scaler", value_type="int", value="0x69"),
+                ),
+                Mapping(
+                    param=(
+                        ScalerValue(type="scaler", value_type="int", value="0x4", name="x"),
+                        ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                    ),
+                    result=ScalerValue(type="scaler", value_type="int", value="0x6a"),
+                ),
+            ],
+            id="Multi trial, multi map",
+        ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        trial_id="t01",
+                        trial_status=TrialStatus.done,
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
+                    ),
+                    Trial(
+                        trial_id="t02",
+                        trial_status=TrialStatus.running,
+                        result=[
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x69"),
+                            ),
+                            Mapping(
+                                param=(
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="x"),
+                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=ScalerValue(type="scaler", value_type="int", value="0x6a"),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
+                    ),
+                ],
+                aggregated_parameter_space=_DUMMY_APS,
+                timeout_minutes=1,
+            ),
+            [
+                Mapping(
+                    param=(
+                        ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
+                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                    ),
+                    result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                ),
+                Mapping(
+                    param=(
+                        ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
+                        ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                    ),
+                    result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                ),
+            ],
+            id="Multi trial, multi map, except running",
+        ),
+    ],
+)
+def test_find_exact_study_strategy_extract_mapping(
+    trial_table: TrialTable,
+    expected: list[Mapping],
+) -> None:
+    strategy = AllCalculationStudyStrategy(None)
+    actual = strategy.extract_mappings(trial_table)
     assert actual == expected

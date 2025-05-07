@@ -92,7 +92,7 @@ class Trial:
             return None
 
         for mapping in self.result:
-            if mapping.result == target_value:
+            if mapping.result.equal_to(target_value):
                 return mapping
         return None
 

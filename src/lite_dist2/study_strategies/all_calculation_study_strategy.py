@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
+from lite_dist2.trial import TrialStatus
 
 if TYPE_CHECKING:
     from lite_dist2.trial import Mapping
@@ -17,6 +18,8 @@ class AllCalculationStudyStrategy(BaseStudyStrategy):
     def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
         mappings = []
         for trial in trial_table.trials:
+            if trial.trial_status != TrialStatus.done:
+                continue
             mappings.extend(trial.result or [])
         return mappings
 
