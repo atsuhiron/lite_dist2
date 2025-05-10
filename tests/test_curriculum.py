@@ -207,28 +207,18 @@ def sample_curriculum_fixture() -> Curriculum:
 
 
 def test_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> None:
-    """save したデータを load_or_create で正しく読み込めるかをテスト"""
     json_path = pathlib.Path(f"{tmp_path}/curriculum.json")
     assert not json_path.exists()
 
-    # save を実行
     sample_curriculum_fixture.save(json_path)
-
-    # ファイルが作成されているか確認
     assert json_path.exists()
 
-    # JSON の内容を確認
     with json_path.open("r", encoding="utf-8") as f:
         json_data = json.load(f)
-
-    # モデルのバリデーションを確認
     model = CurriculumModel.model_validate(json_data)
     assert model is not None
 
-    # load_or_create を実行
     loaded_curriculum = Curriculum.load_or_create(json_path)
-
-    # 元のデータと一致するか確認
     assert len(loaded_curriculum.studies) == len(sample_curriculum_fixture.studies)
     assert len(loaded_curriculum.storages) == len(sample_curriculum_fixture.storages)
     assert loaded_curriculum.studies[0].name == sample_curriculum_fixture.studies[0].name
