@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+import json
+import logging
+import pathlib
 import threading
+import time
 
 from pydantic import BaseModel
 
+from lite_dist2.common import CURRICULUM_PATH
 from lite_dist2.study import Study, StudyModel, StudyStatus
 from lite_dist2.study_storage import StudyStorage
+
+logger = logging.getLogger(__name__)
 
 
 class CurriculumModel(BaseModel):
@@ -55,3 +62,29 @@ class Curriculum:
             studies=[Study.from_model(study) for study in model.studies],
             storages=model.storages,
         )
+
+    def save(self, curr_json_path: pathlib.Path | None = None) -> None:
+        save_start_time = time.perf_counter()
+        if curr_json_path is None:
+            curr_json_path = pathlib.Path(__file__).parent.parent.parent / CURRICULUM_PATH
+
+        model = self.to_model()
+        with curr_json_path.open("w", encoding="utf-8") as f:
+            json.dump(model.model_dump(mode="json"), f, ensure_ascii=False)
+        save_end_time = time.perf_counter()
+        logger.info("Saved curriculum in %.3f msec", (save_end_time - save_start_time) / 1000)
+
+    @staticmethod
+    def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
+        load_start_time = time.perf_counter()
+        if curr_json_path is None:
+            curr_json_path = pathlib.Path(__file__).parent.parent.parent / CURRICULUM_PATH
+
+        if curr_json_path.exists():
+            with curr_json_path.open("r", encoding="utf-8") as f:
+                json_dict = json.load(f)
+            model = CurriculumModel.model_validate(json_dict)
+            return Curriculum.from_model(model)
+        load_end_time = time.perf_counter()
+        logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) / 1000)
+        return Curriculum([], [])

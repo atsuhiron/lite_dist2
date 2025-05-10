@@ -24,7 +24,8 @@ ignore = [
 
 [lint.flake8-type-checking]
 runtime-evaluated-base-classes = [
-    "pydantic.BaseModel"
+    "pydantic.BaseModel",
+    "lite_dist2.study.StudyModel",  # uses at test
 ]
 
 [format]
