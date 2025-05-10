@@ -26,12 +26,12 @@ class Curriculum:
         self.storages = storages
         self._lock = threading.Lock()
 
-    def get_current_study(self) -> Study | None:
+    def get_available_study(self, retaining_capacity: set[str]) -> Study | None:
         for study in self.studies:
-            if study.status == StudyStatus.running:
+            if study.status == StudyStatus.running and study.required_capacity.issubset(retaining_capacity):
                 return study
         for study in self.studies:
-            if study.status == StudyStatus.reserved:
+            if study.status == StudyStatus.reserved and study.required_capacity.issubset(retaining_capacity):
                 return study
         return None
 

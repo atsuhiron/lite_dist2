@@ -10,7 +10,8 @@ from lite_dist2.curriculum import Curriculum, CurriculumModel
 from lite_dist2.study import Study, StudyModel, StudyStatus
 from lite_dist2.study_storage import StudyStorage
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
-from lite_dist2.suggest_strategies import BaseSuggestStrategy, SuggestStrategyModel
+from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
+from lite_dist2.suggest_strategies import BaseSuggestStrategy, SequentialSuggestStrategy, SuggestStrategyModel
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.trial import Mapping, TrialModel, TrialStatus
 from lite_dist2.trial_table import TrialTable, TrialTableModel
@@ -71,6 +72,7 @@ class MockStudy(Study):
         super().__init__(
             study_id,
             study_id,
+            set(),
             StudyStatus.reserved,
             DT,
             MockStudyStrategy(),
@@ -111,7 +113,7 @@ def not_done_study_fixture() -> MockStudy:
     return MockStudy(study_id="not_done_study", done=False)
 
 
-def test_to_storage_if_done(done_study_fixture: MockStudy, not_done_study_fixture: MockStudy) -> None:
+def test_curriculum_to_storage_if_done(done_study_fixture: MockStudy, not_done_study_fixture: MockStudy) -> None:
     curriculum = Curriculum(studies=[done_study_fixture, not_done_study_fixture], storages=[])
     curriculum.to_storage_if_done()
 
@@ -128,6 +130,7 @@ def sample_curriculum_fixture() -> Curriculum:
             StudyModel(
                 study_id="01",
                 name="s1",
+                required_capacity=set(),
                 status=StudyStatus.running,
                 registered_timestamp=DT,
                 study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
@@ -206,7 +209,7 @@ def sample_curriculum_fixture() -> Curriculum:
     return Curriculum(studies, storages)
 
 
-def test_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> None:
+def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> None:
     json_path = pathlib.Path(f"{tmp_path}/curriculum.json")
     assert not json_path.exists()
 
@@ -225,10 +228,72 @@ def test_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> 
     assert loaded_curriculum.storages[0].name == sample_curriculum_fixture.storages[0].name
 
 
-def test_load_or_create_empty(tmp_path: str) -> None:
+def test_curriculum_load_or_create_empty(tmp_path: str) -> None:
     json_path = pathlib.Path(f"{tmp_path}/non_existent.json")
     curriculum = Curriculum.load_or_create(json_path)
 
     assert isinstance(curriculum, Curriculum)
     assert len(curriculum.studies) == 0
     assert len(curriculum.storages) == 0
+
+
+@pytest.mark.parametrize(
+    ("retaining_capacity", "expected_study_id"),
+    [
+        pytest.param(
+            {"hash", "preimage"},
+            "hash_2",
+            id="obtain running",
+        ),
+        pytest.param(
+            {"hash"},
+            "hash_1",
+            id="obtain low required reserved",
+        ),
+        pytest.param(
+            {"mandelbrot"},
+            None,
+            id="obtain nothing",
+        ),
+    ],
+)
+def test_curriculum_get_available_study(retaining_capacity: set[str], expected_study_id: str | None) -> None:
+    _study_param = {
+        "name": "",
+        "registered_timestamp": DT,
+        "study_strategy": AllCalculationStudyStrategy(None),
+        "suggest_strategy": SequentialSuggestStrategy(
+            SuggestStrategyParam(strict_aligned=True),
+            _DUMMY_PARAMETER_SPACE,
+        ),
+        "parameter_space": _DUMMY_PARAMETER_SPACE,
+        "result_type": "scalar",
+        "result_value_type": "int",
+        "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+    }
+    curriculum = Curriculum(
+        studies=[
+            Study(
+                study_id="hash_1",
+                required_capacity={"hash"},
+                status=StudyStatus.reserved,
+                **_study_param,
+            ),
+            Study(
+                study_id="hash_2",
+                required_capacity={"hash", "preimage"},
+                status=StudyStatus.running,
+                **_study_param,
+            ),
+            Study(
+                study_id="hash_3",
+                required_capacity={"hash", "preimage"},
+                status=StudyStatus.reserved,
+                **_study_param,
+            ),
+        ],
+        storages=[],
+    )
+
+    study = curriculum.get_available_study(retaining_capacity)
+    assert (study.study_id if study is not None else None) == expected_study_id

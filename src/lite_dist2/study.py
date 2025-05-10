@@ -32,6 +32,7 @@ class StudyStatus(str, Enum):
 class StudyModel(BaseModel):
     study_id: str
     name: str | None
+    required_capacity: set[str]
     status: StudyStatus
     registered_timestamp: datetime
     study_strategy: StudyStrategyModel
@@ -46,7 +47,8 @@ class Study:
     def __init__(
         self,
         study_id: str,
-        name: str,
+        name: str | None,
+        required_capacity: set[str],
         status: StudyStatus,
         registered_timestamp: datetime,
         study_strategy: BaseStudyStrategy,
@@ -57,7 +59,8 @@ class Study:
         trial_table: TrialTable,
     ) -> None:
         self.study_id = study_id
-        self.name = name
+        self.name = name or self.study_id
+        self.required_capacity = required_capacity
         self.status = status
         self.registered_timestamp = registered_timestamp
         self.study_strategy = study_strategy
@@ -121,6 +124,7 @@ class Study:
         return StudyModel(
             study_id=self.study_id,
             name=self.name,
+            required_capacity=self.required_capacity,
             status=self.status,
             registered_timestamp=self.registered_timestamp,
             study_strategy=self.study_strategy.to_model(),
@@ -164,6 +168,7 @@ class Study:
         return Study(
             study_id=study_model.study_id,
             name=study_model.name,
+            required_capacity=study_model.required_capacity,
             status=study_model.status,
             registered_timestamp=study_model.registered_timestamp,
             study_strategy=Study._create_study_strategy(study_model.study_strategy),

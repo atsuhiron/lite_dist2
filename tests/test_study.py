@@ -21,6 +21,7 @@ from tests.const import DT
             StudyModel(
                 study_id="01",
                 name="s1",
+                required_capacity=set(),
                 status=StudyStatus.running,
                 registered_timestamp=DT,
                 study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
@@ -214,6 +215,7 @@ def test_study_suggest_receipt_single_thread() -> None:
     study = Study(
         study_id="s01",
         name="synchronous_test",
+        required_capacity=set(),
         status=StudyStatus.running,
         registered_timestamp=DT,
         study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
@@ -277,6 +279,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
     study = Study(
         study_id="s01",
         name="synchronous_test",
+        required_capacity=set(),
         status=StudyStatus.running,
         registered_timestamp=DT,
         study_strategy=AllCalculationStudyStrategy(study_strategy_param=None),
