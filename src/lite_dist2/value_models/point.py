@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
-from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
-from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.common import numerize, portablize
 from lite_dist2.type_definitions import PortableValueType
 
 if TYPE_CHECKING:
@@ -41,15 +40,7 @@ class ScalerValue(BaseModel, BasePointValue):
     name: str | None = None
 
     def numerize(self) -> PrimitiveValueType:
-        match self.value_type:
-            case "bool":
-                return self.value
-            case "int":
-                return hex2int(self.value)
-            case "float":
-                return hex2float(self.value)
-            case _:
-                raise LD2ModelTypeError(self.type)
+        return numerize(self.value_type, self.value)
 
     def equal_to(self, other: BasePointValue) -> bool:
         if not isinstance(other, ScalerValue):
@@ -62,18 +53,8 @@ class ScalerValue(BaseModel, BasePointValue):
         value_type: Literal["bool", "int", "float"],
         name: str | None = None,
     ) -> ScalerValue:
-        match value_type:
-            case "bool":
-                val = raw_result_value
-                return ScalerValue(type="scaler", value_type="bool", value=val, name=name)
-            case "int":
-                val = int2hex(raw_result_value)
-                return ScalerValue(type="scaler", value_type="int", value=val, name=name)
-            case "float":
-                val = float2hex(raw_result_value)
-                return ScalerValue(type="scaler", value_type="float", value=val, name=name)
-            case _:
-                raise LD2ModelTypeError(value_type)
+        val = portablize(value_type, raw_result_value)
+        return ScalerValue(type="scaler", value_type=value_type, value=val, name=name)
 
 
 class VectorValue(BaseModel, BasePointValue):
@@ -83,15 +64,7 @@ class VectorValue(BaseModel, BasePointValue):
     name: str | None = None
 
     def numerize(self) -> list[PrimitiveValueType]:
-        match self.value_type:
-            case "bool":
-                return self.values
-            case "int":
-                return [hex2int(v) for v in self.values]
-            case "float":
-                return [hex2float(v) for v in self.values]
-            case _:
-                raise LD2ModelTypeError(self.type)
+        return [numerize(self.value_type, v) for v in self.values]
 
     def equal_to(self, other: BasePointValue) -> bool:
         if not isinstance(other, VectorValue):
@@ -104,18 +77,8 @@ class VectorValue(BaseModel, BasePointValue):
         value_type: Literal["bool", "int", "float"],
         name: str | None = None,
     ) -> VectorValue:
-        match value_type:
-            case "bool":
-                val = list(raw_result_value)
-                return VectorValue(type="vector", value_type="bool", values=val, name=name)
-            case "int":
-                val = [int2hex(v) for v in raw_result_value]
-                return VectorValue(type="vector", value_type="int", values=val, name=name)
-            case "float":
-                val = [float2hex(v) for v in raw_result_value]
-                return VectorValue(type="vector", value_type="float", values=val, name=name)
-            case _:
-                raise LD2ModelTypeError(value_type)
+        val = [portablize(value_type, rv) for rv in raw_result_value]
+        return VectorValue(type="vector", value_type=value_type, values=val, name=name)
 
 
 type ParamType = tuple[ScalerValue, ...]

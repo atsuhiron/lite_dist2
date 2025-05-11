@@ -1091,7 +1091,7 @@ def test_trial_table_count_grid(
                             LineSegmentModel(
                                 type="int",
                                 size="0xa",
-                                step=1,
+                                step="0x1",
                                 start="0x0",
                                 ambient_index="0x0",
                                 ambient_size="0x64",
@@ -1119,7 +1119,7 @@ def test_trial_table_count_grid(
                             LineSegmentModel(
                                 type="int",
                                 size="0xa",
-                                step=1,
+                                step="0x1",
                                 start="0x0",
                                 ambient_index="0x0",
                                 ambient_size="0x64",

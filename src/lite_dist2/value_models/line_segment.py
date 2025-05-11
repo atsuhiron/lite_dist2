@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, Field
 
-from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
+from lite_dist2.common import float2hex, hex2float, hex2int, int2hex, numerize, portablize
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.interfaces import Mergeable
 from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
@@ -18,7 +18,7 @@ class LineSegmentModel(BaseModel):
     name: str | None = None
     type: Literal["bool", "int", "float"]
     size: str
-    step: int | str  # TODO: これも怪しい
+    step: PortableValueType
     start: PortableValueType
     ambient_index: str
     ambient_size: str | None = None
@@ -29,7 +29,7 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
     name: str | None = None
     type: Literal["bool", "int", "float"]
     size: int | None
-    step: int | str
+    step: PrimitiveValueType
     start: PrimitiveValueType
     ambient_index: int
     ambient_size: int | None
@@ -104,7 +104,7 @@ class LineSegment(BaseModel, Mergeable, metaclass=abc.ABCMeta):
 class DummyLineSegment(LineSegment):
     name: str
     type: Literal["bool", "int", "float"]
-    step: int | float
+    step: PrimitiveValueType
     start: Literal[0] = 0
     size: Literal[1] = 1
     ambient_index: Literal[0] = 0
@@ -141,7 +141,7 @@ class DummyLineSegment(LineSegment):
             name=self.name,
             type=self.type,
             size=int2hex(self.size),
-            step=self.get_step(),
+            step=portablize(self.type, self.get_step()),
             start="0x0",
             ambient_index="0x0",
             ambient_size=int2hex(self.ambient_size),
@@ -153,7 +153,7 @@ class DummyLineSegment(LineSegment):
         return DummyLineSegment(
             name=line_segment_model.name,
             type=line_segment_model.type,
-            step=line_segment_model.step,
+            step=numerize(line_segment_model.type, line_segment_model.step),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
         )
 
@@ -224,7 +224,7 @@ class ParameterRangeBool(LineSegment):
             type=self.type,
             start=self.start,
             size=int2hex(self.size),
-            step=self.step,
+            step=int2hex(self.step),
             ambient_index=int2hex(self.ambient_index),
             ambient_size=int2hex(self.ambient_size),
         )
@@ -238,7 +238,7 @@ class ParameterRangeBool(LineSegment):
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
             start=line_segment_model.start,
-            step=line_segment_model.step,
+            step=hex2int(line_segment_model.step),
         )
 
 
@@ -311,7 +311,7 @@ class ParameterRangeInt(LineSegment):
             type=self.type,
             start=int2hex(self.start),
             size=int2hex(self.size),
-            step=self.step,
+            step=int2hex(self.step),
             ambient_index=int2hex(self.ambient_index),
             ambient_size=int2hex(self.ambient_size),
         )
@@ -325,7 +325,7 @@ class ParameterRangeInt(LineSegment):
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
             start=hex2int(line_segment_model.start),
-            step=line_segment_model.step,
+            step=hex2int(line_segment_model.step),
         )
 
 

@@ -110,7 +110,7 @@ def test_parameter_jagged_space_get_flatten_ambient_start_and_size_list(
                         name="x",
                         type="int",
                         size="0x1",
-                        step=1,
+                        step="0x1",
                         start="0x0",
                         ambient_index="0x0",
                         ambient_size="0x64",

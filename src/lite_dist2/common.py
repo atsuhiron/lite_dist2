@@ -1,4 +1,8 @@
 from datetime import datetime, timedelta, timezone
+from typing import Literal
+
+from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
 JST = timezone(timedelta(hours=+9), "JST")
 DEFAULT_TIMEOUT_MINUTE = 10
@@ -19,6 +23,30 @@ def hex2float(hex_str: str) -> float:
 
 def float2hex(val: float) -> str:
     return val.hex()
+
+
+def numerize(type_name: Literal["bool", "int", "float"], value: PortableValueType) -> PrimitiveValueType:
+    match type_name:
+        case "bool":
+            return value
+        case "int":
+            return hex2int(value)
+        case "float":
+            return hex2float(value)
+        case _:
+            raise LD2ModelTypeError(type_name)
+
+
+def portablize(type_name: Literal["bool", "int", "float"], value: PrimitiveValueType) -> PortableValueType:
+    match type_name:
+        case "bool":
+            return value
+        case "int":
+            return int2hex(value)
+        case "float":
+            return float2hex(value)
+        case _:
+            raise LD2ModelTypeError(type_name)
 
 
 def publish_timestamp() -> datetime:
