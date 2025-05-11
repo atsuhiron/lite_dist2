@@ -50,6 +50,39 @@ class Curriculum:
             return True
         return False
 
+    def pop_storage(self, study_id: str | None, name: str | None) -> StudyStorage | None:
+        storages = []
+        target = None
+        if study_id is not None:
+            for storage in self.storages:
+                if storage.study_id == study_id:
+                    target = storage
+                    continue
+                storages.append(storage)
+            self.storages = storages
+            return target
+
+        if name is not None:
+            for storage in self.storages:
+                if storage.name == name:
+                    target = storage
+                    continue
+                storages.append(storage)
+            self.storages = storages
+            return target
+        return None
+
+    def get_study_status(self, study_id: str | None, name: str | None) -> StudyStatus:
+        if study_id is not None:
+            for study in self.studies:
+                if study.study_id == study_id:
+                    return study.status
+        if name is not None:
+            for study in self.studies:
+                if study.name == name:
+                    return study.status
+        return StudyStatus.not_found
+
     def to_model(self) -> CurriculumModel:
         return CurriculumModel(
             studies=[study.to_model() for study in self.studies],
@@ -88,3 +121,14 @@ class Curriculum:
         load_end_time = time.perf_counter()
         logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) / 1000)
         return Curriculum([], [])
+
+
+class CurriculumProvider:
+    _CURR = None
+
+    @classmethod
+    def get(cls) -> Curriculum:
+        if cls._CURR is not None:
+            return cls._CURR
+        cls._CURR = Curriculum.load_or_create()
+        return cls._CURR

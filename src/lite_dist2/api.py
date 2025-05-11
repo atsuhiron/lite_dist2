@@ -1,0 +1,68 @@
+from __future__ import annotations
+
+import logging
+from typing import TYPE_CHECKING, Annotated
+
+from fastapi import Body, FastAPI, HTTPException
+from fastapi.params import Query
+from fastapi.responses import JSONResponse
+
+from lite_dist2.curriculum_models.curriculum import CurriculumProvider
+from lite_dist2.curriculum_models.study import Study, StudyStatus
+from lite_dist2.response_models import OkResponse, StudyRegisteredResponse, StudyResponse
+
+if TYPE_CHECKING:
+    from lite_dist2.curriculum_models.study_registry import StudyRegistry
+
+logger = logging.getLogger(__name__)
+app = FastAPI()
+
+
+@app.get("/ping")
+def handle_ping() -> OkResponse:
+    return OkResponse(ok=True)
+
+
+@app.get("/status")
+def handle_status() -> None:
+    pass
+
+
+@app.post("/study/register", response_model=StudyRegisteredResponse)
+def handle_study_register(
+    study_registry: Annotated[StudyRegistry, Body(description="Registry of processing study")] = ...,
+) -> StudyRegisteredResponse | JSONResponse:
+    curr = CurriculumProvider.get()
+    new_study = Study.from_model(study_registry.to_study_model())
+    curr.insert_study(new_study)
+    return JSONResponse(
+        content=StudyRegisteredResponse(study_id=new_study.study_id),
+        status_code=200,
+    )
+
+
+@app.post("/trial/reserve")
+def handle_trial_reserve() -> None:
+    pass
+
+
+@app.post("/trial/register")
+def handle_trial_register() -> OkResponse:
+    pass
+
+
+@app.get("/study", response_model=StudyResponse)
+def handle_study(
+    study_id: Annotated[str | None, Query(default=None, description="`study_id` of the target study")],
+    name: Annotated[str | None, Query(default=None, description="`name` of the target study")],
+) -> StudyResponse | JSONResponse | HTTPException:
+    if study_id is None and name is None:
+        return HTTPException(status_code=400, detail="One of study_id or name should be set.")
+    if study_id is not None and name is not None:
+        return HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
+
+    curr = CurriculumProvider.get()
+    storage = curr.pop_storage(study_id, name)
+    if storage is not None:
+        return StudyResponse(status=StudyStatus.done, result=storage)
+    return StudyResponse(status=curr.get_study_status(study_id, name), result=None)
