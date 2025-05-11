@@ -1,6 +1,9 @@
+from typing import Literal
+
 import pytest
 
 from lite_dist2 import common
+from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
 
 @pytest.mark.parametrize(
@@ -52,3 +55,37 @@ def test_hex2float(hex_str: str, expected: float) -> None:
 )
 def test_float2hex(float_val: float, expected: str) -> None:
     assert common.float2hex(float_val) == expected
+
+
+@pytest.mark.parametrize(
+    ("type_name", "value", "expected"),
+    [
+        ("bool", False, False),
+        ("int", "0x2", 2),
+        ("float", "0x1.999999999999ap-4", 0.1),
+    ],
+)
+def test_numerize(
+    type_name: Literal["bool", "int", "float"],
+    value: PortableValueType,
+    expected: PrimitiveValueType,
+) -> None:
+    actual = common.numerize(type_name, value)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("type_name", "value", "expected"),
+    [
+        ("bool", False, False),
+        ("int", 2, "0x2"),
+        ("float", 0.1, "0x1.999999999999ap-4"),
+    ],
+)
+def test_portablize(
+    type_name: Literal["bool", "int", "float"],
+    value: PrimitiveValueType,
+    expected: PortableValueType,
+) -> None:
+    actual = common.portablize(type_name, value)
+    assert actual == expected
