@@ -73,7 +73,7 @@ class MockStudy(Study):
             study_id,
             study_id,
             set(),
-            StudyStatus.reserved,
+            StudyStatus.wait,
             DT,
             MockStudyStrategy(),
             MockSuggestStrategy(),
@@ -248,7 +248,7 @@ def test_curriculum_load_or_create_empty(tmp_path: str) -> None:
         pytest.param(
             {"hash"},
             "hash_1",
-            id="obtain low required reserved",
+            id="obtain low required wait",
         ),
         pytest.param(
             {"mandelbrot"},
@@ -276,7 +276,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
             Study(
                 study_id="hash_1",
                 required_capacity={"hash"},
-                status=StudyStatus.reserved,
+                status=StudyStatus.wait,
                 **_study_param,
             ),
             Study(
@@ -288,7 +288,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
             Study(
                 study_id="hash_3",
                 required_capacity={"hash", "preimage"},
-                status=StudyStatus.reserved,
+                status=StudyStatus.wait,
                 **_study_param,
             ),
         ],

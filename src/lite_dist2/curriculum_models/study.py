@@ -24,9 +24,10 @@ if TYPE_CHECKING:
 
 
 class StudyStatus(str, Enum):
-    reserved = "reserved"  # TODO: 変える
+    wait = "wait"
     running = "running"
     done = "done"
+    not_found = "not_found"
 
 
 class StudyModel(BaseModel):
@@ -74,7 +75,7 @@ class Study:
 
     def update_status(self) -> None:
         if self.trial_table.is_empty():
-            self.status = StudyStatus.reserved
+            self.status = StudyStatus.wait
             return
         if self.is_done():
             self.status = StudyStatus.done

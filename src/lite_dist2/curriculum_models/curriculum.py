@@ -31,7 +31,7 @@ class Curriculum:
             if study.status == StudyStatus.running and study.required_capacity.issubset(retaining_capacity):
                 return study
         for study in self.studies:
-            if study.status == StudyStatus.reserved and study.required_capacity.issubset(retaining_capacity):
+            if study.status == StudyStatus.wait and study.required_capacity.issubset(retaining_capacity):
                 return study
         return None
 

@@ -56,7 +56,7 @@ if TYPE_CHECKING:
                 study_id="test_study_id",
                 name="test_registry",
                 required_capacity={"test"},
-                status=StudyStatus.reserved,
+                status=StudyStatus.wait,
                 registered_timestamp=DT,
                 study_strategy=StudyStrategyModel(
                     type="find_exact",
