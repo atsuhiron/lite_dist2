@@ -11,7 +11,7 @@ class OkResponse(BaseModel):
 
 
 class StudyRegisteredResponse(BaseModel):
-    study_id: Field(..., description="Published `study_id` of registered study.")
+    study_id: str = Field(..., description="Published `study_id` of registered study.")
 
 
 class StudyResponse(BaseModel):

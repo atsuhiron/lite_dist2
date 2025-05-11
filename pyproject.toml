@@ -1,7 +1,7 @@
 [project]
 name = "lite-dist2"
 version = "0.1.0"
-description = "Add your description here"
+description = "Distributed processing system"
 readme = "README.md"
 authors = [
     { name = "Justica", email = "atsuronreplaced@gmail.com" }
@@ -13,6 +13,7 @@ dependencies = [
     "pydantic>=2.10.6",
     "requests>=2.32.3",
     "tqdm>=4.67.1",
+    "uvicorn>=0.33.0",
 ]
 
 [build-system]
@@ -21,11 +22,15 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "hatch>=1.14.1",
     "pytest>=8.3.5",
     "pytest-cov>=5.0.0",
     "pytest-mock>=3.14.0",
     "ruff>=0.11.2",
 ]
+
+[project.scripts]
+start = "lite_dist2.start_table_api:start"
 
 [tool.coverage.paths]
 source = [

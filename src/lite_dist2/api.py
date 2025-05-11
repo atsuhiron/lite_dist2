@@ -53,8 +53,8 @@ def handle_trial_register() -> OkResponse:
 
 @app.get("/study", response_model=StudyResponse)
 def handle_study(
-    study_id: Annotated[str | None, Query(default=None, description="`study_id` of the target study")],
-    name: Annotated[str | None, Query(default=None, description="`name` of the target study")],
+    study_id: Annotated[str | None, Query(description="`study_id` of the target study")] = None,
+    name: Annotated[str | None, Query(description="`name` of the target study")] = None,
 ) -> StudyResponse | JSONResponse | HTTPException:
     if study_id is None and name is None:
         return HTTPException(status_code=400, detail="One of study_id or name should be set.")
