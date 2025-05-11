@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel, Field
 
 from lite_dist2.common import JST, int2hex, publish_timestamp
+from lite_dist2.curriculum_models.study_storage import StudyStorage
+from lite_dist2.curriculum_models.trial import Trial, TrialStatus
+from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.expections import LD2ModelTypeError
-from lite_dist2.study_storage import StudyStorage
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy, SuggestStrategyModel
-from lite_dist2.trial import Trial, TrialStatus
-from lite_dist2.trial_table import TrialTable, TrialTableModel
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 
 if TYPE_CHECKING:

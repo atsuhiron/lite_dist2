@@ -1,10 +1,10 @@
 import pytest
 
+from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialStatus
+from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.suggest_strategies.sequential_suggest_strategy import SequentialSuggestStrategy
-from lite_dist2.trial import Mapping, Trial, TrialStatus
-from lite_dist2.trial_table import TrialTable
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.base_space import ParameterSpace
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from lite_dist2.curriculum_models.trial import TrialStatus
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
-from lite_dist2.trial import TrialStatus
 
 if TYPE_CHECKING:
-    from lite_dist2.trial import Mapping
-    from lite_dist2.trial_table import TrialTable
+    from lite_dist2.curriculum_models.trial import Mapping
+    from lite_dist2.curriculum_models.trial_table import TrialTable
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 

@@ -9,8 +9,8 @@ import time
 from pydantic import BaseModel
 
 from lite_dist2.common import CURRICULUM_PATH
-from lite_dist2.study import Study, StudyModel, StudyStatus
-from lite_dist2.study_storage import StudyStorage
+from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
+from lite_dist2.curriculum_models.study_storage import StudyStorage
 
 logger = logging.getLogger(__name__)
 

@@ -8,8 +8,8 @@ from pydantic import BaseModel
 from lite_dist2.value_models.point import ResultType
 
 if TYPE_CHECKING:
-    from lite_dist2.trial import Mapping
-    from lite_dist2.trial_table import TrialTable
+    from lite_dist2.curriculum_models.trial import Mapping
+    from lite_dist2.curriculum_models.trial_table import TrialTable
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 

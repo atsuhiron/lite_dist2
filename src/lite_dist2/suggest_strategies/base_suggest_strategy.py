@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from lite_dist2.trial_table import TrialTable
+    from lite_dist2.curriculum_models.trial_table import TrialTable
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterSpace
 
 

@@ -1,9 +1,9 @@
 import pytest
 
+from lite_dist2.curriculum_models.study import TrialTableModel
+from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.expections import LD2ParameterError
-from lite_dist2.study import TrialTableModel
-from lite_dist2.trial import Mapping, Trial, TrialModel, TrialStatus
-from lite_dist2.trial_table import TrialTable
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace

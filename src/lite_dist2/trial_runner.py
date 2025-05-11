@@ -10,7 +10,7 @@ import tqdm
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from lite_dist2.trial import Trial
+    from lite_dist2.curriculum_models.trial import Trial
     from lite_dist2.type_definitions import RawParamType, RawResultType
     from lite_dist2.value_models.aligned_space import ParameterSpace
 

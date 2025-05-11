@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from lite_dist2.trial import Mapping
+from lite_dist2.curriculum_models.trial import Mapping
 
 
 class StudyStorage(BaseModel):

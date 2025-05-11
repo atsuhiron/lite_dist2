@@ -1,9 +1,9 @@
 import pytest
 
+from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialStatus
+from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
-from lite_dist2.trial import Mapping, Trial, TrialStatus
-from lite_dist2.trial_table import TrialTable
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.point import ResultType, ScalerValue

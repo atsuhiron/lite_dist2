@@ -6,15 +6,15 @@ from typing import TYPE_CHECKING, Literal
 
 import pytest
 
-from lite_dist2.curriculum import Curriculum, CurriculumModel
-from lite_dist2.study import Study, StudyModel, StudyStatus
-from lite_dist2.study_storage import StudyStorage
+from lite_dist2.curriculum_models.curriculum import Curriculum, CurriculumModel
+from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
+from lite_dist2.curriculum_models.study_storage import StudyStorage
+from lite_dist2.curriculum_models.trial import Mapping, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import BaseSuggestStrategy, SequentialSuggestStrategy, SuggestStrategyModel
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
-from lite_dist2.trial import Mapping, TrialModel, TrialStatus
-from lite_dist2.trial_table import TrialTable, TrialTableModel
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.point import ScalerValue
