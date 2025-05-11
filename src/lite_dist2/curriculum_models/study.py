@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
 
-from lite_dist2.common import JST, int2hex, publish_timestamp
+from lite_dist2.common import int2hex, publish_timestamp
 from lite_dist2.curriculum_models.study_storage import StudyStorage
 from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 class StudyStatus(str, Enum):
-    reserved = "reserved"
+    reserved = "reserved"  # TODO: 変える
     running = "running"
     done = "done"
 
@@ -114,7 +114,7 @@ class Study:
             study_id=self.study_id,
             name=self.name,
             registered_timestamp=self.registered_timestamp,
-            done_timestamp=datetime.now(tz=JST),
+            done_timestamp=publish_timestamp(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
             result=self.study_strategy.extract_mappings(self.trial_table),
