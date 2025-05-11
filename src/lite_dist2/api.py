@@ -14,7 +14,9 @@ from lite_dist2.response_models import OkResponse, StudyRegisteredResponse, Stud
 if TYPE_CHECKING:
     from lite_dist2.curriculum_models.study_registry import StudyRegistry
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 app = FastAPI()
 
 
@@ -64,5 +66,13 @@ def handle_study(
     curr = CurriculumProvider.get()
     storage = curr.pop_storage(study_id, name)
     if storage is not None:
-        return StudyResponse(status=StudyStatus.done, result=storage)
-    return StudyResponse(status=curr.get_study_status(study_id, name), result=None)
+        return JSONResponse(
+            content=StudyResponse(status=StudyStatus.done, result=storage),
+            status_code=200,
+        )
+
+    study_status = curr.get_study_status(study_id, name)
+    resp = StudyResponse(status=study_status, result=None)
+    if study_status == StudyStatus.not_found:
+        return HTTPException(status_code=404, detail="Study not found")
+    return JSONResponse(content=resp, status_code=202)

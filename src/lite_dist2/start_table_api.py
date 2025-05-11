@@ -5,7 +5,6 @@ import uvicorn
 
 from lite_dist2.api import app
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
