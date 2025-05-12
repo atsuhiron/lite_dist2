@@ -7,12 +7,12 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.params import Query
 from fastapi.responses import JSONResponse
 
-from lite_dist2.curriculum_models.curriculum import CurriculumProvider
+from lite_dist2.curriculum_models.curriculum import CurriculumProvider, CurriculumSummaryModel
 from lite_dist2.curriculum_models.study import Study, StudyStatus
 from lite_dist2.response_models import OkResponse, StudyRegisteredResponse, StudyResponse
 
 if TYPE_CHECKING:
-    from lite_dist2.curriculum_models.study_registry import StudyRegistry
+    from lite_dist2.curriculum_models.study_portables import StudyRegistry
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,9 +25,13 @@ def handle_ping() -> OkResponse:
     return OkResponse(ok=True)
 
 
-@app.get("/status")
-def handle_status() -> None:
-    pass
+@app.get("/status", response_model=CurriculumSummaryModel)
+def handle_status() -> CurriculumSummaryModel | JSONResponse:
+    curr = CurriculumProvider.get()
+    return JSONResponse(
+        content=curr.to_summaries().model_dump(mode="json"),
+        status_code=200,
+    )
 
 
 @app.post("/study/register", response_model=StudyRegisteredResponse)
@@ -38,7 +42,7 @@ def handle_study_register(
     new_study = Study.from_model(study_registry.to_study_model())
     curr.insert_study(new_study)
     return JSONResponse(
-        content=StudyRegisteredResponse(study_id=new_study.study_id),
+        content=StudyRegisteredResponse(study_id=new_study.study_id).model_dump(mode="json"),
         status_code=200,
     )
 

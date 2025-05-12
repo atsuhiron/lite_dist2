@@ -6,11 +6,11 @@ import pathlib
 import threading
 import time
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from lite_dist2.common import CURRICULUM_PATH
 from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
-from lite_dist2.curriculum_models.study_storage import StudyStorage
+from lite_dist2.curriculum_models.study_portables import StudyStorage, StudySummary
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +18,10 @@ logger = logging.getLogger(__name__)
 class CurriculumModel(BaseModel):
     studies: list[StudyModel]
     storages: list[StudyStorage]
+
+
+class CurriculumSummaryModel(BaseModel):
+    summaries: list[StudySummary] = Field(..., description="The list of study (containing storage) summary.")
 
 
 class Curriculum:
@@ -51,6 +55,7 @@ class Curriculum:
         return False
 
     def pop_storage(self, study_id: str | None, name: str | None) -> StudyStorage | None:
+        # TODO: test
         storages = []
         target = None
         if study_id is not None:
@@ -73,6 +78,7 @@ class Curriculum:
         return None
 
     def get_study_status(self, study_id: str | None, name: str | None) -> StudyStatus:
+        # TODO: test
         if study_id is not None:
             for study in self.studies:
                 if study.study_id == study_id:
@@ -87,6 +93,12 @@ class Curriculum:
         return CurriculumModel(
             studies=[study.to_model() for study in self.studies],
             storages=self.storages,
+        )
+
+    def to_summaries(self) -> CurriculumSummaryModel:
+        return CurriculumSummaryModel(
+            summaries=[storage.to_summary() for storage in self.storages]
+            + [study.to_summary() for study in self.studies],
         )
 
     @staticmethod

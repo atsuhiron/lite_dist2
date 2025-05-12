@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class LineSegmentModel(BaseModel):
     name: str | None = None
     type: Literal["bool", "int", "float"]
-    size: str
+    size: str | None
     step: PortableValueType
     start: PortableValueType
     ambient_index: str

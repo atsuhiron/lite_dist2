@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from lite_dist2.curriculum_models.study import StudyStatus
-from lite_dist2.curriculum_models.study_storage import StudyStorage
+from lite_dist2.curriculum_models.study_portables import StudyStorage
+from lite_dist2.curriculum_models.study_status import StudyStatus
 
 
 class OkResponse(BaseModel):

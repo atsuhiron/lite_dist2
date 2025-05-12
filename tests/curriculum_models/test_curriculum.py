@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import json
 import pathlib
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import pytest
 
 from lite_dist2.curriculum_models.curriculum import Curriculum, CurriculumModel
 from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
-from lite_dist2.curriculum_models.study_storage import StudyStorage
+from lite_dist2.curriculum_models.study_portables import StudyStorage
 from lite_dist2.curriculum_models.trial import Mapping, TrialModel, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
@@ -31,10 +31,11 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
     check_lower_filling=True,
 )
 
-
-class MockStudyStrategyModel(StudyStrategyModel):
-    type: Literal["all_calculation", "find_exact", "minimize", "test"] = "test"
-    study_strategy_param: None = None
+_DUMMY_STUDY_STRATEGY_MODEL = StudyStrategyModel(type="all_calculation", study_strategy_param=None)
+_DUMMY_SUGGEST_STRATEGY_MODEL = SuggestStrategyModel(
+    type="sequential",
+    parameter=SuggestStrategyParam(strict_aligned=True),
+)
 
 
 class MockStudyStrategy(BaseStudyStrategy):
@@ -48,12 +49,7 @@ class MockStudyStrategy(BaseStudyStrategy):
         pass
 
     def to_model(self) -> StudyStrategyModel:
-        pass
-
-
-class MockSuggestStrategyModel(SuggestStrategyModel):
-    type: Literal["sequential", "random", "designated", "test"] = "test"
-    parameter: SuggestStrategyParam | None = None
+        return _DUMMY_STUDY_STRATEGY_MODEL
 
 
 class MockSuggestStrategy(BaseSuggestStrategy):
@@ -64,7 +60,7 @@ class MockSuggestStrategy(BaseSuggestStrategy):
         pass
 
     def to_model(self) -> SuggestStrategyModel:
-        pass
+        return _DUMMY_SUGGEST_STRATEGY_MODEL
 
 
 class MockStudy(Study):
@@ -95,11 +91,16 @@ class MockStudy(Study):
         return StudyStorage(
             study_id=self.study_id,
             name=self.study_id,
+            required_capacity=set(),
             registered_timestamp=DT,
+            study_strategy=self.study_strategy.to_model(),
+            suggest_strategy=self.suggest_strategy.to_model(),
+            parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
             done_timestamp=DT,
             result_type="scaler",
             result_value_type="int",
             result=[],
+            done_grids=4,
         )
 
 
@@ -199,11 +200,16 @@ def sample_curriculum_fixture() -> Curriculum:
         StudyStorage(
             study_id="s2",
             name="s2",
+            required_capacity=set(),
             registered_timestamp=DT,
+            study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+            suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+            parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
             done_timestamp=DT,
             result_type="scaler",
             result_value_type="int",
             result=[],
+            done_grids=4,
         ),
     ]
     return Curriculum(studies, storages)

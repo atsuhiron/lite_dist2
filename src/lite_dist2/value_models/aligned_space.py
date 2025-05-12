@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
+from lite_dist2.common import hex2int
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError, LD2TypeError, LD2UndefinedError
 from lite_dist2.interfaces import Mergeable
 from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
@@ -29,6 +30,14 @@ class ParameterAlignedSpaceModel(BaseModel):
     type: Literal["aligned"]
     axes: list[LineSegmentModel]
     check_lower_filling: bool
+
+    def get_total(self) -> int | None:
+        t = 1
+        for axis in self.axes:
+            if axis.size is None:
+                return None
+            t *= hex2int(axis.size)
+        return t
 
 
 class ParameterAlignedSpace(ParameterSpace, Mergeable):
