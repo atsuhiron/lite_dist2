@@ -7,9 +7,9 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.params import Query
 from fastapi.responses import JSONResponse
 
-from lite_dist2.curriculum_models.curriculum import CurriculumProvider, CurriculumSummaryModel
+from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.curriculum_models.study import Study, StudyStatus
-from lite_dist2.response_models import OkResponse, StudyRegisteredResponse, StudyResponse
+from lite_dist2.response_models import CurriculumSummaryResponse, OkResponse, StudyRegisteredResponse, StudyResponse
 
 if TYPE_CHECKING:
     from lite_dist2.curriculum_models.study_portables import StudyRegistry
@@ -25,11 +25,11 @@ def handle_ping() -> OkResponse:
     return OkResponse(ok=True)
 
 
-@app.get("/status", response_model=CurriculumSummaryModel)
-def handle_status() -> CurriculumSummaryModel | JSONResponse:
+@app.get("/status", response_model=CurriculumSummaryResponse)
+def handle_status() -> CurriculumSummaryResponse | JSONResponse:
     curr = CurriculumProvider.get()
     return JSONResponse(
-        content=curr.to_summaries().model_dump(mode="json"),
+        content=CurriculumSummaryResponse(summaries=curr.to_summaries()).model_dump(mode="json"),
         status_code=200,
     )
 

@@ -6,7 +6,7 @@ import pathlib
 import threading
 import time
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from lite_dist2.common import CURRICULUM_PATH
 from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
@@ -18,10 +18,6 @@ logger = logging.getLogger(__name__)
 class CurriculumModel(BaseModel):
     studies: list[StudyModel]
     storages: list[StudyStorage]
-
-
-class CurriculumSummaryModel(BaseModel):
-    summaries: list[StudySummary] = Field(..., description="The list of study (containing storage) summary.")
 
 
 class Curriculum:
@@ -95,11 +91,8 @@ class Curriculum:
             storages=self.storages,
         )
 
-    def to_summaries(self) -> CurriculumSummaryModel:
-        return CurriculumSummaryModel(
-            summaries=[storage.to_summary() for storage in self.storages]
-            + [study.to_summary() for study in self.studies],
-        )
+    def to_summaries(self) -> list[StudySummary]:
+        return [storage.to_summary() for storage in self.storages] + [study.to_summary() for study in self.studies]
 
     @staticmethod
     def from_model(model: CurriculumModel) -> Curriculum:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from lite_dist2.curriculum_models.study_portables import StudyStorage
+from lite_dist2.curriculum_models.study_portables import StudyStorage, StudySummary
 from lite_dist2.curriculum_models.study_status import StudyStatus
 
 
@@ -20,3 +20,7 @@ class StudyResponse(BaseModel):
         None,
         description="Results of completed study. If the study is not completed or not found, then `None`.",
     )
+
+
+class CurriculumSummaryResponse(BaseModel):
+    summaries: list[StudySummary] = Field(..., description="The list of study (containing storage) summary.")
