@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from lite_dist2.common import CURRICULUM_PATH
 from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
 from lite_dist2.curriculum_models.study_portables import StudyStorage, StudySummary
+from lite_dist2.expections import LD2ParameterError
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,6 @@ class Curriculum:
         return False
 
     def pop_storage(self, study_id: str | None, name: str | None) -> StudyStorage | None:
-        # TODO: test
         storages = []
         target = None
         if study_id is not None:
@@ -71,18 +71,37 @@ class Curriculum:
                 storages.append(storage)
             self.storages = storages
             return target
-        return None
+        p = "study_id, name"
+        e = "Both are None"
+        raise LD2ParameterError(p, e)
 
     def get_study_status(self, study_id: str | None, name: str | None) -> StudyStatus:
-        # TODO: test
         if study_id is not None:
-            for study in self.studies:
-                if study.study_id == study_id:
-                    return study.status
+            return self._get_study_status_by_id(study_id)
+
         if name is not None:
-            for study in self.studies:
-                if study.name == name:
-                    return study.status
+            return self._get_study_status_by_name(name)
+
+        p = "study_id, name"
+        e = "Both are None"
+        raise LD2ParameterError(p, e)
+
+    def _get_study_status_by_id(self, study_id: str) -> StudyStatus:
+        for study in self.studies:
+            if study.study_id == study_id:
+                return study.status
+        for storage in self.storages:
+            if storage.study_id == study_id:
+                return StudyStatus.done
+        return StudyStatus.not_found
+
+    def _get_study_status_by_name(self, name: str) -> StudyStatus:
+        for study in self.studies:
+            if study.name == name:
+                return study.status
+        for storage in self.storages:
+            if storage.name == name:
+                return StudyStatus.done
         return StudyStatus.not_found
 
     def to_model(self) -> CurriculumModel:

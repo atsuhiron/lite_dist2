@@ -11,6 +11,7 @@ from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
 from lite_dist2.curriculum_models.study_portables import StudyStorage
 from lite_dist2.curriculum_models.trial import Mapping, TrialModel, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
+from lite_dist2.expections import LD2ParameterError
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import BaseSuggestStrategy, SequentialSuggestStrategy, SuggestStrategyModel
@@ -303,3 +304,239 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
 
     study = curriculum.get_available_study(retaining_capacity)
     assert (study.study_id if study is not None else None) == expected_study_id
+
+
+@pytest.mark.parametrize(
+    ("study_id", "name", "expected_id", "expected_storages"),
+    [
+        pytest.param(
+            "xxx",
+            "xxx",
+            None,
+            [
+                StudyStorage(
+                    study_id="s01",
+                    name="n01",
+                    required_capacity=set(),
+                    registered_timestamp=DT,
+                    study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                    suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                    parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                    done_timestamp=DT,
+                    result_type="scaler",
+                    result_value_type="int",
+                    result=[],
+                    done_grids=4,
+                ),
+                StudyStorage(
+                    study_id="s02",
+                    name="n02",
+                    required_capacity=set(),
+                    registered_timestamp=DT,
+                    study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                    suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                    parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                    done_timestamp=DT,
+                    result_type="scaler",
+                    result_value_type="int",
+                    result=[],
+                    done_grids=4,
+                ),
+            ],
+            id="None",
+        ),
+        pytest.param(
+            "s01",
+            None,
+            "s01",
+            [
+                StudyStorage(
+                    study_id="s02",
+                    name="n02",
+                    required_capacity=set(),
+                    registered_timestamp=DT,
+                    study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                    suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                    parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                    done_timestamp=DT,
+                    result_type="scaler",
+                    result_value_type="int",
+                    result=[],
+                    done_grids=4,
+                ),
+            ],
+            id="id pickup",
+        ),
+        pytest.param(
+            None,
+            "n02",
+            "s02",
+            [
+                StudyStorage(
+                    study_id="s01",
+                    name="n01",
+                    required_capacity=set(),
+                    registered_timestamp=DT,
+                    study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                    suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                    parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                    done_timestamp=DT,
+                    result_type="scaler",
+                    result_value_type="int",
+                    result=[],
+                    done_grids=4,
+                ),
+            ],
+            id="name pickup",
+        ),
+        pytest.param(
+            "s01",
+            "n02",
+            "s01",
+            [
+                StudyStorage(
+                    study_id="s02",
+                    name="n02",
+                    required_capacity=set(),
+                    registered_timestamp=DT,
+                    study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                    suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                    parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                    done_timestamp=DT,
+                    result_type="scaler",
+                    result_value_type="int",
+                    result=[],
+                    done_grids=4,
+                ),
+            ],
+            id="prior id",
+        ),
+    ],
+)
+def test_curriculum_pop_storage(
+    study_id: str | None,
+    name: str | None,
+    expected_id: str | None,
+    expected_storages: list[StudyStorage],
+) -> StudyStorage | None:
+    curr = Curriculum(
+        studies=[],
+        storages=[
+            StudyStorage(
+                study_id="s01",
+                name="n01",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scaler",
+                result_value_type="int",
+                result=[],
+                done_grids=4,
+            ),
+            StudyStorage(
+                study_id="s02",
+                name="n02",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scaler",
+                result_value_type="int",
+                result=[],
+                done_grids=4,
+            ),
+        ],
+    )
+
+    popped = curr.pop_storage(study_id, name)
+    if expected_id is None:
+        assert popped is None
+    else:
+        assert popped.study_id == expected_id
+    assert curr.storages == expected_storages
+
+
+def test_curriculum_pop_storage_raises() -> None:
+    curr = Curriculum(studies=[], storages=[])
+    with pytest.raises(LD2ParameterError):
+        _ = curr.pop_storage(None, None)
+
+
+@pytest.mark.parametrize(
+    ("study_id", "name", "expected"),
+    [
+        pytest.param("xxx", "xxx", StudyStatus.not_found, id="not_found"),
+        pytest.param("s01", None, StudyStatus.done, id="done (storage) by id"),
+        pytest.param(None, "n01", StudyStatus.done, id="done (storage) by name"),
+        pytest.param("s04", None, StudyStatus.done, id="done (study) by id"),
+        pytest.param(None, "n02", StudyStatus.running, id="running by name"),
+        pytest.param("s03", None, StudyStatus.wait, id="wait by id"),
+        pytest.param("s03", "n02", StudyStatus.wait, id="prior id"),
+    ],
+)
+def test_curriculum_get_study_status(study_id: str | None, name: str | None, expected: StudyStatus) -> None:
+    _study_param = {
+        "required_capacity": {"hash"},
+        "registered_timestamp": DT,
+        "study_strategy": AllCalculationStudyStrategy(None),
+        "suggest_strategy": SequentialSuggestStrategy(
+            SuggestStrategyParam(strict_aligned=True),
+            _DUMMY_PARAMETER_SPACE,
+        ),
+        "parameter_space": _DUMMY_PARAMETER_SPACE,
+        "result_type": "scalar",
+        "result_value_type": "int",
+        "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+    }
+    curr = Curriculum(
+        studies=[
+            Study(
+                study_id="s02",
+                name="n02",
+                status=StudyStatus.running,
+                **_study_param,
+            ),
+            Study(
+                study_id="s03",
+                name="n03",
+                status=StudyStatus.wait,
+                **_study_param,
+            ),
+            Study(
+                study_id="s04",
+                name="n04",
+                status=StudyStatus.done,
+                **_study_param,
+            ),
+        ],
+        storages=[
+            StudyStorage(
+                study_id="s01",
+                name="n01",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scaler",
+                result_value_type="int",
+                result=[],
+                done_grids=4,
+            ),
+        ],
+    )
+
+    actual = curr.get_study_status(study_id, name)
+    assert actual == expected
+
+
+def test_curriculum_get_study_status_raises() -> None:
+    curr = Curriculum(studies=[], storages=[])
+    with pytest.raises(LD2ParameterError):
+        _ = curr.get_study_status(None, None)
