@@ -12,12 +12,18 @@ from lite_dist2.curriculum_models.study import Study, StudyStatus
 from lite_dist2.response_models import CurriculumSummaryResponse, OkResponse, StudyRegisteredResponse, StudyResponse
 
 if TYPE_CHECKING:
+    from pydantic import BaseModel
+
     from lite_dist2.curriculum_models.study_portables import StudyRegistry
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+
+def _response(model: BaseModel, status_code: int) -> JSONResponse:
+    return JSONResponse(content=model.model_dump(mode="json"), status_code=status_code)
 
 
 @app.get("/ping")
@@ -28,10 +34,7 @@ def handle_ping() -> OkResponse:
 @app.get("/status", response_model=CurriculumSummaryResponse)
 def handle_status() -> CurriculumSummaryResponse | JSONResponse:
     curr = CurriculumProvider.get()
-    return JSONResponse(
-        content=CurriculumSummaryResponse(summaries=curr.to_summaries()).model_dump(mode="json"),
-        status_code=200,
-    )
+    return _response(CurriculumSummaryResponse(summaries=curr.to_summaries()), 200)
 
 
 @app.post("/study/register", response_model=StudyRegisteredResponse)
@@ -41,10 +44,7 @@ def handle_study_register(
     curr = CurriculumProvider.get()
     new_study = Study.from_model(study_registry.to_study_model())
     curr.insert_study(new_study)
-    return JSONResponse(
-        content=StudyRegisteredResponse(study_id=new_study.study_id).model_dump(mode="json"),
-        status_code=200,
-    )
+    return _response(StudyRegisteredResponse(study_id=new_study.study_id), 200)
 
 
 @app.post("/trial/reserve")
@@ -70,13 +70,10 @@ def handle_study(
     curr = CurriculumProvider.get()
     storage = curr.pop_storage(study_id, name)
     if storage is not None:
-        return JSONResponse(
-            content=StudyResponse(status=StudyStatus.done, result=storage),
-            status_code=200,
-        )
+        return _response(StudyResponse(status=StudyStatus.done, result=storage), 200)
 
     study_status = curr.get_study_status(study_id, name)
     resp = StudyResponse(status=study_status, result=None)
     if study_status == StudyStatus.not_found:
         return HTTPException(status_code=404, detail="Study not found")
-    return JSONResponse(content=resp, status_code=202)
+    return _response(resp, 202)
