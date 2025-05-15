@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING
 import pytest
 
 from lite_dist2.curriculum_models.curriculum import Curriculum, CurriculumModel
-from lite_dist2.curriculum_models.study import Study, StudyModel, StudyStatus
-from lite_dist2.curriculum_models.study_portables import StudyStorage
+from lite_dist2.curriculum_models.study import Study
+from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage
+from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Mapping, TrialModel, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.expections import LD2ParameterError

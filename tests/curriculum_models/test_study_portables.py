@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from lite_dist2.curriculum_models.study import StudyModel, StudyStatus
-from lite_dist2.curriculum_models.study_portables import StudyRegistry, StudyStorage, StudySummary
+from lite_dist2.curriculum_models.study_portables import StudyModel, StudyRegistry, StudyStorage, StudySummary
+from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Mapping
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam

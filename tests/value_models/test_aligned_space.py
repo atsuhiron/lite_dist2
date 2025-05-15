@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
-from lite_dist2.value_models.aligned_space import FlattenSegment, ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.line_segment import LineSegment, LineSegmentModel, ParameterRangeBool, ParameterRangeInt
 
 if TYPE_CHECKING:

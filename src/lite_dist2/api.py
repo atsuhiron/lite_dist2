@@ -8,7 +8,8 @@ from fastapi.params import Query
 from fastapi.responses import JSONResponse
 
 from lite_dist2.curriculum_models.curriculum import CurriculumProvider
-from lite_dist2.curriculum_models.study import Study, StudyStatus
+from lite_dist2.curriculum_models.study import Study
+from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.response_models import CurriculumSummaryResponse, OkResponse, StudyRegisteredResponse, StudyResponse
 
 if TYPE_CHECKING:

@@ -7,7 +7,8 @@ from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from lite_dist2.curriculum_models.trial_table import TrialTable
-    from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterSpace
+    from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
+    from lite_dist2.value_models.base_space import ParameterSpace
 
 
 class SuggestStrategyParam(BaseModel):
