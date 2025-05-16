@@ -23,6 +23,9 @@ ignore = [
 ]
 
 [lint.flake8-type-checking]
+exempt-modules = [
+    "lite_dist2.table_param.BaseParam"
+]
 runtime-evaluated-base-classes = [
     "pydantic.BaseModel",
     "lite_dist2.study.StudyModel",  # uses at test

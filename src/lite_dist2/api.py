@@ -3,14 +3,20 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Annotated
 
-from fastapi import Body, FastAPI, HTTPException
-from fastapi.params import Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_status import StudyStatus
-from lite_dist2.response_models import CurriculumSummaryResponse, OkResponse, StudyRegisteredResponse, StudyResponse
+from lite_dist2.table_param import TrialReserveParam
+from lite_dist2.table_response import (
+    CurriculumSummaryResponse,
+    OkResponse,
+    StudyRegisteredResponse,
+    StudyResponse,
+    TrialReserveResponse,
+)
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -40,7 +46,7 @@ def handle_status() -> CurriculumSummaryResponse | JSONResponse:
 
 @app.post("/study/register", response_model=StudyRegisteredResponse)
 def handle_study_register(
-    study_registry: Annotated[StudyRegistry, Body(description="Registry of processing study")] = ...,
+    study_registry: Annotated[StudyRegistry, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse | JSONResponse:
     curr = CurriculumProvider.get()
     new_study = Study.from_model(study_registry.to_study_model())
@@ -48,9 +54,19 @@ def handle_study_register(
     return _response(StudyRegisteredResponse(study_id=new_study.study_id), 200)
 
 
-@app.post("/trial/reserve")
-def handle_trial_reserve() -> None:
-    pass
+@app.post("/trial/reserve", response_model=TrialReserveResponse)
+def handle_trial_reserve(
+    param: Annotated[TrialReserveParam, Body(description="Reserved trial parameter")],
+) -> TrialReserveResponse | JSONResponse:
+    curr = CurriculumProvider.get()
+    study = curr.get_available_study(param.retaining_capacity)
+    if study is None:
+        return _response(TrialReserveResponse(trial=None), 202)
+
+    trial = study.suggest_next_trial(param.max_size)
+    if trial is None:
+        return _response(TrialReserveResponse(trial=None), 202)
+    return _response(TrialReserveResponse(trial=trial.to_model()), 200)
 
 
 @app.post("/trial/register")
