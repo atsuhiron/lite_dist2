@@ -2,17 +2,21 @@ from __future__ import annotations
 
 import json
 import logging
-import pathlib
 import threading
 import time
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.common import CURRICULUM_PATH
+from lite_dist2.config import ConfigProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage, StudySummary
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.expections import LD2ParameterError
+
+if TYPE_CHECKING:
+    import pathlib
+
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +136,7 @@ class Curriculum:
     def save(self, curr_json_path: pathlib.Path | None = None) -> None:
         save_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = self.get_default_curriculum_path()
+            curr_json_path = ConfigProvider.table().curriculum_path
 
         model = self.to_model()
         with curr_json_path.open("w", encoding="utf-8") as f:
@@ -144,7 +148,7 @@ class Curriculum:
     def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
         load_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = Curriculum.get_default_curriculum_path()
+            curr_json_path = ConfigProvider.table().curriculum_path
 
         if curr_json_path.exists():
             with curr_json_path.open("r", encoding="utf-8") as f:
@@ -154,10 +158,6 @@ class Curriculum:
         load_end_time = time.perf_counter()
         logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) / 1000)
         return Curriculum([], [])
-
-    @staticmethod
-    def get_default_curriculum_path() -> pathlib.Path:
-        return pathlib.Path(__file__).parent.parent.parent / CURRICULUM_PATH
 
 
 class CurriculumProvider:

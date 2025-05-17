@@ -5,8 +5,6 @@ from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
 JST = timezone(timedelta(hours=+9), "JST")
-DEFAULT_TIMEOUT_MINUTE = 10
-CURRICULUM_PATH = "curriculum.json"
 
 
 def hex2int(hex_str: str) -> int:
