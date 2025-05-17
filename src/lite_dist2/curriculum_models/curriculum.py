@@ -132,7 +132,7 @@ class Curriculum:
     def save(self, curr_json_path: pathlib.Path | None = None) -> None:
         save_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = pathlib.Path(__file__).parent.parent.parent / CURRICULUM_PATH
+            curr_json_path = self.get_default_curriculum_path()
 
         model = self.to_model()
         with curr_json_path.open("w", encoding="utf-8") as f:
@@ -144,7 +144,7 @@ class Curriculum:
     def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
         load_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = pathlib.Path(__file__).parent.parent.parent / CURRICULUM_PATH
+            curr_json_path = Curriculum.get_default_curriculum_path()
 
         if curr_json_path.exists():
             with curr_json_path.open("r", encoding="utf-8") as f:
@@ -155,9 +155,13 @@ class Curriculum:
         logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) / 1000)
         return Curriculum([], [])
 
+    @staticmethod
+    def get_default_curriculum_path() -> pathlib.Path:
+        return pathlib.Path(__file__).parent.parent.parent / CURRICULUM_PATH
+
 
 class CurriculumProvider:
-    _CURR = None
+    _CURR: Curriculum | None = None
 
     @classmethod
     def get(cls) -> Curriculum:
@@ -165,3 +169,9 @@ class CurriculumProvider:
             return cls._CURR
         cls._CURR = Curriculum.load_or_create()
         return cls._CURR
+
+    @classmethod
+    async def save_async(cls) -> None:
+        if cls._CURR is None:
+            return
+        cls._CURR.save()
