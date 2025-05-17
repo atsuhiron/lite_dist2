@@ -27,6 +27,15 @@ class TableConfig(BaseModel):
 
 
 class WorkerConfig(BaseModel):
+    process_num: int | None = Field(
+        default=None,
+        description="The number of processes on using `AutoMPTrialRunner`. If `None`, run trial at single thread.",
+    )
+    disable_function_progress_bar: bool = Field(
+        default=False,
+        description="Whether to disable progress bar.",
+    )
+
     @staticmethod
     def load_from_file() -> WorkerConfig:
         path = Path(__file__).parent.parent.parent / "worker_config.json"
