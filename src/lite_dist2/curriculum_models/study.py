@@ -51,19 +51,17 @@ class Study:
         self._table_lock = threading.Lock()
 
     def update_status(self) -> None:
-        if self.trial_table.is_empty():
-            self.status = StudyStatus.wait
-            return
         if self.is_done():
             self.status = StudyStatus.done
             return
-        self.status = StudyStatus.running
 
     def is_done(self) -> bool:
         return self.study_strategy.is_done(self.trial_table, self.parameter_space)
 
     def suggest_next_trial(self, num: int | None) -> Trial | None:
         with self._table_lock:
+            self.status = StudyStatus.running
+
             parameter_sub_space = self.suggest_strategy.suggest(self.trial_table, num)
             if parameter_sub_space is None:
                 return None
@@ -86,6 +84,7 @@ class Study:
 
         with self._table_lock:
             self.trial_table.receipt_trial(trial.trial_id, trial.result)
+            self.trial_table.simplify_aps()
 
     def to_storage(self) -> StudyStorage:
         return StudyStorage(
