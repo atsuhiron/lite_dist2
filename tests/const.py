@@ -1,5 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
-from lite_dist2.common import JST
-
-DT = datetime(2025, 4, 27, 20, 36, 10, 0, tzinfo=JST)
+_JST = timezone(timedelta(hours=+9), "JST")
+DT = datetime(2025, 4, 27, 20, 36, 10, 0, tzinfo=_JST)

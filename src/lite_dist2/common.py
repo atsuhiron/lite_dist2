@@ -4,8 +4,6 @@ from typing import Literal
 from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
-JST = timezone(timedelta(hours=+9), "JST")
-
 
 def hex2int(hex_str: str) -> int:
     return int(hex_str, base=16)
@@ -48,4 +46,4 @@ def portablize(type_name: Literal["bool", "int", "float"], value: PrimitiveValue
 
 
 def publish_timestamp() -> datetime:
-    return datetime.now(tz=JST)
+    return datetime.now(tz=timezone(timedelta(hours=+9), "JST"))

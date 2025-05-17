@@ -10,8 +10,8 @@ from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial
-from lite_dist2.table_param import TrialRegisterParam, TrialReserveParam
-from lite_dist2.table_response import (
+from lite_dist2.table_node_api.table_param import TrialRegisterParam, TrialReserveParam
+from lite_dist2.table_node_api.table_response import (
     CurriculumSummaryResponse,
     OkResponse,
     StudyRegisteredResponse,

@@ -24,7 +24,7 @@ ignore = [
 
 [lint.flake8-type-checking]
 exempt-modules = [
-    "lite_dist2.table_param"
+    "lite_dist2.table_node_api.table_param"
 ]
 runtime-evaluated-base-classes = [
     "pydantic.BaseModel",
