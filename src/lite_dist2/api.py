@@ -9,7 +9,8 @@ from fastapi.responses import JSONResponse
 from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_status import StudyStatus
-from lite_dist2.table_param import TrialReserveParam
+from lite_dist2.curriculum_models.trial import Trial
+from lite_dist2.table_param import TrialRegisterParam, TrialReserveParam
 from lite_dist2.table_response import (
     CurriculumSummaryResponse,
     OkResponse,
@@ -69,9 +70,18 @@ def handle_trial_reserve(
     return _response(TrialReserveResponse(trial=trial.to_model()), 200)
 
 
-@app.post("/trial/register")
-def handle_trial_register() -> OkResponse:
-    pass
+@app.post("/trial/register", response_model=OkResponse)
+def handle_trial_register(
+    param: Annotated[TrialRegisterParam, Body(description="Registering trial")],
+) -> OkResponse | JSONResponse | HTTPException:
+    curr = CurriculumProvider.get()
+    trial = param.trial
+    study = curr.find_study_by_id(trial.study_id)
+    if study is None:
+        return HTTPException(status_code=404, detail=f"Study not found: study_id={trial.study_id}")
+
+    study.receipt_trial(Trial.from_model(trial))
+    return _response(OkResponse(ok=True), 200)
 
 
 @app.get("/study", response_model=StudyResponse)

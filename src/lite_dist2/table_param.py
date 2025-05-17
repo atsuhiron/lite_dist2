@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from lite_dist2.curriculum_models.trial import TrialModel
+
 
 class BaseParam(BaseModel):
     pass
@@ -15,4 +17,11 @@ class TrialReserveParam(BaseParam):
     max_size: int = Field(
         ...,
         description="The maximum size of parameter space reserving.",
+    )
+
+
+class TrialRegisterParam(BaseModel):
+    trial: TrialModel = Field(
+        ...,
+        description="Registering trial to the worker node.",
     )

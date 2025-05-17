@@ -29,12 +29,20 @@ class Curriculum:
         self._lock = threading.Lock()
 
     def get_available_study(self, retaining_capacity: set[str]) -> Study | None:
-        for study in self.studies:
-            if study.status == StudyStatus.running and study.required_capacity.issubset(retaining_capacity):
-                return study
-        for study in self.studies:
-            if study.status == StudyStatus.wait and study.required_capacity.issubset(retaining_capacity):
-                return study
+        with self._lock:
+            for study in self.studies:
+                if study.status == StudyStatus.running and study.required_capacity.issubset(retaining_capacity):
+                    return study
+            for study in self.studies:
+                if study.status == StudyStatus.wait and study.required_capacity.issubset(retaining_capacity):
+                    return study
+        return None
+
+    def find_study_by_id(self, study_id: str) -> Study | None:
+        with self._lock:
+            for study in self.studies:
+                if study.study_id == study_id:
+                    return study
         return None
 
     def insert_study(self, study: Study) -> None:
