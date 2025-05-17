@@ -181,25 +181,11 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         return all(s.derived_by_same_ambient_space_with(o) for s, o in zip(self.axes, other.axes, strict=True))
 
     def get_start_index(self, *args: object) -> int:
-        if len(args) < 1:
-            name = "target_dim"
-            raise LD2ParameterError(name, "missing")
-
-        target_dim = args[0]
-        if not isinstance(target_dim, int):
-            name = "target_dim"
-            raise LD2TypeError(name, int, type(args[0]))
+        target_dim = self._check_arg(*args)
         return self.axes[target_dim].get_start_index()
 
     def can_merge(self, other: ParameterAlignedSpace, *args: object) -> bool:
-        if len(args) < 1:
-            name = "target_dim"
-            raise LD2ParameterError(name, "missing")
-
-        target_dim = args[0]
-        if not isinstance(target_dim, int):
-            name = "target_dim"
-            raise LD2TypeError(name, int, type(args[0]))
+        target_dim = self._check_arg(*args)
 
         if not self.derived_by_same_ambient_space_with(other):
             # 同じ母空間から誘導されたものでなければ False
@@ -226,14 +212,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         return self_axis.can_merge(other_axis)
 
     def merge(self, other: ParameterAlignedSpace, *args: object) -> ParameterAlignedSpace:
-        if len(args) < 1:
-            name = "target_dim"
-            raise LD2ParameterError(name, "missing")
-
-        target_dim = args[0]
-        if not isinstance(target_dim, int):
-            name = "target_dim"
-            raise LD2TypeError(name, int, type(args[0]))
+        target_dim = self._check_arg(*args)
 
         axes = []
         for d in range(self.dim):
@@ -267,6 +246,18 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
             loomed_indices.append(residual_flatten_index // size)
             residual_flatten_index = residual_flatten_index % size
         return tuple(loomed_indices)
+
+    @staticmethod
+    def _check_arg(*args: object) -> int:
+        if len(args) < 1:
+            name = "target_dim"
+            raise LD2ParameterError(name, "missing")
+
+        target_dim = args[0]
+        if not isinstance(target_dim, int):
+            name = "target_dim"
+            raise LD2TypeError(name, int, type(args[0]))
+        return target_dim
 
     @staticmethod
     def from_model(space_model: ParameterAlignedSpaceModel) -> ParameterAlignedSpace:
