@@ -7,11 +7,15 @@ from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import TrialModel
 
 
-class OkResponse(BaseModel):
+class BaseTableResponse(BaseModel):
+    pass
+
+
+class OkResponse(BaseTableResponse):
     ok: bool = Field(...)
 
 
-class TrialReserveResponse(BaseModel):
+class TrialReserveResponse(BaseTableResponse):
     trial: TrialModel | None = Field(
         ...,
         description=(
@@ -21,14 +25,14 @@ class TrialReserveResponse(BaseModel):
     )
 
 
-class StudyRegisteredResponse(BaseModel):
+class StudyRegisteredResponse(BaseTableResponse):
     study_id: str = Field(
         ...,
         description="Published `study_id` of registered study.",
     )
 
 
-class StudyResponse(BaseModel):
+class StudyResponse(BaseTableResponse):
     status: StudyStatus = Field(
         ...,
         description="Status of the target Study.",
@@ -39,7 +43,7 @@ class StudyResponse(BaseModel):
     )
 
 
-class CurriculumSummaryResponse(BaseModel):
+class CurriculumSummaryResponse(BaseTableResponse):
     summaries: list[StudySummary] = Field(
         ...,
         description="The list of study (containing storage) summary.",

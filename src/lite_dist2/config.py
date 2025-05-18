@@ -10,6 +10,7 @@ class TableConfig(BaseModel):
     default_timeout_minutes: int = Field(
         default=10,
         description="Timeout minutes before a trial is reserved and registered",
+        ge=1,
     )
     curriculum_path: Path = Field(
         default=Path(__file__).parent.parent.parent / "curriculum.json",
@@ -34,6 +35,20 @@ class WorkerConfig(BaseModel):
     disable_function_progress_bar: bool = Field(
         default=False,
         description="Whether to disable progress bar.",
+    )
+    retaining_capacity: set[str] = Field(
+        default_factory=set,
+        description="Set of capabilities that the worker node has.",
+    )
+    wait_minutes_on_no_trial: int = Field(
+        default=5,
+        description="Waiting time when there was no trial allocated by the table node.",
+        ge=1,
+    )
+    table_node_request_timeout_seconds: int = Field(
+        default=30,
+        description="Timeout seconds before a table node request times out.",
+        ge=1,
     )
 
     @staticmethod

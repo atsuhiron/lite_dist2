@@ -25,3 +25,11 @@ class LD2InvalidSpaceError(LD2Error):
 class LD2TypeError(LD2Error):
     def __init__(self, name: str, available_types: type | tuple[type], actual: type) -> None:
         super().__init__(f"Invalid type: {name=}, {available_types=}, {actual=}")
+
+
+class LD2TableNodeServerError(LD2Error):
+    pass
+
+
+class LD2TableNodeClientError(LD2Error):
+    pass
