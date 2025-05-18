@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.config import TableConfigProvider
 from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
@@ -13,21 +12,20 @@ from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from lite_dist2.value_models.point import ResultType
 
 
 class TrialTableModel(BaseModel):
     trials: list[TrialModel]
     aggregated_parameter_space: dict[int, list[ParameterAlignedSpaceModel]] | None
-    timeout_seconds: int
 
     @staticmethod
     def create_empty() -> TrialTableModel:
-        table_config = TableConfigProvider.table()
         return TrialTableModel(
             trials=[],
             aggregated_parameter_space=None,
-            timeout_seconds=table_config.default_timeout_seconds,
         )
 
 
@@ -36,11 +34,9 @@ class TrialTable:
         self,
         trials: list[Trial],
         aggregated_parameter_space: dict[int, list[ParameterAlignedSpace]] | None,
-        timeout_seconds: int,
     ) -> None:
         self.trials = trials
         self.aggregated_parameter_space = aggregated_parameter_space
-        self.timeout_seconds = timeout_seconds
 
     def is_not_defined_aps(self) -> bool:
         return self.aggregated_parameter_space is None
@@ -136,6 +132,22 @@ class TrialTable:
                 return finding
         return None
 
+    def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:
+        new_trials = []
+        outdated_ids = []
+        for trial in self.trials:
+            if trial.trial_status != TrialStatus.running:
+                new_trials.append(trial)
+                continue
+            delta_sec = trial.measure_seconds_from_registered(now)
+            if delta_sec < timeout_seconds:
+                # まだ期限内
+                new_trials.append(trial)
+            else:
+                outdated_ids.append(trial.trial_id)
+        self.trials = new_trials
+        return outdated_ids
+
     def to_model(self) -> TrialTableModel:
         if self.aggregated_parameter_space is None:
             aps = None
@@ -144,7 +156,6 @@ class TrialTable:
         return TrialTableModel(
             trials=[trial.to_model() for trial in self.trials],
             aggregated_parameter_space=aps,
-            timeout_seconds=self.timeout_seconds,
         )
 
     @staticmethod
@@ -159,5 +170,4 @@ class TrialTable:
         return TrialTable(
             trials=[Trial.from_model(trial) for trial in model.trials],
             aggregated_parameter_space=aps,
-            timeout_seconds=model.timeout_seconds,
         )

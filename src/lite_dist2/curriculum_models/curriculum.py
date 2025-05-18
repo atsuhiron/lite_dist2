@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
+from lite_dist2.common import publish_timestamp
 from lite_dist2.config import TableConfigProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage, StudySummary
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     import pathlib
 
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -117,6 +119,16 @@ class Curriculum:
                 return StudyStatus.done
         return StudyStatus.not_found
 
+    def check_timeout_trial(self) -> None:
+        removed_ids = []
+        timeout_seconds = TableConfigProvider.table().default_timeout_seconds
+        for study in self.studies:
+            removed_ids.extend(study.check_timeout_trial(publish_timestamp(), timeout_seconds))
+        if len(removed_ids) > 0:
+            logger.info("Outdated trials: %s", ", ".join(removed_ids))
+        else:
+            logger.info("No trials are outdated")
+
     def to_model(self) -> CurriculumModel:
         return CurriculumModel(
             studies=[study.to_model() for study in self.studies],
@@ -175,3 +187,9 @@ class CurriculumProvider:
         if cls._CURR is None:
             return
         cls._CURR.save()
+
+    @classmethod
+    async def check_timeout(cls) -> None:
+        if cls._CURR is None:
+            return
+        cls._CURR.check_timeout_trial()

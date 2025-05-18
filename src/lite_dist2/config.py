@@ -12,13 +12,18 @@ class TableConfig(BaseModel):
         description="Timeout seconds before a trial is reserved and registered",
         ge=1,
     )
+    timeout_check_interval_seconds: int = Field(
+        default=60,
+        description="Interval of time to check timeout trials",
+        ge=1,
+    )
     curriculum_path: Path = Field(
         default=Path(__file__).parent.parent.parent / "curriculum.json",
         description="Path to the curriculum json file",
     )
-    curriculum_save_period_seconds: int = Field(
+    curriculum_save_interval_seconds: int = Field(
         default=600,
-        description="Period time to save curriculum json file",
+        description="Interval of time to save curriculum json file",
         ge=1,
     )
 

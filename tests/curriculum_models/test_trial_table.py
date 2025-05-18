@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 
 from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
@@ -10,6 +12,14 @@ from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentMo
 from lite_dist2.value_models.point import ScalerValue
 from tests.const import DT
 
+_DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
+    axes=[
+        ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+        ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+    ],
+    check_lower_filling=True,
+)
+
 
 @pytest.mark.parametrize(
     ("table", "total_num", "expected"),
@@ -18,7 +28,6 @@ from tests.const import DT
             TrialTable(
                 trials=[],  # ここでは使わないので空
                 aggregated_parameter_space=None,
-                timeout_seconds=1,
             ),
             100,
             FlattenSegment(0, None),
@@ -28,7 +37,6 @@ from tests.const import DT
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
-                timeout_seconds=1,
             ),
             100,
             FlattenSegment(0, None),
@@ -55,7 +63,6 @@ from tests.const import DT
                     ],
                     0: [],
                 },
-                timeout_seconds=1,
             ),
             10,
             FlattenSegment(10, 0),
@@ -82,7 +89,6 @@ from tests.const import DT
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             None,
             FlattenSegment(10, None),
@@ -122,7 +128,6 @@ from tests.const import DT
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             10,
             FlattenSegment(10, 40),
@@ -162,7 +167,6 @@ from tests.const import DT
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             None,
             FlattenSegment(10, 40),
@@ -200,7 +204,6 @@ from tests.const import DT
                     0: [],
                     1: [],
                 },
-                timeout_seconds=1,
             ),
             100,
             FlattenSegment(100, 0),
@@ -262,7 +265,6 @@ from tests.const import DT
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             100,
             FlattenSegment(5, 5),
@@ -528,7 +530,6 @@ from tests.const import DT
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             100,
             FlattenSegment(20, None),
@@ -793,7 +794,6 @@ from tests.const import DT
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             100,
             FlattenSegment(20, None),
@@ -817,7 +817,6 @@ def test_trial_table_find_least_division(
             TrialTable(
                 trials=[],  # ここでは使わないので空
                 aggregated_parameter_space=None,
-                timeout_seconds=1,
             ),
             0,
             id="Empty_aps=None",
@@ -826,7 +825,6 @@ def test_trial_table_find_least_division(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
-                timeout_seconds=1,
             ),
             0,
             id="Empty",
@@ -852,7 +850,6 @@ def test_trial_table_find_least_division(
                     ],
                     0: [],
                 },
-                timeout_seconds=1,
             ),
             10,
             id="Universal 1D",
@@ -878,7 +875,6 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             10,
             id="Infinite 1D",
@@ -917,7 +913,6 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             20,
             id="Segmented 1D",
@@ -956,7 +951,6 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             20,
             id="Infinite segmented 1D",
@@ -993,7 +987,6 @@ def test_trial_table_find_least_division(
                     0: [],
                     1: [],
                 },
-                timeout_seconds=1,
             ),
             100,
             id="Universal 2D",
@@ -1054,7 +1047,6 @@ def test_trial_table_find_least_division(
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             15,
             id="Segmented 2D",
@@ -1075,7 +1067,6 @@ def test_trial_table_count_grid(
         TrialTableModel(
             trials=[],
             aggregated_parameter_space=None,
-            timeout_seconds=1,
         ),
         TrialTableModel(
             trials=[
@@ -1103,7 +1094,6 @@ def test_trial_table_count_grid(
                 ),
             ],
             aggregated_parameter_space=None,
-            timeout_seconds=1,
         ),
         TrialTableModel(
             trials=[
@@ -1149,7 +1139,6 @@ def test_trial_table_count_grid(
                 ),
             ],
             aggregated_parameter_space=None,
-            timeout_seconds=1,
         ),
     ],
 )
@@ -1350,7 +1339,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             "t02",
             None,
@@ -1541,7 +1529,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             id="Do nothing: None result",
         ),
@@ -1733,7 +1720,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             "t02",
             [
@@ -1991,7 +1977,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             id="aligned normal",
         ),
@@ -2144,7 +2129,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             "t02",
             [
@@ -2363,7 +2347,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             id="jagged normal",
         ),
@@ -2424,7 +2407,6 @@ def test_trial_table_receipt_trial_raise_override_done_trial() -> None:
                 ),
             ],
         },
-        timeout_seconds=1,
     )
 
     result = [
@@ -2450,7 +2432,6 @@ def test_trial_table_receipt_trial_raise_not_found_trial() -> None:
             0: [],
             1: [],
         },
-        timeout_seconds=1,
     )
 
     result = [
@@ -2465,3 +2446,85 @@ def test_trial_table_receipt_trial_raise_not_found_trial() -> None:
 
     with pytest.raises(LD2ParameterError, match=r"Not\sfound\strial\sthat\sid"):
         trial_table.receipt_trial("t01", result)
+
+
+def test_trial_table_heck_timeout_trial() -> None:
+    common_param = {
+        "study_id": "s01",
+        "parameter_space": _DUMMY_PARAMETER_SPACE,
+        "result_type": "scaler",
+        "result_value_type": "int",
+        "result": [],
+    }
+
+    now = DT
+    trial_table = TrialTable(
+        trials=[
+            Trial(
+                trial_id="running_but_created_now",
+                timestamp=now,
+                trial_status=TrialStatus.running,
+                **common_param,
+            ),
+            Trial(
+                trial_id="running_little_past",
+                timestamp=now - timedelta(seconds=30),
+                trial_status=TrialStatus.running,
+                **common_param,
+            ),
+            Trial(
+                trial_id="running_very_past",
+                timestamp=now - timedelta(seconds=3000),
+                trial_status=TrialStatus.running,
+                **common_param,
+            ),
+            Trial(
+                trial_id="done_little_past",
+                timestamp=now - timedelta(seconds=40),
+                trial_status=TrialStatus.done,
+                **common_param,
+            ),
+            Trial(
+                trial_id="done_very_past",
+                timestamp=now - timedelta(seconds=3000),
+                trial_status=TrialStatus.done,
+                **common_param,
+            ),
+        ],
+        aggregated_parameter_space={},
+    )
+
+    expected_trial_table = TrialTable(
+        trials=[
+            Trial(
+                trial_id="running_but_created_now",
+                timestamp=now,
+                trial_status=TrialStatus.running,
+                **common_param,
+            ),
+            Trial(
+                trial_id="running_little_past",
+                timestamp=now - timedelta(seconds=30),
+                trial_status=TrialStatus.running,
+                **common_param,
+            ),
+            Trial(
+                trial_id="done_little_past",
+                timestamp=now - timedelta(seconds=40),
+                trial_status=TrialStatus.done,
+                **common_param,
+            ),
+            Trial(
+                trial_id="done_very_past",
+                timestamp=now - timedelta(seconds=3000),
+                trial_status=TrialStatus.done,
+                **common_param,
+            ),
+        ],
+        aggregated_parameter_space={},
+    )
+    expected_ids = ["running_very_past"]
+
+    actual_ids = trial_table.check_timeout_trial(now, timeout_seconds=300)
+    assert actual_ids == expected_ids
+    assert trial_table.to_model() == expected_trial_table.to_model()

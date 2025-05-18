@@ -19,22 +19,40 @@ def _get_local_ip() -> str:
         return s.getsockname()[0]
 
 
-async def periodic_save() -> None:
-    period = TableConfigProvider.table().curriculum_save_period_seconds
+async def _periodic_save() -> None:
+    interval = TableConfigProvider.table().curriculum_save_interval_seconds
     while True:
-        await asyncio.sleep(period)
+        await asyncio.sleep(interval)
         logger.info("Performing periodic save of curriculum data")
         await CurriculumProvider.save_async()
 
 
-def run_periodic_save() -> None:
-    asyncio.run(periodic_save())
+def _run_periodic_save() -> None:
+    asyncio.run(_periodic_save())
+
+
+async def _periodic_timeout_check() -> None:
+    interval = TableConfigProvider.table().timeout_check_interval_seconds
+    while True:
+        await asyncio.sleep(interval)
+        logger.info("Performing periodic timeout check of trials")
+        await CurriculumProvider.check_timeout()
+
+
+def _run_periodic_timeout_check() -> None:
+    asyncio.run(_periodic_timeout_check())
 
 
 async def start() -> None:
     logger.info("Table Node IP: %s", _get_local_ip())
-    save_thread = threading.Thread(target=run_periodic_save, daemon=True)
+
+    # save thread
+    save_thread = threading.Thread(target=_run_periodic_save, daemon=True)
     save_thread.start()
+
+    # timeout check thread
+    timeout_thread = threading.Thread(target=_run_periodic_timeout_check, daemon=True)
+    timeout_thread.start()
 
     uvicorn.run(app, host="0.0.0.0", port=8000)  # noqa: S104
 

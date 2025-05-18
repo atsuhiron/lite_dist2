@@ -78,7 +78,7 @@ class MockStudy(Study):
             _DUMMY_PARAMETER_SPACE,
             "scaler",
             "int",
-            TrialTable([], None, 1),
+            TrialTable([], None),
         )
         self.study_id = study_id
         self._done = done
@@ -193,7 +193,6 @@ def sample_curriculum_fixture() -> Curriculum:
                         -1: [],
                         0: [_DUMMY_PARAMETER_SPACE.to_model()],
                     },
-                    timeout_seconds=1,
                 ),
             ),
         ),

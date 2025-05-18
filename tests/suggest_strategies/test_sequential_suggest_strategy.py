@@ -437,7 +437,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
-                timeout_seconds=1,
             ),
             3,
             ParameterAlignedSpace(
@@ -514,7 +513,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             3,
             ParameterAlignedSpace(
@@ -545,7 +543,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             TrialTable(
                 trials=[],
                 aggregated_parameter_space={-1: [], 0: []},
-                timeout_seconds=1,
             ),
             3,
             ParameterAlignedSpace(
@@ -629,7 +626,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             3,
             ParameterAlignedSpace(
@@ -720,7 +716,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             4,
             ParameterJaggedSpace(
@@ -873,7 +868,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             4,
             ParameterJaggedSpace(
@@ -1052,7 +1046,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             4,
             ParameterAlignedSpace(
@@ -1158,7 +1151,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                     ],
                 },
-                timeout_seconds=1,
             ),
             4,
             ParameterJaggedSpace(
@@ -1292,7 +1284,6 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     ],
                     1: [],
                 },
-                timeout_seconds=1,
             ),
             4,
             None,

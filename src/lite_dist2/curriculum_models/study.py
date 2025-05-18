@@ -86,6 +86,9 @@ class Study:
             self.trial_table.receipt_trial(trial.trial_id, trial.result)
             self.trial_table.simplify_aps()
 
+    def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:
+        return self.trial_table.check_timeout_trial(now, timeout_seconds)
+
     def to_storage(self) -> StudyStorage:
         return StudyStorage(
             study_id=self.study_id,

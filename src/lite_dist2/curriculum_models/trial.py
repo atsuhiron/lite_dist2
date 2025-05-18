@@ -84,6 +84,10 @@ class Trial:
             case _:
                 raise LD2ModelTypeError(self.result_type)
 
+    def measure_seconds_from_registered(self, now: datetime) -> int:
+        delta = now - self.timestamp
+        return int(delta.total_seconds())
+
     def find_target_value(self, target_value: ResultType) -> Mapping | None:
         # find_exact 用
         if not self.result:
