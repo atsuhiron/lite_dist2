@@ -5,7 +5,7 @@ import threading
 
 import uvicorn
 
-from lite_dist2.config import ConfigProvider
+from lite_dist2.config import TableConfigProvider
 from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.table_node_api.api import app
 
@@ -20,7 +20,7 @@ def _get_local_ip() -> str:
 
 
 async def periodic_save() -> None:
-    period = ConfigProvider.table().curriculum_save_period_seconds
+    period = TableConfigProvider.table().curriculum_save_period_seconds
     while True:
         await asyncio.sleep(period)
         logger.info("Performing periodic save of curriculum data")

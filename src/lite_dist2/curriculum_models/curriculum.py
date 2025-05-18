@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.config import ConfigProvider
+from lite_dist2.config import TableConfigProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage, StudySummary
 from lite_dist2.curriculum_models.study_status import StudyStatus
@@ -136,7 +136,7 @@ class Curriculum:
     def save(self, curr_json_path: pathlib.Path | None = None) -> None:
         save_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = ConfigProvider.table().curriculum_path
+            curr_json_path = TableConfigProvider.table().curriculum_path
 
         model = self.to_model()
         with curr_json_path.open("w", encoding="utf-8") as f:
@@ -148,7 +148,7 @@ class Curriculum:
     def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
         load_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = ConfigProvider.table().curriculum_path
+            curr_json_path = TableConfigProvider.table().curriculum_path
 
         if curr_json_path.exists():
             with curr_json_path.open("r", encoding="utf-8") as f:

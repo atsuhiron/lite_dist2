@@ -33,6 +33,10 @@ class TableConfig(BaseModel):
 
 
 class WorkerConfig(BaseModel):
+    name: str | None = Field(
+        default=None,
+        description="Name of the worker node",
+    )
     process_num: int | None = Field(
         default=None,
         description="The number of processes on using `AutoMPTrialRunner`. If `None`, run trial at single thread.",
@@ -70,19 +74,11 @@ class WorkerConfig(BaseModel):
             return WorkerConfig.model_validate(json.load(f))
 
 
-class ConfigProvider:
+class TableConfigProvider:
     _TABLE: TableConfig | None = None
-    _WORKER: WorkerConfig | None = None
 
     @classmethod
     def table(cls) -> TableConfig:
         if cls._TABLE is None:
             cls._TABLE = TableConfig.load_from_file()
         return cls._TABLE
-
-    @classmethod
-    def worker(cls) -> WorkerConfig:
-        if cls._WORKER is None:
-            cls._WORKER = WorkerConfig.load_from_file()
-            return cls._WORKER
-        return cls._WORKER

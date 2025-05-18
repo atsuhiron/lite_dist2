@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 import requests
 
-from lite_dist2.config import ConfigProvider
 from lite_dist2.curriculum_models.trial import Trial
 from lite_dist2.expections import LD2TableNodeClientError, LD2TableNodeServerError
 from lite_dist2.table_node_api.table_param import TrialRegisterParam, TrialReserveParam
@@ -28,15 +27,14 @@ class TableNodeClient:
 
     def ping(self) -> bool:
         try:
-            _ = self._get("/ping")
+            _ = self._get("/ping", timeout=10)
         except LD2TableNodeServerError:
             return False
         return True
 
-    def reserve_trial(self, max_size: int) -> Trial | None:
-        config = ConfigProvider.worker()
-        param = TrialReserveParam(retaining_capacity=config.retaining_capacity, max_size=max_size)
-        status_code, d = self._post("/trial/reserve", param.model_dump(mode="json"))
+    def reserve_trial(self, max_size: int, retaining_capacity: set[str], timeout_seconds: int) -> Trial | None:
+        param = TrialReserveParam(retaining_capacity=retaining_capacity, max_size=max_size)
+        status_code, d = self._post("/trial/reserve", timeout_seconds, param.model_dump(mode="json"))
 
         resp = TrialReserveResponse.model_validate(d)
         if status_code == requests.codes.accepted or resp.trial is None:
@@ -47,29 +45,27 @@ class TableNodeClient:
         logger.info("Reserved trial (size=%d)", trial.parameter_space.get_total())
         return trial
 
-    def register_trial(self, trial: Trial) -> None:
+    def register_trial(self, trial: Trial, timeout_seconds: int) -> None:
         param = TrialRegisterParam(trial=trial.to_model())
-        _ = self._post("/trial/register", param.model_dump(mode="json"))
+        _ = self._post("/trial/register", timeout_seconds, param.model_dump(mode="json"))
 
-    def _get(self, path: str, query: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
+    def _get(self, path: str, timeout: int, query: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
-        config = ConfigProvider.worker()
         response = requests.get(
             url,
             headers=self.HEADERS,
             params=query,
-            timeout=config.table_node_request_timeout_seconds,
+            timeout=timeout,
         )
         return response.status_code, self._check_status_code(response)
 
-    def _post(self, path: str, body: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+    def _post(self, path: str, timeout_seconds: int, body: dict[str, Any]) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
-        config = ConfigProvider.worker()
         response = requests.post(
             url,
             headers=self.HEADERS,
             json=body,
-            timeout=config.table_node_request_timeout_seconds,
+            timeout=timeout_seconds,
         )
         return response.status_code, self._check_status_code(response)
 

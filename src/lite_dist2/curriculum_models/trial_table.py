@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.config import ConfigProvider
+from lite_dist2.config import TableConfigProvider
 from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
@@ -23,7 +23,7 @@ class TrialTableModel(BaseModel):
 
     @staticmethod
     def create_empty() -> TrialTableModel:
-        table_config = ConfigProvider.table()
+        table_config = TableConfigProvider.table()
         return TrialTableModel(
             trials=[],
             aggregated_parameter_space=None,
