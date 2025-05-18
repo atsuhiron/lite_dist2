@@ -37,6 +37,10 @@ class WorkerConfig(BaseModel):
         default=None,
         description="The number of processes on using `AutoMPTrialRunner`. If `None`, run trial at single thread.",
     )
+    max_size: int = Field(
+        default=1,
+        description="The maximum size of a trial.",
+    )
     disable_function_progress_bar: bool = Field(
         default=False,
         description="Whether to disable progress bar.",

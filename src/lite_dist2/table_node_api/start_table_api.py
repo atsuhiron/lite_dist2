@@ -9,6 +9,7 @@ from lite_dist2.config import ConfigProvider
 from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.table_node_api.api import app
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 

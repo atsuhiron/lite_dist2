@@ -85,6 +85,6 @@ class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
     def wrap_func(
         self,
         parameter_space: ParameterSpace,
-        _pool: Pool | None,
+        _: Pool | None,
     ) -> list[tuple[RawParamType, RawResultType]]:
         return self.batch_func(parameter_space.grid())
