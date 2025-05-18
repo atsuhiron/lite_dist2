@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class TrialTableModel(BaseModel):
     trials: list[TrialModel]
     aggregated_parameter_space: dict[int, list[ParameterAlignedSpaceModel]] | None
-    timeout_minutes: int
+    timeout_seconds: int
 
     @staticmethod
     def create_empty() -> TrialTableModel:
@@ -27,7 +27,7 @@ class TrialTableModel(BaseModel):
         return TrialTableModel(
             trials=[],
             aggregated_parameter_space=None,
-            timeout_minutes=table_config.default_timeout_minutes,
+            timeout_seconds=table_config.default_timeout_seconds,
         )
 
 
@@ -36,11 +36,11 @@ class TrialTable:
         self,
         trials: list[Trial],
         aggregated_parameter_space: dict[int, list[ParameterAlignedSpace]] | None,
-        timeout_minutes: int,
+        timeout_seconds: int,
     ) -> None:
         self.trials = trials
         self.aggregated_parameter_space = aggregated_parameter_space
-        self.timeout_minutes = timeout_minutes
+        self.timeout_seconds = timeout_seconds
 
     def is_not_defined_aps(self) -> bool:
         return self.aggregated_parameter_space is None
@@ -144,7 +144,7 @@ class TrialTable:
         return TrialTableModel(
             trials=[trial.to_model() for trial in self.trials],
             aggregated_parameter_space=aps,
-            timeout_minutes=self.timeout_minutes,
+            timeout_seconds=self.timeout_seconds,
         )
 
     @staticmethod
@@ -159,5 +159,5 @@ class TrialTable:
         return TrialTable(
             trials=[Trial.from_model(trial) for trial in model.trials],
             aggregated_parameter_space=aps,
-            timeout_minutes=model.timeout_minutes,
+            timeout_seconds=model.timeout_seconds,
         )

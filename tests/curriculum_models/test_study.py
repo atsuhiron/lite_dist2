@@ -178,7 +178,7 @@ from tests.const import DT
                             ),
                         ],
                     },
-                    timeout_minutes=1,
+                    timeout_seconds=1,
                 ),
             ),
             id="full_definition",
@@ -229,7 +229,7 @@ def test_study_suggest_receipt_single_thread() -> None:
         parameter_space=_parameter_space,
         result_type="scaler",
         result_value_type="float",
-        trial_table=TrialTable(trials=[], aggregated_parameter_space=None, timeout_minutes=2),
+        trial_table=TrialTable(trials=[], aggregated_parameter_space=None, timeout_seconds=2),
     )
 
     def contract_and_submit() -> None:
@@ -293,7 +293,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
         parameter_space=_parameter_space,
         result_type="scaler",
         result_value_type="float",
-        trial_table=TrialTable(trials=[], aggregated_parameter_space=None, timeout_minutes=2),
+        trial_table=TrialTable(trials=[], aggregated_parameter_space=None, timeout_seconds=2),
     )
 
     def contract_and_submit() -> None:

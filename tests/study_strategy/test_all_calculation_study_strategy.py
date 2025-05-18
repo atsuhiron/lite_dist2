@@ -32,7 +32,7 @@ _TRIAL_ARGS = {
             TrialTable(
                 trials=[],
                 aggregated_parameter_space=None,
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -57,7 +57,7 @@ _TRIAL_ARGS = {
                     -1: [],
                     0: [],
                 },
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -116,7 +116,7 @@ _TRIAL_ARGS = {
                         ),
                     ],
                 },
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -207,7 +207,7 @@ _TRIAL_ARGS = {
                         ),
                     ],
                 },
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -319,7 +319,7 @@ _TRIAL_ARGS = {
                     ],
                     1: [],
                 },
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -418,7 +418,7 @@ _TRIAL_ARGS = {
                     0: [],
                     1: [],
                 },
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             ParameterAlignedSpace(
                 axes=[
@@ -463,7 +463,7 @@ def test_all_calculation_study_strategy_is_done(
             TrialTable(
                 trials=[],
                 aggregated_parameter_space=_DUMMY_APS,
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             [],
             id="Empty",
@@ -487,7 +487,7 @@ def test_all_calculation_study_strategy_is_done(
                     ),
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             [
                 Mapping(
@@ -547,7 +547,7 @@ def test_all_calculation_study_strategy_is_done(
                     ),
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             [
                 Mapping(
@@ -628,7 +628,7 @@ def test_all_calculation_study_strategy_is_done(
                     ),
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
-                timeout_minutes=1,
+                timeout_seconds=1,
             ),
             [
                 Mapping(

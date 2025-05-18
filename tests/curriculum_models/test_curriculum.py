@@ -193,7 +193,7 @@ def sample_curriculum_fixture() -> Curriculum:
                         -1: [],
                         0: [_DUMMY_PARAMETER_SPACE.to_model()],
                     },
-                    timeout_minutes=1,
+                    timeout_seconds=1,
                 ),
             ),
         ),

@@ -7,14 +7,19 @@ from pydantic import BaseModel, Field
 
 
 class TableConfig(BaseModel):
-    default_timeout_minutes: int = Field(
-        default=10,
-        description="Timeout minutes before a trial is reserved and registered",
+    default_timeout_seconds: int = Field(
+        default=600,
+        description="Timeout seconds before a trial is reserved and registered",
         ge=1,
     )
     curriculum_path: Path = Field(
         default=Path(__file__).parent.parent.parent / "curriculum.json",
         description="Path to the curriculum json file",
+    )
+    curriculum_save_period_seconds: int = Field(
+        default=600,
+        description="Period time to save curriculum json file",
+        ge=1,
     )
 
     @staticmethod
@@ -40,7 +45,7 @@ class WorkerConfig(BaseModel):
         default_factory=set,
         description="Set of capabilities that the worker node has.",
     )
-    wait_minutes_on_no_trial: int = Field(
+    wait_seconds_on_no_trial: int = Field(
         default=5,
         description="Waiting time when there was no trial allocated by the table node.",
         ge=1,
