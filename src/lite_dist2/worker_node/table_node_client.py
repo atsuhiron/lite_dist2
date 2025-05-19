@@ -7,18 +7,18 @@ import requests
 
 from lite_dist2.curriculum_models.trial import Trial
 from lite_dist2.expections import LD2TableNodeClientError, LD2TableNodeServerError
-from lite_dist2.table_node_api.table_param import TrialRegisterParam, TrialReserveParam
-from lite_dist2.table_node_api.table_response import TrialReserveResponse
+from lite_dist2.table_node_api.table_param import StudyRegisterParam, TrialRegisterParam, TrialReserveParam
+from lite_dist2.table_node_api.table_response import StudyRegisteredResponse, TrialReserveResponse
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class TableNodeClient:
+    INSTANT_API_TIMEOUT_SECONDS = 10
     HEADERS: ClassVar[dict[str, str]] = {"Content-Type": "application/json; charset=utf-8"}
 
     def __init__(self, ip: str, name: str) -> None:
@@ -27,10 +27,17 @@ class TableNodeClient:
 
     def ping(self) -> bool:
         try:
-            _ = self._get("/ping", timeout=10)
+            _ = self._get("/ping", timeout=self.INSTANT_API_TIMEOUT_SECONDS)
         except LD2TableNodeServerError:
             return False
         return True
+
+    def register_study(self, param: StudyRegisterParam) -> StudyRegisteredResponse:
+        _, d = self._post("/study/register", self.INSTANT_API_TIMEOUT_SECONDS, param.model_dump(mode="json"))
+
+        resp = StudyRegisteredResponse.model_validate(d)
+        logger.info("Registered study: %s", resp.study_id)
+        return resp
 
     def reserve_trial(self, max_size: int, retaining_capacity: set[str], timeout_seconds: int) -> Trial | None:
         param = TrialReserveParam(retaining_capacity=retaining_capacity, max_size=max_size)
@@ -72,7 +79,7 @@ class TableNodeClient:
     @staticmethod
     def _check_status_code(response: requests.Response) -> dict[str, Any]:
         if response.status_code >= requests.codes.internal_server_error:
-            raise LD2TableNodeServerError
+            raise LD2TableNodeServerError(response.text)
         if response.status_code >= requests.codes.bad_request:
-            raise LD2TableNodeClientError
+            raise LD2TableNodeClientError(response.text)
         return response.json()

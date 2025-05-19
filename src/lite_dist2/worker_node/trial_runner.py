@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class BaseTrialRunner(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def func(self, *args: RawParamType) -> tuple[RawParamType, RawResultType]:
+    def func(self, parameters: RawParamType) -> tuple[RawParamType, RawResultType]:
         pass
 
     @abc.abstractmethod
@@ -75,7 +75,7 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
 
 
 class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
-    def func(self, *args: RawParamType) -> tuple[RawParamType, RawResultType]:
+    def func(self, *parameters: RawParamType) -> tuple[RawParamType, RawResultType]:
         pass
 
     @abc.abstractmethod

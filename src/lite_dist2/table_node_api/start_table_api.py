@@ -43,7 +43,7 @@ def _run_periodic_timeout_check() -> None:
     asyncio.run(_periodic_timeout_check())
 
 
-async def start() -> None:
+def start() -> None:
     logger.info("Table Node IP: %s", _get_local_ip())
 
     # save thread
@@ -57,5 +57,10 @@ async def start() -> None:
     uvicorn.run(app, host="0.0.0.0", port=8000)  # noqa: S104
 
 
+def start_in_thread() -> None:
+    table_thread = threading.Thread(target=start, daemon=True)
+    table_thread.start()
+
+
 if __name__ == "__main__":
-    asyncio.run(start())
+    start()

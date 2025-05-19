@@ -2,11 +2,16 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from lite_dist2.curriculum_models.study_portables import StudyRegistry
 from lite_dist2.curriculum_models.trial import TrialModel
 
 
 class BaseParam(BaseModel):
     pass
+
+
+class StudyRegisterParam(BaseParam):
+    study: StudyRegistry
 
 
 class TrialReserveParam(BaseParam):

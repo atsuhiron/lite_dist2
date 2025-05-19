@@ -21,6 +21,9 @@ ignore = [
     "S101",     # pytest use assert
     "SLF001",   # test private method
 ]
+"example/**.py" = [
+    "INP001",   # Example is not package
+]
 
 [lint.flake8-type-checking]
 exempt-modules = [

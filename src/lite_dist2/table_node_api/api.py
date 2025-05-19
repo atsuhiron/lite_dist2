@@ -10,7 +10,7 @@ from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial
-from lite_dist2.table_node_api.table_param import TrialRegisterParam, TrialReserveParam
+from lite_dist2.table_node_api.table_param import StudyRegisterParam, TrialRegisterParam, TrialReserveParam
 from lite_dist2.table_node_api.table_response import (
     CurriculumSummaryResponse,
     OkResponse,
@@ -21,8 +21,6 @@ from lite_dist2.table_node_api.table_response import (
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
-
-    from lite_dist2.curriculum_models.study_portables import StudyRegistry
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,6 +37,13 @@ def handle_ping() -> OkResponse:
     return OkResponse(ok=True)
 
 
+@app.get("/save")
+def handle_save() -> OkResponse:
+    curr = CurriculumProvider.get()
+    curr.save()
+    return OkResponse(ok=True)
+
+
 @app.get("/status", response_model=CurriculumSummaryResponse)
 def handle_status() -> CurriculumSummaryResponse | JSONResponse:
     curr = CurriculumProvider.get()
@@ -47,10 +52,10 @@ def handle_status() -> CurriculumSummaryResponse | JSONResponse:
 
 @app.post("/study/register", response_model=StudyRegisteredResponse)
 def handle_study_register(
-    study_registry: Annotated[StudyRegistry, Body(description="Registry of processing study")],
+    study_registry: Annotated[StudyRegisterParam, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse | JSONResponse:
     curr = CurriculumProvider.get()
-    new_study = Study.from_model(study_registry.to_study_model())
+    new_study = Study.from_model(study_registry.study.to_study_model())
     curr.insert_study(new_study)
     return _response(StudyRegisteredResponse(study_id=new_study.study_id), 200)
 
@@ -81,6 +86,7 @@ def handle_trial_register(
         return HTTPException(status_code=404, detail=f"Study not found: study_id={trial.study_id}")
 
     study.receipt_trial(Trial.from_model(trial))
+    curr.to_storage_if_done()
     return _response(OkResponse(ok=True), 200)
 
 

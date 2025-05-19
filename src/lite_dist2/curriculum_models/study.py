@@ -76,12 +76,11 @@ class Study:
                 result_value_type=self.result_value_type,
             )
             self.trial_table.register(trial)
+        if self.trial_table.is_not_defined_aps():
+            self.trial_table.init_aps(trial)
         return trial
 
     def receipt_trial(self, trial: Trial) -> None:
-        if self.trial_table.is_not_defined_aps():
-            self.trial_table.init_aps(trial)
-
         with self._table_lock:
             self.trial_table.receipt_trial(trial.trial_id, trial.result)
             self.trial_table.simplify_aps()

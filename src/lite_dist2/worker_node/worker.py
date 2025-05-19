@@ -23,8 +23,11 @@ class Worker:
         self,
         trial_runner: Annotated[BaseTrialRunner, "Runner for executing trials"],
         ip: Annotated[str, "IP address of the table node server"],
-        pool: Annotated[Pool | None, "Process pool for parallel execution. Ignored except `SemiAutoMPTrialRunner`."],
         config: Annotated[WorkerConfig, "Configuration of  the worker node"],
+        pool: Annotated[
+            Pool | None,
+            "Process pool for parallel execution. Ignored except `SemiAutoMPTrialRunner`.",
+        ] = None,
     ) -> None:
         self.trial_runner = trial_runner
         self.client = TableNodeClient(ip, config.name)
@@ -49,4 +52,6 @@ class Worker:
             logger.info("No trial. Waiting %d seconds...", self.config.wait_seconds_on_no_trial)
             time.sleep(self.config.wait_seconds_on_no_trial)
             return
-        self.trial_runner.run(trial, self.config, self.pool)
+
+        done_trial = self.trial_runner.run(trial, self.config, self.pool)
+        self.client.register_trial(done_trial, self.config.table_node_request_timeout_seconds)

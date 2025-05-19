@@ -60,7 +60,10 @@ class StudyRegistry(_StudyCommonModel):
 
     def _publish_study_id(self) -> str:
         node = hash(self.name) if self.name is not None else hash(self.required_capacity)
-        return str(uuid.uuid1(node))
+        if isinstance(node, int):
+            # 下 48 bit だけ取得
+            node = node & 0xFFFFFFFFFFFF
+        return str(uuid.uuid1(node=node, clock_seq=None))
 
 
 class StudySummary(_StudyCommonModel):

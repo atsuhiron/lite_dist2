@@ -1,0 +1,95 @@
+import time
+
+from lite_dist2.common import float2hex, int2hex
+from lite_dist2.config import WorkerConfig
+from lite_dist2.curriculum_models.study_portables import StudyRegistry
+from lite_dist2.study_strategies import StudyStrategyModel
+from lite_dist2.suggest_strategies import SuggestStrategyModel
+from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
+from lite_dist2.table_node_api.start_table_api import start_in_thread
+from lite_dist2.table_node_api.table_param import StudyRegisterParam
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.value_models.aligned_space_registry import LineSegmentRegistry, ParameterAlignedSpaceRegistry
+from lite_dist2.worker_node.table_node_client import TableNodeClient
+from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+from lite_dist2.worker_node.worker import Worker
+
+
+def register_study(table_ip: str) -> None:
+    _resolution = 10
+    _half_size = 2.0
+
+    study_register_param = StudyRegisterParam(
+        study=StudyRegistry(
+            name="mandelbrot",
+            required_capacity=set(),
+            study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
+            suggest_strategy=SuggestStrategyModel(
+                type="sequential",
+                parameter=SuggestStrategyParam(strict_aligned=True),
+            ),
+            result_type="scaler",
+            result_value_type="int",
+            parameter_space=ParameterAlignedSpaceRegistry(
+                type="aligned",
+                axes=[
+                    LineSegmentRegistry(
+                        name="x",
+                        type="float",
+                        size=int2hex(_resolution),
+                        step=float2hex(2 * _half_size / _resolution),
+                        start=float2hex(-1 * _half_size),
+                    ),
+                    LineSegmentRegistry(
+                        name="y",
+                        type="float",
+                        size=int2hex(_resolution),
+                        step=float2hex(2 * _half_size / _resolution),
+                        start=float2hex(-1 * _half_size),
+                    ),
+                ],
+            ),
+        ),
+    )
+    client = TableNodeClient(table_ip, name="admin node")
+    client.register_study(study_register_param)
+
+
+class Mandelbrot(AutoMPTrialRunner):
+    _ABS_THRESHOLD = 2.0
+    _MAX_ITER = 255
+
+    def func(self, parameters: RawParamType) -> tuple[RawParamType, RawResultType]:
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+        while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
+            z = z**2 + c
+            iter_count += 1
+        return (x, y), iter_count
+
+
+def run_worker(table_ip: str) -> None:
+    worker_config = WorkerConfig(
+        name="w_01",
+        process_num=2,
+        max_size=10,
+        wait_seconds_on_no_trial=5,
+        table_node_request_timeout_seconds=60,
+    )
+    worker = Worker(
+        trial_runner=Mandelbrot(),
+        ip=table_ip,
+        config=worker_config,
+    )
+    worker.start()
+
+
+if __name__ == "__main__":
+    ip = "127.0.0.1:8000"
+    start_in_thread()  # table node start in a separate thread
+    time.sleep(1)  # wait for activate
+    register_study(ip)  # register study to table node
+    run_worker(ip)  # run worker node
