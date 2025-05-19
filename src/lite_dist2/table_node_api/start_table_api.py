@@ -20,7 +20,7 @@ def _get_local_ip() -> str:
 
 
 async def _periodic_save() -> None:
-    interval = TableConfigProvider.table().curriculum_save_interval_seconds
+    interval = TableConfigProvider.get().curriculum_save_interval_seconds
     while True:
         await asyncio.sleep(interval)
         logger.info("Performing periodic save of curriculum data")
@@ -32,7 +32,7 @@ def _run_periodic_save() -> None:
 
 
 async def _periodic_timeout_check() -> None:
-    interval = TableConfigProvider.table().timeout_check_interval_seconds
+    interval = TableConfigProvider.get().timeout_check_interval_seconds
     while True:
         await asyncio.sleep(interval)
         logger.info("Performing periodic timeout check of trials")

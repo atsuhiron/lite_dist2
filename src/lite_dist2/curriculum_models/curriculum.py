@@ -121,7 +121,7 @@ class Curriculum:
 
     def check_timeout_trial(self) -> None:
         removed_ids = []
-        timeout_seconds = TableConfigProvider.table().default_timeout_seconds
+        timeout_seconds = TableConfigProvider.get().default_timeout_seconds
         for study in self.studies:
             removed_ids.extend(study.check_timeout_trial(publish_timestamp(), timeout_seconds))
         if len(removed_ids) > 0:
@@ -148,7 +148,7 @@ class Curriculum:
     def save(self, curr_json_path: pathlib.Path | None = None) -> None:
         save_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = TableConfigProvider.table().curriculum_path
+            curr_json_path = TableConfigProvider.get().curriculum_path
 
         model = self.to_model()
         with curr_json_path.open("w", encoding="utf-8") as f:
@@ -160,7 +160,7 @@ class Curriculum:
     def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
         load_start_time = time.perf_counter()
         if curr_json_path is None:
-            curr_json_path = TableConfigProvider.table().curriculum_path
+            curr_json_path = TableConfigProvider.get().curriculum_path
 
         if curr_json_path.exists():
             with curr_json_path.open("r", encoding="utf-8") as f:

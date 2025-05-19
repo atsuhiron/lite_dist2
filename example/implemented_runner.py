@@ -1,7 +1,8 @@
 import time
+from pathlib import Path
 
 from lite_dist2.common import float2hex, int2hex
-from lite_dist2.config import WorkerConfig
+from lite_dist2.config import TableConfig, TableConfigProvider, WorkerConfig
 from lite_dist2.curriculum_models.study_portables import StudyRegistry
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.suggest_strategies import SuggestStrategyModel
@@ -13,6 +14,14 @@ from lite_dist2.value_models.aligned_space_registry import LineSegmentRegistry, 
 from lite_dist2.worker_node.table_node_client import TableNodeClient
 from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 from lite_dist2.worker_node.worker import Worker
+
+
+def set_table_config() -> None:
+    config = TableConfig(
+        curriculum_path=Path(__file__).parent / "example_curriculum.json",
+        curriculum_save_interval_seconds=10,
+    )
+    TableConfigProvider.set(config)
 
 
 def register_study(table_ip: str) -> None:
@@ -88,8 +97,28 @@ def run_worker(table_ip: str) -> None:
 
 
 if __name__ == "__main__":
-    ip = "127.0.0.1:8000"
-    start_in_thread()  # table node start in a separate thread
+    # 1. Set table config for example
+    #    Execution node type in normal use: Table
+    #    NOTE: For normal use, change the `table_config.json` file in the root directory.
+    set_table_config()
+
+    # 2. Start table node in other thread
+    #    Execution node type in normal use: Table
+    #    NOTE: In most cases, use `start()` (or `uv run start`) instead of `start_in_thread()`
+    #          since table nodes and worker nodes are separated.
+    start_in_thread()
     time.sleep(1)  # wait for activate
-    register_study(ip)  # register study to table node
-    run_worker(ip)  # run worker node
+
+    # 3. Register study to table node
+    #    Execution node type in normal use: Manage
+    #    NOTE: If the managed node is also a worker node or a table node,
+    #          `TableNodeClient.register_study` is available.
+    #          Otherwise, studies can be registered using the curl command.
+    register_study(table_ip="127.0.0.1:8000")
+
+    # 4. run worker node
+    #    Execution node type in normal use: Worker
+    #    NOTE: In this example, the entire process should be completed within 10 seconds.
+    #          10 seconds later, example_curriculum.json should be saved in the same directory as this file.
+    #          The saving interval can be changed from the `TableConfig.curriculum_save_interval_seconds`.
+    run_worker(table_ip="127.0.0.1:8000")

@@ -69,21 +69,16 @@ class WorkerConfig(BaseModel):
         ge=1,
     )
 
-    @staticmethod
-    def load_from_file() -> WorkerConfig:
-        path = Path(__file__).parent.parent.parent / "worker_config.json"
-        if not path.exists():
-            msg = f"Worker config file not found: {path}"
-            raise FileNotFoundError(msg)
-        with path.open() as f:
-            return WorkerConfig.model_validate(json.load(f))
-
 
 class TableConfigProvider:
     _TABLE: TableConfig | None = None
 
     @classmethod
-    def table(cls) -> TableConfig:
+    def set(cls, config: TableConfig) -> None:
+        cls._TABLE = config
+
+    @classmethod
+    def get(cls) -> TableConfig:
         if cls._TABLE is None:
             cls._TABLE = TableConfig.load_from_file()
         return cls._TABLE
