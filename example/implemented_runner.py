@@ -110,8 +110,8 @@ if __name__ == "__main__":
     time.sleep(1)  # wait for activate
 
     # 3. Register study to table node
-    #    Execution node type in normal use: Manage
-    #    NOTE: If the managed node is also a worker node or a table node,
+    #    Execution node type in normal use: Management
+    #    NOTE: If the management node is also a worker node or a table node,
     #          `TableNodeClient.register_study` is available.
     #          Otherwise, studies can be registered using the curl command.
     register_study(table_ip="127.0.0.1:8000")

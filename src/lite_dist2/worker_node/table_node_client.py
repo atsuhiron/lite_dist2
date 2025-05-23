@@ -32,6 +32,8 @@ class TableNodeClient:
             return False
         return True
 
+    # TODO: /study 用のメソッド作る
+
     def register_study(self, param: StudyRegisterParam) -> StudyRegisteredResponse:
         _, d = self._post("/study/register", self.INSTANT_API_TIMEOUT_SECONDS, param.model_dump(mode="json"))
 
