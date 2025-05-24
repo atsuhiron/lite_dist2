@@ -68,7 +68,7 @@ class Mandelbrot(AutoMPTrialRunner):
     _ABS_THRESHOLD = 2.0
     _MAX_ITER = 255
 
-    def func(self, parameters: RawParamType) -> tuple[RawParamType, RawResultType]:
+    def func(self, parameters: RawParamType) -> RawResultType:
         x = float(parameters[0])
         y = float(parameters[1])
         c = complex(x, y)
@@ -77,7 +77,7 @@ class Mandelbrot(AutoMPTrialRunner):
         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
             z = z**2 + c
             iter_count += 1
-        return (x, y), iter_count
+        return iter_count
 
 
 def run_worker(table_ip: str) -> None:
@@ -86,7 +86,7 @@ def run_worker(table_ip: str) -> None:
         process_num=2,
         max_size=10,
         wait_seconds_on_no_trial=5,
-        table_node_request_timeout_seconds=600,
+        table_node_request_timeout_seconds=60,
     )
     worker = Worker(
         trial_runner=Mandelbrot(),

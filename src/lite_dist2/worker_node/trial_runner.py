@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class BaseTrialRunner(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def func(self, parameters: RawParamType) -> tuple[RawParamType, RawResultType]:
+    def func(self, parameters: RawParamType) -> RawResultType:
         pass
 
     @abc.abstractmethod
@@ -28,6 +28,9 @@ class BaseTrialRunner(metaclass=abc.ABCMeta):
         pool: Pool | None = None,
     ) -> list[tuple[RawParamType, RawResultType]]:
         pass
+
+    def parameter_pass_func(self, parameters: RawParamType) -> tuple[RawParamType, RawResultType]:
+        return parameters, self.func(parameters)
 
     def run(self, trial: Trial, config: WorkerConfig, pool: Pool | None = None) -> Trial:
         raw_mappings = self.wrap_func(trial.parameter_space, config, pool)
@@ -48,11 +51,11 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
         if config.process_num is not None and config.process_num > 1:
             with Pool(processes=config.process_num) as pool, tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in pool.imap_unordered(self.func, parameter_space.grid()):
+                for arg_tuple, result_iter in pool.imap_unordered(self.parameter_pass_func, parameter_space.grid()):
                     raw_mappings.append((arg_tuple, result_iter))
                     p_bar.update(1)
             return raw_mappings
-        return [self.func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)]
+        return [self.parameter_pass_func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)]
 
 
 class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
@@ -67,11 +70,11 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
         if pool is not None:
             with tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in pool.imap_unordered(self.func, parameter_space.grid()):
+                for arg_tuple, result_iter in pool.imap_unordered(self.parameter_pass_func, parameter_space.grid()):
                     raw_mappings.append((arg_tuple, result_iter))
                     p_bar.update(1)
             return raw_mappings
-        return [self.func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)]
+        return [self.parameter_pass_func(arg_tuple) for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)]
 
 
 class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
