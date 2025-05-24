@@ -2352,13 +2352,13 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
         ),
     ],
 )
-def test_trial_table_receipt_trial(
+def test_trial_table_receipt_trial_result(
     trial_table: TrialTable,
     trial_id: str,
     result: list[Mapping] | None,
     expected: TrialTable,
 ) -> None:
-    trial_table.receipt_trial(trial_id, result)
+    trial_table.receipt_trial_result(trial_id, result)
     actual_model = trial_table.to_model()
     expected_model = expected.to_model()
     assert actual_model.trials == expected_model.trials
@@ -2366,7 +2366,7 @@ def test_trial_table_receipt_trial(
 
 
 # noinspection SpellCheckingInspection
-def test_trial_table_receipt_trial_raise_override_done_trial() -> None:
+def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
     trial_table = TrialTable(
         trials=[
             Trial(
@@ -2420,11 +2420,11 @@ def test_trial_table_receipt_trial_raise_override_done_trial() -> None:
     ]
 
     with pytest.raises(LD2ParameterError, match=r"Cannot\soverride\sresult\sof\sdone\strial"):
-        trial_table.receipt_trial("t01", result)
+        trial_table.receipt_trial_result("t01", result)
 
 
 # noinspection SpellCheckingInspection
-def test_trial_table_receipt_trial_raise_not_found_trial() -> None:
+def test_trial_table_receipt_trial_result_raise_not_found_trial() -> None:
     trial_table = TrialTable(
         trials=[],
         aggregated_parameter_space={
@@ -2445,7 +2445,7 @@ def test_trial_table_receipt_trial_raise_not_found_trial() -> None:
     ]
 
     with pytest.raises(LD2ParameterError, match=r"Not\sfound\strial\sthat\sid"):
-        trial_table.receipt_trial("t01", result)
+        trial_table.receipt_trial_result("t01", result)
 
 
 def test_trial_table_heck_timeout_trial() -> None:

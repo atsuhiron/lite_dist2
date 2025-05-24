@@ -47,7 +47,7 @@ class TrialTable:
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
 
-    def receipt_trial(self, receipted_trial_id: str, result: list[Mapping] | None) -> None:
+    def receipt_trial_result(self, receipted_trial_id: str, result: list[Mapping] | None) -> None:
         if result is None:
             # Do nothing
             return
