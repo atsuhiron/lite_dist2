@@ -79,8 +79,44 @@ assert n == numerize("float", p)
 ```
 
 ### StudyStrategy
+分散処理の種別によって処理の終了条件や必要な結果の取得方法が変わったりします。
+用途に適した運用ができるように LiteDist2 では以下の3つの `StudyStrategy` を用意しています。
+- `all_calculation`: 与えられたパラメータ空間全体にわたって所定の計算を行う。
+- `find_exact`: ある関数の値が特定の値になるようなパラメータの組を探す。（ハッシュ関数の原像生成など）
+- `minimize`: **未実装**。ある関数の値が最小になるようなパラメータの組を探す。（機械学習のハイパーパラメータチューニングなど）
+
+`all_calculation` の例は次の通りです。`all_calculation` では必要なパラメータはありません。
+```json
+{
+  "type": "all_calculation",
+  "study_strategy_param": null
+}
+```
+`find_exact` の例は次の通りです。こちらの例ではパラメータとして目標となる値、 `target_value` が必要です。
+```json
+{
+  "type": "find_exact",
+  "study_strategy_param": {"target_value": "aff97160474a056e838c1f721af01edf"}
+}
+```
+
 ### SuggestStrategy
+それぞれのワーカーノードに対して `Trial` としてどの部分空間を割り当てるかは一意には定まりません。
+これを司るのが `SuggestStrategy` です。現在、以下の２種類が用意されています。
+- `sequential`: パラメータ空間の最初から順番に割り当てる。
+- `random`: **未実装**。パラメータ空間内をランダムに選んで割り当てる。
+
+`sequential` 例は次の通りです。`strict_aligned: true` を指定することで [`ParameterAlignedSpace`](#parameteralignedspace) の使用を強制できます。
+```json
+{
+  "type": "sequential",
+  "suggest_strategy_param": {"strict_aligned":  true}
+}
+```
+
 ### TrialRunner
+ワーカーノードで `Trial` を実行するクラスのことです。このクラスは利用者が望む処理を実行するようにカスタマイズする必要があります。
+具体的には `BaseTrialRunner` を実装する必要があります。
 
 ## 4. インストール方法
 ### 必要条件
@@ -103,8 +139,8 @@ assert n == numerize("float", p)
 ## 9. 高度な使用方法
 ### カスタム Trial Runner の実装
 ### ParameterSpace の実装について
-#### AlignedParameterSpace
-上の例は最も簡単なパラメータ空間の表し方の例で、最初に `Study` を登録する時に使用できる型（`ParameterAlignedSpaceRegistry`）です。
+#### ParameterAlignedSpace
+[ParameterSpace](#parameterspace)の例は最も簡単なパラメータ空間の表し方の例で、最初に `Study` を登録する時に使用できる型（`ParameterAlignedSpaceRegistry`）です。
 テーブルノードとワーカノードの間でやり取りをする場合はもう少し追加で情報が必要になります。
 これは、上の例では空間全体を表せばそれで十分ですが、テーブルノードとワーカノードの間でやり取りでは「全体（母空間）に対してどの部分か」を表す必要があるためです。  
 次の例は母空間の一部を切り取った部分空間を表したものです。
@@ -147,8 +183,8 @@ x, y のサイズが変わっていることに注目してください。それ
 これら追加の値はワーカーノードでの計算が終了した後にテーブルノードで集計する際に必要な値です。ワーカーノードでは単に `size`, `size`, `start` を見ればよく、
 この例では 「x=false, y=-35, z は 0.0 から 50.0 まで」の１次元空間を表していることが分かります。
 
-#### JaggedParameterSpace
-`AlignedParameterSpace` のような「ここからここまで」の表記では必ず四角で区切られた範囲（正確には「超直方体」）を表すことしかできません。
+#### ParameterJaggedSpace
+`ParameterAlignedSpace` のような「ここからここまで」の表記では必ず四角で区切られた範囲（正確には「超直方体」）を表すことしかできません。
 一方で、「この点とあの点」のように具体的に列挙した方が便利な場面があります。
 ```json
 {
@@ -187,6 +223,15 @@ x, y のサイズが変わっていることに注目してください。それ
 ただし、名前や型に関する情報は依然として必要であるので `axes_info` が定義されています。
 最後のフィールドに `"is_dummy": true` とあることからも分かる通り、このオブジェクトは `type`, `name`, `ambient_size` のみが有効な値です。
 
+### 半直線の利用
+
 ## 10. 開発
 ### 開発環境のセットアップ
+```shell
+uv sync --dev
+```
+
 ### テスト実行方法
+```shell
+uv run pytest
+```
