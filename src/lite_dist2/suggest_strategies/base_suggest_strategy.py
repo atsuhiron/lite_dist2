@@ -17,7 +17,7 @@ class SuggestStrategyParam(BaseModel):
 
 class SuggestStrategyModel(BaseModel):
     type: Literal["sequential", "random", "designated"]
-    parameter: SuggestStrategyParam
+    suggest_strategy_param: SuggestStrategyParam
 
 
 class BaseSuggestStrategy(metaclass=abc.ABCMeta):

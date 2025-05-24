@@ -155,7 +155,7 @@ class Study:
     def _create_suggest_strategy(model: SuggestStrategyModel, space: ParameterAlignedSpace) -> BaseSuggestStrategy:
         match model.type:
             case "sequential":
-                return SequentialSuggestStrategy(model.parameter, space)
+                return SequentialSuggestStrategy(model.suggest_strategy_param, space)
             case "random":
                 raise NotImplementedError
             case "designated":

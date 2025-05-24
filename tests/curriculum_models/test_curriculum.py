@@ -36,7 +36,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
 _DUMMY_STUDY_STRATEGY_MODEL = StudyStrategyModel(type="all_calculation", study_strategy_param=None)
 _DUMMY_SUGGEST_STRATEGY_MODEL = SuggestStrategyModel(
     type="sequential",
-    parameter=SuggestStrategyParam(strict_aligned=True),
+    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
 )
 
 
@@ -139,7 +139,7 @@ def sample_curriculum_fixture() -> Curriculum:
                 study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
-                    parameter=SuggestStrategyParam(strict_aligned=True),
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                 result_type="scaler",

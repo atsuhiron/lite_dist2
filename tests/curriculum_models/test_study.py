@@ -30,7 +30,7 @@ from tests.const import DT
                 study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
-                    parameter=SuggestStrategyParam(strict_aligned=True),
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 parameter_space=ParameterAlignedSpaceModel(
                     type="aligned",

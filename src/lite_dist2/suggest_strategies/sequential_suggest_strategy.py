@@ -178,5 +178,5 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
     def to_model(self) -> SuggestStrategyModel:
         return SuggestStrategyModel(
             type="sequential",
-            parameter=self.suggest_parameter,
+            suggest_strategy_param=self.suggest_parameter,
         )

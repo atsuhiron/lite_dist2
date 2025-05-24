@@ -42,7 +42,7 @@ if TYPE_CHECKING:
                 ),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
-                    parameter=SuggestStrategyParam(strict_aligned=True),
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 parameter_space=ParameterAlignedSpaceRegistry(
                     type="aligned",
@@ -73,7 +73,7 @@ if TYPE_CHECKING:
                 ),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
-                    parameter=SuggestStrategyParam(strict_aligned=True),
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 parameter_space=ParameterAlignedSpaceModel(
                     type="aligned",
@@ -172,7 +172,7 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                 ),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
-                    parameter=SuggestStrategyParam(strict_aligned=True),
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 done_grids=10000,
             ),
@@ -220,7 +220,7 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                 ),
                 suggest_strategy=SuggestStrategyModel(
                     type="sequential",
-                    parameter=SuggestStrategyParam(strict_aligned=True),
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 total_grids=10000,
                 done_grids=10000,

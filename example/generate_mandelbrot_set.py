@@ -35,7 +35,7 @@ def register_study(table_ip: str) -> None:
             study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
             suggest_strategy=SuggestStrategyModel(
                 type="sequential",
-                parameter=SuggestStrategyParam(strict_aligned=True),
+                suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
             ),
             result_type="scaler",
             result_value_type="int",
