@@ -199,7 +199,7 @@ class ParameterRangeBool(LineSegment):
 
     def merge(self, other: ParameterRangeBool, *_: object) -> ParameterRangeBool:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
-        size = larger.end_index() - smaller.start + 1
+        size = larger.end_index() - smaller.ambient_index + 1
         return ParameterRangeBool(
             name=self.name,
             type="bool",
@@ -286,7 +286,7 @@ class ParameterRangeInt(LineSegment):
 
     def merge(self, other: ParameterRangeInt, *_: object) -> ParameterRangeInt:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
-        size = larger.end_index() - smaller.start + 1
+        size = larger.end_index() - smaller.ambient_index + 1
         return ParameterRangeInt(
             name=self.name,
             type="int",
@@ -372,7 +372,7 @@ class ParameterRangeFloat(LineSegment):
 
     def merge(self, other: LineSegment, *_: object) -> LineSegment:
         smaller, larger = (self, other) if self.ambient_index < other.ambient_index else (other, self)
-        size = larger.end_index() - smaller.start + 1
+        size = larger.end_index() - smaller.ambient_index + 1
         return ParameterRangeFloat(
             name=self.name,
             type="float",

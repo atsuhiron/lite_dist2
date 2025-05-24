@@ -86,7 +86,7 @@ def run_worker(table_ip: str) -> None:
         process_num=2,
         max_size=10,
         wait_seconds_on_no_trial=5,
-        table_node_request_timeout_seconds=60,
+        table_node_request_timeout_seconds=600,
     )
     worker = Worker(
         trial_runner=Mandelbrot(),

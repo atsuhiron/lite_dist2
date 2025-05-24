@@ -5,19 +5,20 @@ import pytest
 
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.base_space import FlattenSegment
-from lite_dist2.value_models.line_segment import ParameterRangeInt
+from lite_dist2.value_models.line_segment import ParameterRangeFloat, ParameterRangeInt
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product, remap_space, simplify
 
 
 @pytest.mark.parametrize(
     ("sub_spaces", "target_dim", "expected"),
     [
-        (  # empty
+        pytest.param(
             [],
             0,
             [],
+            id="empty",
         ),
-        (  # single
+        pytest.param(
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -35,8 +36,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                     check_lower_filling=False,
                 ),
             ],
+            id="single",
         ),
-        (  # far double
+        pytest.param(
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -47,37 +49,6 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                 ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
-                    ],
-                    check_lower_filling=False,
-                ),
-            ],
-            0,
-            [
-                ParameterAlignedSpace(
-                    axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
-                    ],
-                    check_lower_filling=False,
-                ),
-                ParameterAlignedSpace(
-                    axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
-                    ],
-                    check_lower_filling=False,
-                ),
-            ],
-        ),
-        (  # far double reversed
-            [
-                ParameterAlignedSpace(
-                    axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
-                    ],
-                    check_lower_filling=False,
-                ),
-                ParameterAlignedSpace(
-                    axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
                     ],
                     check_lower_filling=False,
                 ),
@@ -97,8 +68,41 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                     check_lower_filling=False,
                 ),
             ],
+            id="far double",
         ),
-        (  # adjacency double
+        pytest.param(
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
+                    ],
+                    check_lower_filling=False,
+                ),
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    ],
+                    check_lower_filling=False,
+                ),
+            ],
+            0,
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    ],
+                    check_lower_filling=False,
+                ),
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
+                    ],
+                    check_lower_filling=False,
+                ),
+            ],
+            id="far double reversed",
+        ),
+        pytest.param(
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -122,8 +126,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                     check_lower_filling=False,
                 ),
             ],
+            id="adjacency double",
         ),
-        (  # adjacency reversed double
+        pytest.param(
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -147,8 +152,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                     check_lower_filling=False,
                 ),
             ],
+            id="adjacency reversed double",
         ),
-        (  # adjacency triple
+        pytest.param(
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -178,8 +184,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                     check_lower_filling=False,
                 ),
             ],
+            id="adjacency triple",
         ),
-        (  # false adjacency (different dimension)
+        pytest.param(
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -213,8 +220,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                     check_lower_filling=True,
                 ),
             ],
+            id="false adjacency (different dimension)",
         ),
-        (  # true adjacency (same dimension)
+        pytest.param(
             [
                 ParameterAlignedSpace(
                     axes=[
@@ -241,6 +249,84 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                     check_lower_filling=True,
                 ),
             ],
+            id="true adjacency (same dimension)",
+        ),
+        pytest.param(
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeFloat(
+                            name="x",
+                            type="float",
+                            size=1,
+                            step=0.4,
+                            start=-1.6,
+                            ambient_index=1,
+                            ambient_size=10,
+                        ),
+                        ParameterRangeFloat(
+                            name="y",
+                            type="float",
+                            size=10,
+                            step=0.4,
+                            start=-2.0,
+                            ambient_index=0,
+                            ambient_size=10,
+                        ),
+                    ],
+                    check_lower_filling=True,
+                ),
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeFloat(
+                            name="x",
+                            type="float",
+                            size=1,
+                            step=0.4,
+                            start=-2.0,
+                            ambient_index=0,
+                            ambient_size=10,
+                        ),
+                        ParameterRangeFloat(
+                            name="y",
+                            type="float",
+                            size=10,
+                            step=0.4,
+                            start=-2.0,
+                            ambient_index=0,
+                            ambient_size=10,
+                        ),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+            0,
+            [
+                ParameterAlignedSpace(
+                    axes=[
+                        ParameterRangeFloat(
+                            name="x",
+                            type="float",
+                            size=2,
+                            step=0.4,
+                            start=-2.0,
+                            ambient_index=0,
+                            ambient_size=10,
+                        ),
+                        ParameterRangeFloat(
+                            name="y",
+                            type="float",
+                            size=10,
+                            step=0.4,
+                            start=-2.0,
+                            ambient_index=0,
+                            ambient_size=10,
+                        ),
+                    ],
+                    check_lower_filling=True,
+                ),
+            ],
+            id="true adjacency (same dimension; error case found in example)",
         ),
     ],
 )

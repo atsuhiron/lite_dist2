@@ -84,8 +84,8 @@ class TrialTable:
         if self.aggregated_parameter_space is None:
             return
 
-        dim = self.trials[0].parameter_space.get_dim()
-        remapped_spaces = []
+        dim = max(self.aggregated_parameter_space.keys()) + 1
+        remapped_spaces: list[dict[int, list[ParameterAlignedSpace]]] = []
         for d in reversed(range(dim)):
             simplified = simplify(self.aggregated_parameter_space[d], d)
             remapped_spaces.append(remap_space(simplified, dim))
