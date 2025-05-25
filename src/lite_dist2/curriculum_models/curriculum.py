@@ -121,7 +121,7 @@ class Curriculum:
 
     def check_timeout_trial(self) -> None:
         removed_ids = []
-        timeout_seconds = TableConfigProvider.get().default_timeout_seconds
+        timeout_seconds = TableConfigProvider.get().trial_timeout_seconds
         for study in self.studies:
             removed_ids.extend(study.check_timeout_trial(publish_timestamp(), timeout_seconds))
         if len(removed_ids) > 0:

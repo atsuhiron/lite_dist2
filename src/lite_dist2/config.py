@@ -7,7 +7,13 @@ from pydantic import BaseModel, Field
 
 
 class TableConfig(BaseModel):
-    default_timeout_seconds: int = Field(
+    port: int = Field(
+        default=8000,
+        description="The port number to use table node",
+        ge=0,
+        le=65535,
+    )
+    trial_timeout_seconds: int = Field(
         default=600,
         description="Timeout seconds before a trial is reserved and registered",
         ge=1,
@@ -26,7 +32,6 @@ class TableConfig(BaseModel):
         description="Interval of time to save curriculum json file",
         ge=1,
     )
-    # TODO: ポート番号
 
     @staticmethod
     def load_from_file() -> TableConfig:

@@ -14,9 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_local_ip() -> str:
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        s.connect(("8.8.8.8", 80))
-        return s.getsockname()[0]
+    return socket.gethostbyname(socket.gethostname())
 
 
 async def _periodic_save() -> None:
@@ -54,7 +52,8 @@ def start() -> None:
     timeout_thread = threading.Thread(target=_run_periodic_timeout_check, daemon=True)
     timeout_thread.start()
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)  # noqa: S104
+    port = TableConfigProvider.get().port
+    uvicorn.run(app, host="0.0.0.0", port=port)  # noqa: S104
 
 
 def start_in_thread() -> None:
