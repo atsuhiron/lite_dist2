@@ -138,7 +138,7 @@ class Mandelbrot(AutoMPTrialRunner):
         return iter_count
 ```
 ここでは `BaseTrialRunner` に手を加えて自動でマルチプロセス処理を行ってくれる `AutoMPTrialRunner` という抽象クラスを利用しています。
-注目すべきポイントは `func` メソッドの引数と戻り値の型です。  
+注目すべきポイントは `func` メソッドの引数と戻り値の型です。**`func` メソッドの引数と戻り値の型は必ずこの形式に準拠する必要があります。**  
 引数は `parameters: RawParamType` で、パラメータの組の `tuple` です（例えば `(-0.5, 1.4)` など）。
 一方で戻り値は `RawResultType` となっています。これは計算された値です（例えば `15` など）。戻り値がベクトル量の場合は `(1.2, 4)` のような `tuple` を利用することが可能です。  
 `BaseTrialRunner` の実装については `AutoMPTrialRunner` の他にも `SemiAutoMPTrialRunner`、`ManualMPTrialRunner` があります。
@@ -161,14 +161,164 @@ pip install lite-dist2
 ```
 
 ## 5. 使用方法
-### 基本的な使い方
-### 管理ノードの設定と実行
-### テーブルノードの設定と実行
-### ワーカーノードの設定と実行
+`example/generate_mandelbrot_set.py` で基本的な使用例を紹介します。このセクションでは API のリファレンスやスキーマについては説明しないので、
+知りたい場合は [7. API リファレンス](#7-api-リファレンス) や [8. API のスキーマ](#8-api-のスキーマ) を参照してください。
+
+### TrialRunner の実装
+[TrialRunner の説明](#trialrunner) や [高度な TrialRunner の実装](#高度な-trialrunner-の実装) を参考にしながら、
+あなたのプロジェクトで `TrialRunner` を実装してください。そのプロジェクトが各ノード（少なくとも各ワーカーノード）で動くことになります。
+
+### テーブルノードの起動
+このライブラリかあるいはこのライブラリを利用したあなたのプロジェクトをテーブルノードにデプロイします。デプロイされたテーブルノードでは以下のコマンドでサーバを起動できます。
+```shell
+uv run start-table
+```
+あるいはこのライブラリがインストールされた仮想環境内であれば単に
+```shell
+start-table
+```
+で起動できます。このとき、
+```text
+$ uv run start-table
+INFO:lite_dist2.table_node_api.start_table_api:Table Node IP: xxx.xxx.xxx.xxx
+INFO:     Started server process [17836]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+のような表示がされます。`Table Node IP: xxx.xxx.xxx.xxx` の部分がこのノードのプライベートIPです。**続くワーカーノードの起動ではこの値を利用します。**
+
+### Study の登録
+管理ノードからテーブルノードに /study/register で `Study` を登録します。登録は Python でクライアントクラスを経由して行う方法と、curl などの API ツールを使用する方法があります。  
+Python の場合:
+```python
+from lite_dist2.common import float2hex, int2hex
+from lite_dist2.curriculum_models.study_portables import StudyRegistry
+from lite_dist2.study_strategies import StudyStrategyModel
+from lite_dist2.suggest_strategies import SuggestStrategyModel
+from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
+from lite_dist2.table_node_api.table_param import StudyRegisterParam
+from lite_dist2.value_models.aligned_space_registry import LineSegmentRegistry, ParameterAlignedSpaceRegistry
+from lite_dist2.worker_node.table_node_client import TableNodeClient
+
+_resolution = 10
+_half_size = 2.0
+
+study_register_param = StudyRegisterParam(
+    study=StudyRegistry(
+        name="mandelbrot",
+        required_capacity=set(),
+        study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
+        suggest_strategy=SuggestStrategyModel(
+            type="sequential",
+            suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
+        ),
+        result_type="scaler",
+        result_value_type="int",
+        parameter_space=ParameterAlignedSpaceRegistry(
+            type="aligned",
+            axes=[
+                LineSegmentRegistry(
+                    name="x",
+                    type="float",
+                    size=int2hex(_resolution),
+                    step=float2hex(2 * _half_size / _resolution),
+                    start=float2hex(-1 * _half_size),
+                ),
+                LineSegmentRegistry(
+                    name="y",
+                    type="float",
+                    size=int2hex(_resolution),
+                    step=float2hex(2 * _half_size / _resolution),
+                    start=float2hex(-1 * _half_size),
+                ),
+            ],
+        ),
+    ),
+)
+client = TableNodeClient("xxx.xxx.xxx.xxx:8000", name="admin node")
+client.register_study(study_register_param)
+```
+curl の場合:
+```shell
+curl -X POST -H "Content-Type: application/json" \
+-d '{
+  "study": {
+    "name": "mandelbrot",
+    "required_capacity": [],
+    "study_strategy": {"type": "all_calculation", "study_strategy_param": null},
+    "suggest_strategy": {
+      "type": "sequential",
+      "suggest_strategy_param": {"strict_aligned": true}
+    },
+    "result_type": "scaler",
+    "result_value_type": "int",
+    "parameter_space": {
+      "type": "aligned",
+      "axes": [
+        {"name": "x", "type": "float", "size": "0xa", "step": "0x1.999999999999ap-2", "start": "-0x1.0000000000000p+1"},
+        {"name": "y", "type": "float", "size": "0xa", "step": "0x1.999999999999ap-2", "start": "-0x1.0000000000000p+1"}
+      ]
+    }
+  }
+}' xxx.xxx.xxx.xxx:8000/study/register
+```
+`xxx.xxx.xxx.xxx` にはテーブルノードのプライベート IP を指定してください。
+
+### ワーカーノードの起動
+あなたのプロジェクトをワーカーノードにデプロイします。
+
+```python
+from lite_dist2.config import WorkerConfig
+from lite_dist2.worker_node.worker import Worker
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+
+class Mandelbrot(AutoMPTrialRunner):
+    def func(self, parameters: RawParamType) -> RawResultType:
+        ...
+
+worker_config = WorkerConfig(
+    name="w_01",
+    process_num=2,
+    max_size=10,
+    wait_seconds_on_no_trial=5,
+    table_node_request_timeout_seconds=60,
+)
+worker = Worker(
+    trial_runner=Mandelbrot(),
+    ip="xxx.xxx.xxx.xxx:8000",
+    config=worker_config,
+)
+worker.start()
+```
+実装した `TrialRunner` と `WorkerConfig` を `Worker` に渡した後、`worker.start()` を実行すればそのワーカーノードは自動でテーブルノードから `Trial` を取得して実行します。
+`WorkerConfig` の具体的な設定については [WorkerConfig](#workerconfig) を参照してください。
+
+### 結果の取得
+`Study` の完了如何にかかわらず、/study で `Study` を取得できます。
+`Study` の特定は /study/register の際に発行される `study_id` か、/study/register のパラメータとしてあなたが指定した `name` のどちらかが使用できます。
+この工程も同様に Python でクライアントクラスを経由して行う方法と、curl などの API ツールを使用する方法があります。  
+Python の場合:
+```python
+from lite_dist2.worker_node.table_node_client import TableNodeClient
+client = TableNodeClient("xxx.xxx.xxx.xxx:8000", name="admin node")
+study = client.study(name="mandelbrot")
+```
+
+curl の場合:
+```shell
+curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
+```
+`Study` がまだ実行中の場合は次のようなレスポンスが得られるはずです。ステータスコードは 202 です。
+```json
+{"status": "running", "result": null}
+```
+終了していた場合は `"status": "done"` になり、`result` に実行結果が格納されます。
 
 ## 6. 設定
-### 設定ファイル
-### 設定パラメータ
+### TableConfig
+### WorkerConfig
 
 ## 7. API リファレンス
 
@@ -263,6 +413,9 @@ x, y のサイズが変わっていることに注目してください。それ
 ### 半直線の利用
 
 ### 高度な TrialRunner の実装
+
+### Python スクリプト内でのテーブルノードの起動
+ブロッキング・ノンブロッキング
 
 ## 10. 開発
 ### 開発環境のセットアップ

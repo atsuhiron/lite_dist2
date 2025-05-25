@@ -26,6 +26,7 @@ class TableConfig(BaseModel):
         description="Interval of time to save curriculum json file",
         ge=1,
     )
+    # TODO: ポート番号
 
     @staticmethod
     def load_from_file() -> TableConfig:

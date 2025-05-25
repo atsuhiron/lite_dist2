@@ -44,7 +44,7 @@ def _run_periodic_timeout_check() -> None:
 
 
 def start() -> None:
-    logger.info("Table Node IP: %s", _get_local_ip())
+    # logger.info("Table Node IP: %s", _get_local_ip())
 
     # save thread
     save_thread = threading.Thread(target=_run_periodic_save, daemon=True)

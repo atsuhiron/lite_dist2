@@ -30,7 +30,7 @@ dev = [
 ]
 
 [project.scripts]
-start = "lite_dist2.table_node_api.start_table_api:start"
+start-table = "lite_dist2.table_node_api.start_table_api:start"
 
 [tool.coverage.paths]
 source = [

@@ -54,6 +54,7 @@ def handle_status() -> CurriculumSummaryResponse | JSONResponse:
 def handle_study_register(
     study_registry: Annotated[StudyRegisterParam, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse | JSONResponse:
+    # TODO: name がかぶってたら 400 にする
     curr = CurriculumProvider.get()
     new_study = Study.from_model(study_registry.study.to_study_model())
     curr.insert_study(new_study)
@@ -99,6 +100,7 @@ def handle_study(
         return HTTPException(status_code=400, detail="One of study_id or name should be set.")
     if study_id is not None and name is not None:
         return HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
+        # TODO: 400系全般がおかしい
 
     curr = CurriculumProvider.get()
     storage = curr.pop_storage(study_id, name)
