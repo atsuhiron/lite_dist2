@@ -49,7 +49,7 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         total = parameter_space.get_total()
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
-        if config.process_num is not None and config.process_num > 1:
+        if config.process_num is None or config.process_num > 1:
             with Pool(processes=config.process_num) as pool, tqdm.tqdm(**tqdm_kwargs) as p_bar:
                 for arg_tuple, result_iter in pool.imap_unordered(self.parameter_pass_func, parameter_space.grid()):
                     raw_mappings.append((arg_tuple, result_iter))
