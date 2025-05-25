@@ -5,13 +5,16 @@ from typing import TYPE_CHECKING
 
 import requests
 
+from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial
 from lite_dist2.expections import LD2TableNodeClientError, LD2TableNodeServerError
 from lite_dist2.table_node_api.table_param import StudyRegisterParam, TrialRegisterParam, TrialReserveParam
-from lite_dist2.table_node_api.table_response import StudyRegisteredResponse, TrialReserveResponse
+from lite_dist2.table_node_api.table_response import StudyRegisteredResponse, StudyResponse, TrialReserveResponse
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar
+
+    from lite_dist2.curriculum_models.study_portables import StudyStorage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,8 +34,6 @@ class TableNodeClient:
         except LD2TableNodeServerError:
             return False
         return True
-
-    # TODO: /study 用のメソッド作る
 
     def register_study(self, param: StudyRegisterParam) -> StudyRegisteredResponse:
         _, d = self._post("/study/register", self.INSTANT_API_TIMEOUT_SECONDS, param.model_dump(mode="json"))
@@ -57,6 +58,15 @@ class TableNodeClient:
     def register_trial(self, trial: Trial, timeout_seconds: int) -> None:
         param = TrialRegisterParam(trial=trial.to_model())
         _ = self._post("/trial/register", timeout_seconds, param.model_dump(mode="json"))
+
+    def study(self, study_id: str | None = None, name: str | None = None) -> StudyStorage | None:
+        _, resp = self._get("/study", self.INSTANT_API_TIMEOUT_SECONDS, {"study_id": study_id, "name": name})
+        study_response = StudyResponse.model_validate(resp)
+        if study_response.status != StudyStatus.done:
+            detail_info = f"{study_id=}" if study_id is not None else f"{name=}"
+            logger.info("Study(%s) is %s", detail_info, str(study_response))
+            return None
+        return study_response.result
 
     def _get(self, path: str, timeout: int, query: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"

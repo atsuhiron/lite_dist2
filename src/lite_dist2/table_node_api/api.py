@@ -108,5 +108,5 @@ def handle_study(
     study_status = curr.get_study_status(study_id, name)
     resp = StudyResponse(status=study_status, result=None)
     if study_status == StudyStatus.not_found:
-        return HTTPException(status_code=404, detail="Study not found")
+        return _response(resp, status_code=404)
     return _response(resp, 202)
