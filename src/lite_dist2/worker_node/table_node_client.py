@@ -14,8 +14,6 @@ from lite_dist2.table_node_api.table_response import StudyRegisteredResponse, St
 if TYPE_CHECKING:
     from typing import Any, ClassVar
 
-    from lite_dist2.curriculum_models.study_portables import StudyStorage
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -59,14 +57,13 @@ class TableNodeClient:
         param = TrialRegisterParam(trial=trial.to_model())
         _ = self._post("/trial/register", timeout_seconds, param.model_dump(mode="json"))
 
-    def study(self, study_id: str | None = None, name: str | None = None) -> StudyStorage | None:
+    def study(self, study_id: str | None = None, name: str | None = None) -> StudyResponse | None:
         _, resp = self._get("/study", self.INSTANT_API_TIMEOUT_SECONDS, {"study_id": study_id, "name": name})
         study_response = StudyResponse.model_validate(resp)
         if study_response.status != StudyStatus.done:
             detail_info = f"{study_id=}" if study_id is not None else f"{name=}"
             logger.info("Study(%s) is %s", detail_info, str(study_response))
-            return None
-        return study_response.result
+        return study_response
 
     def _get(self, path: str, timeout: int, query: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
