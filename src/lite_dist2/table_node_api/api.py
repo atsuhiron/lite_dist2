@@ -79,12 +79,12 @@ def handle_trial_reserve(
 @app.post("/trial/register", response_model=OkResponse)
 def handle_trial_register(
     param: Annotated[TrialRegisterParam, Body(description="Registering trial")],
-) -> OkResponse | JSONResponse | HTTPException:
+) -> OkResponse | JSONResponse:
     curr = CurriculumProvider.get()
     trial = param.trial
     study = curr.find_study_by_id(trial.study_id)
     if study is None:
-        return HTTPException(status_code=404, detail=f"Study not found: study_id={trial.study_id}")
+        raise HTTPException(status_code=404, detail=f"Study not found: study_id={trial.study_id}")
 
     study.receipt_trial(Trial.from_model(trial))
     curr.to_storage_if_done()
@@ -95,12 +95,11 @@ def handle_trial_register(
 def handle_study(
     study_id: Annotated[str | None, Query(description="`study_id` of the target study")] = None,
     name: Annotated[str | None, Query(description="`name` of the target study")] = None,
-) -> StudyResponse | JSONResponse | HTTPException:
+) -> StudyResponse | JSONResponse:
     if study_id is None and name is None:
-        return HTTPException(status_code=400, detail="One of study_id or name should be set.")
+        raise HTTPException(status_code=400, detail="One of study_id or name should be set.")
     if study_id is not None and name is not None:
-        return HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
-        # TODO: 400系全般がおかしい
+        raise HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
 
     curr = CurriculumProvider.get()
     storage = curr.pop_storage(study_id, name)
