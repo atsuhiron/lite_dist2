@@ -36,6 +36,7 @@ class TrialModel(BaseModel):
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     result: list[Mapping] | None = None
+    # TODO: 実行したノードが分かるように
 
 
 class Trial:

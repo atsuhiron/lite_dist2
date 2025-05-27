@@ -37,6 +37,11 @@ flowchart LR
 ## 3. 主要概念
 LiteDist2 を説明するさいにはいくつかの用語が必要です。既に出てきた `Study`、`Trial` がそれです。
 
+### Curriculum
+複数の `Study` を束ねたもので、実行予定、実行中、実行済みのタスクの一覧です。テーブルノード全体の状態とも言います。
+/study/register で `Curriculum` に `Study` を追加し、/study でポップされます。  
+テーブルノードは定期的にこのオブジェクトをバックアップします。
+
 ### Study
 ワーカーノードを使って処理する大きなタスクのことです。
 必ず１次元以上のパラメータ空間を持ち、その空間内のグリッドの座標がワーカーノードに与えられ、所定の計算を行います。
@@ -109,7 +114,7 @@ assert n == numerize("float", p)
 ```json
 {
   "type": "sequential",
-  "suggest_strategy_param": {"strict_aligned":  true}
+  "suggest_strategy_param": {"strict_aligned": true}
 }
 ```
 
@@ -316,13 +321,150 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 ```
 終了していた場合は `"status": "done"` になり、`result` に実行結果が格納されます。
 
+### 結果の見方
+/study で取得した結果は次のような形式です（`result` は１つだけ表示しています）。
+```json
+
+{
+    "name": "mandelbrot",
+    "required_capacity": [],
+    "study_strategy": {"type": "all_calculation", "study_strategy_param": null},
+    "suggest_strategy": {"type": "sequential", "suggest_strategy_param": {"strict_aligned": true}},
+    "result_type": "scaler",
+    "result_value_type": "int",
+    "study_id": "b4fed0ba-394d-11f0-b30f-e8d45b580c23",
+    "registered_timestamp": "2025-05-25T18:50:36.034909+09:00",
+    "parameter_space": {
+        "type": "aligned",
+        "axes": [
+            {
+                "name": "x",
+                "type": "float",
+                "size": "0xa",
+                "step": "0x1.999999999999ap-2",
+                "start": "-0x1.0000000000000p+1",
+                "ambient_index": "0x0",
+                "ambient_size": "0xa",
+                "is_dummy": false
+            },
+            {
+                "name": "y",
+                "type": "float",
+                "size": "0xa",
+                "step": "0x1.999999999999ap-2",
+                "start": "-0x1.0000000000000p+1",
+                "ambient_index": "0x0",
+                "ambient_size": "0xa",
+                "is_dummy": false
+            }
+        ],
+        "check_lower_filling": true
+    },
+    "done_timestamp": "2025-05-25T18:50:42.078755+09:00",
+    "result": [
+        {
+            "param": [
+                {
+                    "type": "scaler",
+                    "value_type": "float",
+                    "value": "-0x1.0000000000000p+1",
+                    "name": "x"
+                },
+                {
+                    "type": "scaler",
+                    "value_type": "float",
+                    "value": "-0x1.0000000000000p+1",
+                    "name": "y"
+                }
+            ],
+            "result": {
+                "type": "scaler",
+                "value_type": "int",
+                "value": "0x1",
+                "name": null
+            }
+        }
+    ],
+    "done_grids": 100
+}
+```
+`result` に注目すると、`param` と `result` が含まれていることが分かります。つまり、「`param[].value` での値が `result.value`」ということです。
+
 ## 6. 設定
 ### TableConfig
+| 名前                               | 型    | デフォルト値                           | 説明                               |
+|----------------------------------|------|----------------------------------|----------------------------------|
+| port                             | int  | 8000                             | テーブルノードが使用するポート番号                |
+| trial_timeout_seconds            | int  | 600                              | `Trial` が予約されてから登録されるまでのタイムアウト時間 |
+| timeout_check_interval_seconds   | int  | 60                               | `Trial` のタイムアウトを確認する間隔           |
+| curriculum_path                  | Path | {project root}/"curriculum.json" | `Curriculum` を保存する際のファイルパス       |
+| curriculum_save_interval_seconds | int  | 600                              | `Curriculum` を保存する時間間隔           |
+
 ### WorkerConfig
+| 名前                                 | 型           | デフォルト値 | 説明                                                                                        |
+|------------------------------------|-------------|--------|-------------------------------------------------------------------------------------------|
+| name                               | str \| None | None   | ワーカーノードの名前。                                                                               |
+| process_num                        | int \| None | None   | `AutoMPTrialRunner` を使用した際に生成されるプロセス数。`None` であれば `os.cpu_count()` の値を利用する。               |
+| max_size                           | int         | 1      | `Trial` の最大サイズ。`SuggestStrategy` で `"strict_aligned": true` を設定していた場合、これより小さいサイズになることがある。 |
+| disable_function_progress_bar      | bool        | False  | 進捗バーを非表示にするかどうか。                                                                          |
+| retaining_capacity                 | set[str]    | set()  | そのワーカーノードが持っている能力。１つのテーブルノードで複数種類の `Study` を処理するときに利用する。                                  |
+| wait_seconds_on_no_trial           | int         | 5      | テーブルノードに実行できる `Study` が無かった際に次の `Trial` 取得を待機する時間。                                        |
+| table_node_request_timeout_seconds | int         | 30     | テーブルノードに対するリクエストのタイムアウト時間。                                                                |
 
 ## 7. API リファレンス
+| パス              | メソッド | パラメータ                                                                       | ボディ                  | レスポンス                       | 説明                      |
+|-----------------|------|-----------------------------------------------------------------------------|----------------------|-----------------------------|-------------------------|
+| /ping           | GET  | なし                                                                          | なし                   | `OkResponse`                | 死活監視用API                |
+| /save           | GET  | なし                                                                          | なし                   | `OkResponse`                | `Curriculum` を保存する      |
+| /status         | GET  | なし                                                                          | なし                   | `CurriculumSummaryResponse` | `Curriculum` の概要情報を取得する |
+| /study/register | POST | なし                                                                          | `StudyRegisterParam` | `StudyRegisteredResponse`   | `Study` を登録する           |
+| /trial/reserve  | POST | なし                                                                          | `TrialReserveParam`  | `TrialReserveResponse`      | `Trial` を予約する           |
+| /trial/register | POST | なし                                                                          | `TrialRegisterParam` | `OkResponse`                | 完了した `Trial` を登録する      |
+| /study          | GET  | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                   | `StudyResponse`             | `Study` の情報を取得する        |
 
 ## 8. API のスキーマ
+
+### StudyRegisterParam
+| 名前    | 型             | 必須 | 説明           |
+|-------|---------------|----|--------------|
+| study | StudyRegistry | ✓  | 登録する `Study` |
+
+### TrialReserveParam
+| 名前                 | 型         | 必須 | 説明                                        |
+|--------------------|-----------|----|-------------------------------------------|
+| retaining_capacity | list[str] | ✓  | そのワーカーノードが対応できるタスクの種類 (内部的な型は `set[str]`) |
+| max_size           | int       | ✓  | 予約するパラメータ空間の最大サイズ                         |
+
+### TrialRegisterParam
+| 名前    | 型          | 必須 | 説明                   |
+|-------|------------|----|----------------------|
+| trial | TrialModel | ✓  | テーブルノードに登録する `Trial` |
+
+### TrialReserveResponse
+| 名前    | 型                  | 必須 | 説明                                                                                 |
+|-------|--------------------|----|------------------------------------------------------------------------------------|
+| trial | TrialModel \| None | ✓  | そのワーカーノードに対して予約された `Trial`。`Curriculum` が空か、そのワーカーノードで対応できる `Trial` がない場合は `None`。 |
+
+### StudyRegisteredResponse
+| 名前       | 型   | 必須 | 説明                          |
+|----------|-----|----|-----------------------------|
+| study_id | str | ✓  | 登録された `Study` に対して発行された ID。 |
+
+### StudyResponse
+| 名前     | 型                    | 必須 | 説明                                                          |
+|--------|----------------------|----|-------------------------------------------------------------|
+| status | StudyStatus          | ✓  | 対象の `Study` の状態。                                            |
+| result | StudyStorage \| None | ✗  | 完了した `Study` の結果。もし対象の `Study` が完了していないか見つからなかった場合は `None`。 |
+
+### CurriculumSummaryResponse
+| 名前        | 型                  | 必須 | 説明                                                     |
+|-----------|--------------------|----|--------------------------------------------------------|
+| summaries | list[StudySummary] | ✓  | `Curriculum` が現在保持している `Study` 及び `StudyStorage` のリスト。 |
+
+### OkResponse
+| 名前 | 型    | 必須 | 説明 |
+|----|------|----|----|
+| ok | bool | ✓  |    |
 
 ## 9. 高度な使用方法
 ### ParameterSpace の実装について

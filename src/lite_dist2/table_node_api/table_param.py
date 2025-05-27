@@ -11,7 +11,10 @@ class BaseParam(BaseModel):
 
 
 class StudyRegisterParam(BaseParam):
-    study: StudyRegistry
+    study: StudyRegistry = Field(
+        ...,
+        description="`Study` to register",
+    )
 
 
 class TrialReserveParam(BaseParam):
@@ -28,5 +31,5 @@ class TrialReserveParam(BaseParam):
 class TrialRegisterParam(BaseModel):
     trial: TrialModel = Field(
         ...,
-        description="Registering trial to the worker node.",
+        description="Registering trial to the table node.",
     )
