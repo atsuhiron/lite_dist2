@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_local_ip() -> str:
+    # TODO: 前のバージョンと併用する。
     return socket.gethostbyname(socket.gethostname())
 
 

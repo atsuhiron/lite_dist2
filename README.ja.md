@@ -466,6 +466,64 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 |----|------|----|----|
 | ok | bool | ✓  |    |
 
+## StudyModel 消すかも
+| 名前 | 型 | 必須 | 説明 |
+|------|------|------|------|
+| name | str \| None | ✓ | |
+| required_capacity | set[str] | ✓ | |
+| study_strategy | StudyStrategyModel | ✓ | |
+| suggest_strategy | SuggestStrategyModel | ✓ | |
+| result_type | Literal["scaler", "vector"] | ✓ | |
+| result_value_type | Literal["bool", "int", "float"] | ✓ | |
+| study_id | str | ✓ | |
+| status | StudyStatus | ✓ | |
+| registered_timestamp | datetime | ✓ | |
+| parameter_space | ParameterAlignedSpaceModel | ✓ | |
+| trial_table | TrialTableModel | No | |
+
+## StudyRegistry
+| 名前                | 型                               | 必須 | 説明                                                                                                                              |
+|-------------------|---------------------------------|----|---------------------------------------------------------------------------------------------------------------------------------|
+| name              | str \| None                     | ✓  | この `Study` の名前                                                                                                                  |
+| required_capacity | list[str]                       | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| study_strategy    | StudyStrategyModel              | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
+| suggest_strategy  | SuggestStrategyModel            | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
+| result_type       | Literal["scaler", "vector"]     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
+| result_value_type | Literal["bool", "int", "float"] | ✓  | この `Study` の戻り値の型。                                                                                                              |
+| parameter_space   | ParameterAlignedSpaceRegistry   | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                     |
+
+## StudySummary
+| 名前                   | 型                               | 必須 | 説明                                                                                                                              |
+|----------------------|---------------------------------|----|---------------------------------------------------------------------------------------------------------------------------------|
+| name                 | str \| None                     | ✓  | この `Study` の名前                                                                                                                  |
+| required_capacity    | set[str]                        | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| study_strategy       | StudyStrategyModel              | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
+| suggest_strategy     | SuggestStrategyModel            | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
+| result_type          | Literal["scaler", "vector"]     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
+| result_value_type    | Literal["bool", "int", "float"] | ✓  | この `Study` の戻り値の型。                                                                                                              |
+| study_id             | str                             | ✓  | この `Study` の ID                                                                                                                 |
+| status               | StudyStatus                     | ✓  |                                                                                                                                 |
+| registered_timestamp | datetime                        | ✓  |                                                                                                                                 |
+| parameter_space      | ParameterAlignedSpaceModel      | ✓  |                                                                                                                                 |
+| total_grids          | int \| None                     | ✓  |                                                                                                                                 |
+| done_grids           | int                             | ✓  |                                                                                                                                 |
+
+## StudyStorage
+| 名前 | 型 | 必須 | 説明 |
+|------|------|------|------|
+| name | str \| None | ✓ | |
+| required_capacity | set[str] | ✓ | |
+| study_strategy | StudyStrategyModel | ✓ | |
+| suggest_strategy | SuggestStrategyModel | ✓ | |
+| result_type | Literal["scaler", "vector"] | ✓ | |
+| result_value_type | Literal["bool", "int", "float"] | ✓ | |
+| study_id | str | ✓ | |
+| registered_timestamp | datetime | ✓ | |
+| parameter_space | ParameterAlignedSpaceModel | ✓ | |
+| done_timestamp | datetime | ✓ | |
+| result | list[Mapping] | ✓ | |
+| done_grids | int | ✓ | |
+
 ## 9. 高度な使用方法
 ### ParameterSpace の実装について
 #### ParameterAlignedSpace
