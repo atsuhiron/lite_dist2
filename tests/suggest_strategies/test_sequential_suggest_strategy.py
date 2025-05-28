@@ -479,6 +479,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),),
@@ -592,6 +593,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),),
@@ -664,6 +666,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -756,6 +759,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -795,6 +799,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -921,6 +926,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -973,6 +979,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1099,6 +1106,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1204,6 +1212,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(

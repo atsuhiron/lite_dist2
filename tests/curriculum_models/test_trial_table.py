@@ -310,6 +310,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         trial_status=TrialStatus.done,
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -410,6 +411,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         trial_status=TrialStatus.done,
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -475,6 +477,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         trial_status=TrialStatus.running,
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                     ),
                 ],
                 aggregated_parameter_space={
@@ -568,6 +571,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         trial_status=TrialStatus.done,
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -671,6 +675,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         trial_status=TrialStatus.done,
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -739,6 +744,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         trial_status=TrialStatus.running,
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                     ),
                 ],
                 aggregated_parameter_space={
@@ -1091,6 +1097,7 @@ def test_trial_table_count_grid(
                     ),
                     result_type="scaler",
                     result_value_type="float",
+                    worker_node_name="w01",
                 ),
             ],
             aggregated_parameter_space=None,
@@ -1118,6 +1125,7 @@ def test_trial_table_count_grid(
                     ),
                     result_type="scaler",
                     result_value_type="float",
+                    worker_node_name="w01",
                     result=[
                         Mapping(
                             param=(
@@ -1182,6 +1190,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1235,6 +1244,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=None,
                     ),
                     Trial(
@@ -1265,6 +1275,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1372,6 +1383,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1425,6 +1437,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=None,
                     ),
                     Trial(
@@ -1455,6 +1468,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1563,6 +1577,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1616,6 +1631,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=None,
                     ),
                     Trial(
@@ -1646,6 +1662,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1776,6 +1793,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1829,6 +1847,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1882,6 +1901,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -1998,6 +2018,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -2038,6 +2059,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=None,
                     ),
                     Trial(
@@ -2055,6 +2077,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -2172,6 +2195,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -2212,6 +2236,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -2252,6 +2277,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         result_type="scaler",
                         result_value_type="int",
+                        worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
@@ -2383,6 +2409,7 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
                 ),
                 result_type="scaler",
                 result_value_type="int",
+                worker_node_name="w01",
                 result=[
                     Mapping(
                         param=(
@@ -2455,6 +2482,7 @@ def test_trial_table_heck_timeout_trial() -> None:
         "result_type": "scaler",
         "result_value_type": "int",
         "result": [],
+        "worker_node_name": "w01",
     }
 
     now = DT

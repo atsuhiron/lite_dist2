@@ -22,6 +22,7 @@ _TRIAL_ARGS = {
     "parameter_space": _DUMMY_PARAMETER_SPACE,
     "result_type": "scalar",
     "result_value_type": "int",
+    "worker_node_name": "w01",
 }
 
 

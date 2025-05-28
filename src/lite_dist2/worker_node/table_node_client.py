@@ -24,7 +24,7 @@ class TableNodeClient:
 
     def __init__(self, ip: str, name: str) -> None:
         self.domain = "http://" + ip
-        self.name = name  # TODO: これを登録できるようにする
+        self.name = name
 
     def ping(self) -> bool:
         try:
@@ -41,7 +41,11 @@ class TableNodeClient:
         return resp
 
     def reserve_trial(self, max_size: int, retaining_capacity: set[str], timeout_seconds: int) -> Trial | None:
-        param = TrialReserveParam(retaining_capacity=retaining_capacity, max_size=max_size)
+        param = TrialReserveParam(
+            retaining_capacity=retaining_capacity,
+            max_size=max_size,
+            worker_node_name=self.name,
+        )
         status_code, d = self._post("/trial/reserve", timeout_seconds, param.model_dump(mode="json"))
 
         resp = TrialReserveResponse.model_validate(d)

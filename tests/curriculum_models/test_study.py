@@ -91,6 +91,7 @@ from tests.const import DT
                             ),
                             result_type="scaler",
                             result_value_type="float",
+                            worker_node_name="w01",
                             result=[
                                 Mapping(
                                     param=(
@@ -147,6 +148,7 @@ from tests.const import DT
                             ),
                             result_type="scaler",
                             result_value_type="float",
+                            worker_node_name="w01",
                         ),
                     ],
                     aggregated_parameter_space={
@@ -233,7 +235,7 @@ def test_study_suggest_receipt_single_thread() -> None:
 
     def contract_and_submit() -> None:
         # trial 取得
-        trial = study.suggest_next_trial(num=5)
+        trial = study.suggest_next_trial(num=5, worker_node_name="w01")
         if trial is None:
             return
 
@@ -297,7 +299,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
 
     def contract_and_submit() -> None:
         # trial 取得
-        trial = study.suggest_next_trial(num=5)
+        trial = study.suggest_next_trial(num=5, worker_node_name="w01")
 
         # 結果書き込み
         raw_mappings = []

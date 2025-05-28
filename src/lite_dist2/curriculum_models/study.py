@@ -58,7 +58,7 @@ class Study:
     def is_done(self) -> bool:
         return self.study_strategy.is_done(self.trial_table, self.parameter_space)
 
-    def suggest_next_trial(self, num: int | None) -> Trial | None:
+    def suggest_next_trial(self, num: int | None, worker_node_name: str | None) -> Trial | None:
         with self._table_lock:
             self.status = StudyStatus.running
 
@@ -74,6 +74,7 @@ class Study:
                 parameter_space=parameter_sub_space,
                 result_type=self.result_type,
                 result_value_type=self.result_value_type,
+                worker_node_name=worker_node_name,
             )
             self.trial_table.register(trial)
         if self.trial_table.is_not_defined_aps():

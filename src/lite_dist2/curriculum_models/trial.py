@@ -35,8 +35,8 @@ class TrialModel(BaseModel):
     parameter_space: ParameterAlignedSpaceModel | ParameterJaggedSpaceModel
     result_type: Literal["scaler", "vector"]
     result_value_type: Literal["bool", "int", "float"]
+    worker_node_name: str | None
     result: list[Mapping] | None = None
-    # TODO: 実行したノードが分かるように
 
 
 class Trial:
@@ -49,6 +49,7 @@ class Trial:
         parameter_space: ParameterSpace,
         result_type: Literal["scaler", "vector"],
         result_value_type: Literal["bool", "int", "float"],
+        worker_node_name: str | None,
         result: list[Mapping] | None = None,
     ) -> None:
         self.study_id = study_id
@@ -58,6 +59,7 @@ class Trial:
         self.parameter_space = parameter_space
         self.result_type = result_type
         self.result_value_type = result_value_type
+        self.worker_node_name = worker_node_name
         self.result = result
 
     def convert_mappings_from(self, raw_mappings: list[tuple[RawParamType, RawResultType]]) -> list[Mapping]:
@@ -110,6 +112,7 @@ class Trial:
             parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
+            worker_node_name=self.worker_node_name,
             result=self.result,
         )
 
@@ -130,5 +133,6 @@ class Trial:
             parameter_space=parameter_space,
             result_type=model.result_type,
             result_value_type=model.result_value_type,
+            worker_node_name=model.worker_node_name,
             result=model.result,
         )

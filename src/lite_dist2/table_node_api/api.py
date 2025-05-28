@@ -70,7 +70,7 @@ def handle_trial_reserve(
     if study is None:
         return _response(TrialReserveResponse(trial=None), 202)
 
-    trial = study.suggest_next_trial(param.max_size)
+    trial = study.suggest_next_trial(param.max_size, param.worker_node_name)
     if trial is None:
         return _response(TrialReserveResponse(trial=None), 202)
     return _response(TrialReserveResponse(trial=trial.to_model()), 200)

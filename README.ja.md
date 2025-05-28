@@ -430,10 +430,11 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | study | StudyRegistry | ✓  | 登録する `Study` |
 
 ### TrialReserveParam
-| 名前                 | 型         | 必須 | 説明                                        |
-|--------------------|-----------|----|-------------------------------------------|
-| retaining_capacity | list[str] | ✓  | そのワーカーノードが対応できるタスクの種類 (内部的な型は `set[str]`) |
-| max_size           | int       | ✓  | 予約するパラメータ空間の最大サイズ                         |
+| 名前                 | 型           | 必須 | 説明                                         |
+|--------------------|-------------|----|--------------------------------------------|
+| retaining_capacity | list[str]   | ✓  | そのワーカーノードが対応できるタスクの種類 (内部的な型は `set[str]`)。 |
+| max_size           | int         | ✓  | 予約するパラメータ空間の最大サイズ。                         |
+| worker_node_name   | str \| None |    | ワーカーノードの名前。                                |
 
 ### TrialRegisterParam
 | 名前    | 型          | 必須 | 説明                   |

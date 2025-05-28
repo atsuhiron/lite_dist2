@@ -154,6 +154,7 @@ def sample_curriculum_fixture() -> Curriculum:
                             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                             result_type="scaler",
                             result_value_type="float",
+                            worker_node_name="w01",
                             result=[
                                 Mapping(
                                     param=(
@@ -187,6 +188,7 @@ def sample_curriculum_fixture() -> Curriculum:
                             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                             result_type="scaler",
                             result_value_type="float",
+                            worker_node_name="w01",
                         ),
                     ],
                     aggregated_parameter_space={

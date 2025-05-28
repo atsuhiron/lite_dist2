@@ -26,6 +26,10 @@ class TrialReserveParam(BaseParam):
         ...,
         description="The maximum size of parameter space reserving.",
     )
+    worker_node_name: str | None = Field(
+        default=None,
+        description="Name of the worker node. ",
+    )
 
 
 class TrialRegisterParam(BaseModel):
