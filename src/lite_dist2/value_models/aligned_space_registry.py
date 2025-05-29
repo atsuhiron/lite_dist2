@@ -10,7 +10,7 @@ from lite_dist2.value_models.line_segment import LineSegmentModel
 class LineSegmentRegistry(BaseModel):
     name: str | None = None
     type: Literal["bool", "int", "float"]
-    size: str
+    size: str | None
     step: PortableValueType
     start: PortableValueType
 

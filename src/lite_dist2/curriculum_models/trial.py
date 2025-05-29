@@ -22,7 +22,6 @@ class Mapping(BaseModel):
 
 
 class TrialStatus(str, Enum):
-    declined = "declined"
     running = "running"
     done = "done"
 
