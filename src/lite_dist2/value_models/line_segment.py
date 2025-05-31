@@ -310,10 +310,10 @@ class ParameterRangeInt(LineSegment):
             name=self.name,
             type=self.type,
             start=int2hex(self.start),
-            size=int2hex(self.size),
+            size=None if self.size is None else int2hex(self.size),
             step=int2hex(self.step),
             ambient_index=int2hex(self.ambient_index),
-            ambient_size=int2hex(self.ambient_size),
+            ambient_size=None if self.ambient_size is None else int2hex(self.ambient_size),
         )
 
     @staticmethod
@@ -321,7 +321,7 @@ class ParameterRangeInt(LineSegment):
         return ParameterRangeInt(
             name=line_segment_model.name,
             type="int",
-            size=hex2int(line_segment_model.size),
+            size=None if line_segment_model.size is None else hex2int(line_segment_model.size),
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
             start=hex2int(line_segment_model.start),
@@ -396,10 +396,10 @@ class ParameterRangeFloat(LineSegment):
             name=self.name,
             type=self.type,
             start=float2hex(self.start),
-            size=int2hex(self.size),
+            size=None if self.size is None else int2hex(self.size),
             step=float2hex(self.step),
             ambient_index=int2hex(self.ambient_index),
-            ambient_size=int2hex(self.ambient_size),
+            ambient_size=None if self.ambient_size is None else int2hex(self.ambient_size),
         )
 
     @staticmethod
@@ -407,7 +407,7 @@ class ParameterRangeFloat(LineSegment):
         return ParameterRangeFloat(
             name=line_segment_model.name,
             type="float",
-            size=hex2int(line_segment_model.size),
+            size=None if line_segment_model.size is None else hex2int(line_segment_model.size),
             ambient_index=hex2int(line_segment_model.ambient_index),
             ambient_size=None if line_segment_model.ambient_size is None else hex2int(line_segment_model.ambient_size),
             start=hex2float(line_segment_model.start),
