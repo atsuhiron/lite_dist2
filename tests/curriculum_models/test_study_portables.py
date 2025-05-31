@@ -116,6 +116,130 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
 
 
 @pytest.mark.parametrize(
+    ("study_registry", "expected"),
+    [
+        pytest.param(
+            StudyRegistry(
+                name="test_registry",
+                required_capacity={"test"},
+                study_strategy=StudyStrategyModel(
+                    type="find_exact",
+                    study_strategy_param=StudyStrategyParam(
+                        target_value=VectorValue(
+                            type="vector",
+                            value_type="int",
+                            name="test_target",
+                            values=["0x0", "0x1", "0x2"],
+                        ),
+                    ),
+                ),
+                suggest_strategy=SuggestStrategyModel(
+                    type="sequential",
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
+                ),
+                parameter_space=ParameterAlignedSpaceRegistry(
+                    type="aligned",
+                    axes=[
+                        LineSegmentRegistry(name="x", type="int", size="0x64", step="0x2", start="0x0"),
+                        LineSegmentRegistry(name="y", type="float", size="0x64", step="0x1.0p-1", start="0x0.0p+0"),
+                    ],
+                ),
+                result_type="vector",
+                result_value_type="int",
+            ),
+            True,
+            id="find_exact, finite: True",
+        ),
+        pytest.param(
+            StudyRegistry(
+                name="test_registry",
+                required_capacity={"test"},
+                study_strategy=StudyStrategyModel(
+                    type="find_exact",
+                    study_strategy_param=StudyStrategyParam(
+                        target_value=VectorValue(
+                            type="vector",
+                            value_type="int",
+                            name="test_target",
+                            values=["0x0", "0x1", "0x2"],
+                        ),
+                    ),
+                ),
+                suggest_strategy=SuggestStrategyModel(
+                    type="sequential",
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
+                ),
+                parameter_space=ParameterAlignedSpaceRegistry(
+                    type="aligned",
+                    axes=[
+                        LineSegmentRegistry(name="x", type="int", size=None, step="0x2", start="0x0"),
+                        LineSegmentRegistry(name="y", type="float", size="0x64", step="0x1.0p-1", start="0x0.0p+0"),
+                    ],
+                ),
+                result_type="vector",
+                result_value_type="int",
+            ),
+            True,
+            id="find_exact, infinite: True",
+        ),
+        pytest.param(
+            StudyRegistry(
+                name="test_registry",
+                required_capacity={"test"},
+                study_strategy=StudyStrategyModel(
+                    type="all_calculation",
+                    study_strategy_param=None,
+                ),
+                suggest_strategy=SuggestStrategyModel(
+                    type="sequential",
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
+                ),
+                parameter_space=ParameterAlignedSpaceRegistry(
+                    type="aligned",
+                    axes=[
+                        LineSegmentRegistry(name="x", type="int", size="0x64", step="0x2", start="0x0"),
+                        LineSegmentRegistry(name="y", type="float", size="0x64", step="0x1.0p-1", start="0x0.0p+0"),
+                    ],
+                ),
+                result_type="vector",
+                result_value_type="int",
+            ),
+            True,
+            id="all_calculation, finite: True",
+        ),
+        pytest.param(
+            StudyRegistry(
+                name="test_registry",
+                required_capacity={"test"},
+                study_strategy=StudyStrategyModel(
+                    type="all_calculation",
+                    study_strategy_param=None,
+                ),
+                suggest_strategy=SuggestStrategyModel(
+                    type="sequential",
+                    suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
+                ),
+                parameter_space=ParameterAlignedSpaceRegistry(
+                    type="aligned",
+                    axes=[
+                        LineSegmentRegistry(name="x", type="int", size=None, step="0x2", start="0x0"),
+                        LineSegmentRegistry(name="y", type="float", size="0x64", step="0x1.0p-1", start="0x0.0p+0"),
+                    ],
+                ),
+                result_type="vector",
+                result_value_type="int",
+            ),
+            False,
+            id="all_calculation, infinite: False",
+        ),
+    ],
+)
+def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) -> None:
+    actual = study_registry.is_valid()
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
     ("storage", "expected"),
     [
         pytest.param(

@@ -44,6 +44,10 @@ class StudyRegistry(_StudyCommonModel):
 
     parameter_space: ParameterAlignedSpaceRegistry
 
+    def is_valid(self) -> bool:
+        is_infinite = any(axis.size is None for axis in self.parameter_space.axes)
+        return not (is_infinite and self.study_strategy.type == "all_calculation")
+
     def to_study_model(self) -> StudyModel:
         return StudyModel(
             study_id=self._publish_study_id(),

@@ -547,12 +547,12 @@ def test_curriculum_get_study_status_raises() -> None:
 @pytest.mark.parametrize(
     ("name", "expected"),
     [
-        pytest.param("n01", False),
-        pytest.param("n02", False),
-        pytest.param("n03", False),
-        pytest.param("n04", False),
-        pytest.param("n07", True),
-        pytest.param(None, True),
+        pytest.param("n01", False, id="storage: False"),
+        pytest.param("n02", False, id="running: False"),
+        pytest.param("n03", False, id="wait: False"),
+        pytest.param("n04", False, id="done: False"),
+        pytest.param("n07", True, id="unique name: True"),
+        pytest.param(None, True, id="None: True"),
     ],
 )
 def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:

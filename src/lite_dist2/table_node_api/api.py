@@ -54,7 +54,9 @@ def handle_status() -> CurriculumSummaryResponse | JSONResponse:
 def handle_study_register(
     study_registry: Annotated[StudyRegisterParam, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse | JSONResponse:
-    # TODO: 無限 && all_calculate だったら 400 にする
+    if not study_registry.study.is_valid():
+        raise HTTPException(status_code=400, detail="Cannot use together infinite space and all_calculation strategy.")
+
     curr = CurriculumProvider.get()
     new_study = Study.from_model(study_registry.study.to_study_model())
 
