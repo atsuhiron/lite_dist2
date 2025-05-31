@@ -112,6 +112,7 @@ class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
     def batch_func(
         self,
         raw_params: Iterator[RawParamType],
+        config: WorkerConfig,
         *args: tuple[Any, ...],
         **kwargs: dict[str, Any],
     ) -> list[tuple[RawParamType, RawResultType]]:
@@ -120,9 +121,9 @@ class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
     def wrap_func(
         self,
         parameter_space: ParameterSpace,
-        _config: WorkerConfig,
+        config: WorkerConfig,
         _: Pool | None = None,
         *args: tuple[Any, ...],
         **kwargs: dict[str, Any],
     ) -> list[tuple[RawParamType, RawResultType]]:
-        return self.batch_func(parameter_space.grid(), *args, **kwargs)
+        return self.batch_func(parameter_space.grid(), config, *args, **kwargs)

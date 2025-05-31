@@ -1,8 +1,10 @@
+from lite_dist2.type_definitions import RawParamTypefrom typing import Iterator
+
 # lite_dist2
 Simple distributed computing system
 
 ## 1. 概要
-LiteDist2 は簡易的な分散処理システムです。後述する３種類のノードを使用して処理を行います。
+LiteDist2 は簡易的な分散処理システムです。LAN内に配置された３種類のノードを使用して処理を行います。
 
 ## 2. アーキテクチャ
 ### 管理ノード（Management Node）
@@ -51,8 +53,8 @@ LiteDist2 を説明するさいにはいくつかの用語が必要です。既�
 
 ### Trial
 `Study` を分割したタスクの一部です。１つの `Trial` は必ず１つのワーカーノードで実行されます。
-ワーカーノードでは `TrialRunner` で実行された後、結果を追加してテーブルノードに送り返されます。
-`Trial` のサイズは /trial/reserve で取得する際に送信する `max_size: int` で変更できます。
+ワーカーノードでは `TrialRunner` で与えられた `Trial` を実行します。その後、 `Trial` に結果を追加してテーブルノードに送り返されます。
+`Trial` に含まれるグリッドの数は /trial/reserve で取得する際に送信する `max_size: int` で変更できます。
 
 ### ParameterSpace
 ワーカーノードが計算する際の引数の組を生成する空間のことです。パラメータ空間は必ず１つ以上の次元を持ちます。
@@ -67,23 +69,24 @@ LiteDist2 を説明するさいにはいくつかの用語が必要です。既�
   ]
 }
 ```
-これは「x は ブール値の True か False、 y は整数の -50 から 50 まで 1 刻み、z は浮動小数の 0.0 から 50.0 まで 0.25 刻み」を意味します。
+これは「x は ブール値の `True` か `False`、 y は整数の `-50` から `50` まで `1` 刻み、z は浮動小数の `0.0` から `50.0` まで `0.25` 刻み」を意味します。
 この場合、パラメータ空間では 2\*101\*200 = 40400 個のグリッドがあることになります。
 具体的な `ParameterSpace` の実装については [ParameterSpace の実装について](#parameterspace-の実装について) を参照してください。
 
 ### PortableValueType
-上記のように JSON 内で利用できる数値は文字列かブール値のみ許可されています。つまり、ブール値はそのまま利用できますが、整数値はhex表記しなければなりません。
+上記のように JSON 内で利用できる数値は文字列かブール値のみ許可されています。つまり、ブール値はそのまま利用できますが、整数値は hex 表記しなければなりません。
 これは異なる処理系を間に挟んでも、値が正確に表せるようにするためです。  
 通常の型とこれらの `PortableValueType` への相互変換には以下の関数が利用できます。
 ```python
 from lite_dist2.common import numerize, portablize
+
 n = 0.24
 p = portablize("float", n)  # "0x1.eb851eb851eb8p-3"
 assert n == numerize("float", p)
 ```
 
 ### StudyStrategy
-分散処理の種別によって処理の終了条件や必要な結果の取得方法が変わったりします。
+分散処理の種別によって処理の終了条件や結果の取得方法が変わったりします。
 用途に適した運用ができるように LiteDist2 では以下の3つの `StudyStrategy` を用意しています。
 - `all_calculation`: 与えられたパラメータ空間全体にわたって所定の計算を行う。
 - `find_exact`: ある関数の値が特定の値になるようなパラメータの組を探す。（ハッシュ関数の原像生成など）
@@ -131,7 +134,7 @@ class Mandelbrot(AutoMPTrialRunner):
     _ABS_THRESHOLD = 2.0
     _MAX_ITER = 255
 
-    def func(self, parameters: RawParamType) -> RawResultType:
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
         x = float(parameters[0])
         y = float(parameters[1])
         c = complex(x, y)
@@ -146,6 +149,7 @@ class Mandelbrot(AutoMPTrialRunner):
 注目すべきポイントは `func` メソッドの引数と戻り値の型です。**`func` メソッドの引数と戻り値の型は必ずこの形式に準拠する必要があります。**  
 引数は `parameters: RawParamType` で、パラメータの組の `tuple` です（例えば `(-0.5, 1.4)` など）。
 一方で戻り値は `RawResultType` となっています。これは計算された値です（例えば `15` など）。戻り値がベクトル量の場合は `(1.2, 4)` のような `tuple` を利用することが可能です。  
+他の引数である `args` や `kwargs` は何らかの定数を渡したい時に利用でき、後述する `worker.start()` メソッドから値を代入できます。
 `BaseTrialRunner` の実装については `AutoMPTrialRunner` の他にも `SemiAutoMPTrialRunner`、`ManualMPTrialRunner` があります。
 詳細は [高度な TrialRunner の実装](#高度な-trialrunner-の実装) を参照してください。
 
@@ -166,6 +170,10 @@ pip install lite-dist2
 ```
 
 ## 5. 使用方法
+> [!CAUTION]  
+> グローバルIPが必要な環境では使用できません。必ずLAN内で使用してください。  
+> また、テーブルノードはIPをLAN内に開放しているので、必ず信頼できるネットワーク内でのみ利用してください。
+
 `example/generate_mandelbrot_set.py` で基本的な使用例を紹介します。このセクションでは API のリファレンスやスキーマについては説明しないので、
 知りたい場合は [7. API リファレンス](#7-api-リファレンス) や [8. API のスキーマ](#8-api-のスキーマ) を参照してください。
 
@@ -280,7 +288,7 @@ from lite_dist2.type_definitions import RawParamType, RawResultType
 from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 
 class Mandelbrot(AutoMPTrialRunner):
-    def func(self, parameters: RawParamType) -> RawResultType:
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
         ...
 
 worker_config = WorkerConfig(
@@ -407,20 +415,20 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | process_num                        | int \| None | None   | `AutoMPTrialRunner` を使用した際に生成されるプロセス数。`None` であれば `os.cpu_count()` の値を利用する。               |
 | max_size                           | int         | 1      | `Trial` の最大サイズ。`SuggestStrategy` で `"strict_aligned": true` を設定していた場合、これより小さいサイズになることがある。 |
 | disable_function_progress_bar      | bool        | False  | 進捗バーを非表示にするかどうか。                                                                          |
-| retaining_capacity                 | set[str]    | set()  | そのワーカーノードが持っている能力。１つのテーブルノードで複数種類の `Study` を処理するときに利用する。                                  |
+| retaining_capacity                 | list[str]   | []     | そのワーカーノードが持っている能力(内部的な型は `set[str]`)。１つのテーブルノードで複数種類の `Study` を処理するときに利用する。               |
 | wait_seconds_on_no_trial           | int         | 5      | テーブルノードに実行できる `Study` が無かった際に次の `Trial` 取得を待機する時間。                                        |
 | table_node_request_timeout_seconds | int         | 30     | テーブルノードに対するリクエストのタイムアウト時間。                                                                |
 
 ## 7. API リファレンス
-| パス              | メソッド | パラメータ                                                                       | ボディ                  | レスポンス                       | 説明                      |
-|-----------------|------|-----------------------------------------------------------------------------|----------------------|-----------------------------|-------------------------|
-| /ping           | GET  | なし                                                                          | なし                   | `OkResponse`                | 死活監視用API                |
-| /save           | GET  | なし                                                                          | なし                   | `OkResponse`                | `Curriculum` を保存する      |
-| /status         | GET  | なし                                                                          | なし                   | `CurriculumSummaryResponse` | `Curriculum` の概要情報を取得する |
-| /study/register | POST | なし                                                                          | `StudyRegisterParam` | `StudyRegisteredResponse`   | `Study` を登録する           |
-| /trial/reserve  | POST | なし                                                                          | `TrialReserveParam`  | `TrialReserveResponse`      | `Trial` を予約する           |
-| /trial/register | POST | なし                                                                          | `TrialRegisterParam` | `OkResponse`                | 完了した `Trial` を登録する      |
-| /study          | GET  | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                   | `StudyResponse`             | `Study` の情報を取得する        |
+| パス              | メソッド | パラメータ                                                                       | ボディ                                       | レスポンス                                                   | 説明                      |
+|-----------------|------|-----------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|-------------------------|
+| /ping           | GET  | なし                                                                          | なし                                        | [OkResponse](#okresponse)                               | 死活監視用API                |
+| /save           | GET  | なし                                                                          | なし                                        | [OkResponse](#okresponse)                               | `Curriculum` を保存する      |
+| /status         | GET  | なし                                                                          | なし                                        | [CurriculumSummaryResponse](#curriculumsummaryresponse) | `Curriculum` の概要情報を取得する |
+| /study/register | POST | なし                                                                          | [StudyRegisterParam](#studyregisterparam) | [StudyRegisteredResponse](#studyregisteredresponse)     | `Study` を登録する           |
+| /trial/reserve  | POST | なし                                                                          | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | `Trial` を予約する           |
+| /trial/register | POST | なし                                                                          | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | 完了した `Trial` を登録する      |
+| /study          | GET  | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                                        | [StudyResponse](#studyresponse)                         | `Study` の情報を取得する        |
 
 ## 8. API のスキーマ
 
@@ -482,14 +490,14 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | 名前                   | 型                                                         | 必須 | 説明                                                                                                                              |
 |----------------------|-----------------------------------------------------------|----|---------------------------------------------------------------------------------------------------------------------------------|
 | name                 | str \| None                                               |    | この `Study` の名前                                                                                                                  |
-| required_capacity    | set[str]                                                  | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
 | study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
 | suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
 | result_type          | Literal["scaler", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
 | result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                              |
 | study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                |
 | status               | [StudyStatus](#studystatus-enum)                          | ✓  | この `Study` の状態。                                                                                                                 |
-| registered_timestamp | datetime                                                  | ✓  | この `Study` が登録された時刻を表すタイムスタンプ。                                                                                                  |
+| registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                               |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                     |
 | total_grids          | int \| None                                               |    | この `Study` で計算する可能性のあるパラメータの組の数。パラメータ空間が無限の場合は `None`。                                                                          |
 | done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                |
@@ -498,15 +506,15 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | 名前                   | 型                                                         | 必須 | 説明                                                                                                                              |
 |----------------------|-----------------------------------------------------------|----|---------------------------------------------------------------------------------------------------------------------------------|
 | name                 | str \| None                                               |    | この `Study` の名前                                                                                                                  |
-| required_capacity    | set[str]                                                  | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
 | study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
 | suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
 | result_type          | Literal["scaler", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
 | result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                              |
 | study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                |
-| registered_timestamp | datetime                                                  | ✓  | この `Study` が登録された時刻を表すタイムスタンプ。                                                                                                  |
+| registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                               |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                     |
-| done_timestamp       | datetime                                                  | ✓  | この `Study` が完了したじこくを表すタイムスタンプ。                                                                                                  |
+| done_timestamp       | str                                                       | ✓  | この `Study` が完了したじこくを表すタイムスタンプ（内部的な型は `datetime`）。                                                                               |
 | result               | list[[Mapping](#mapping)]                                 | ✓  | 計算結果一覧。`StudyStrategy` が `all_calculation` である場合は下の `done_grids` とこのリストの長さが一致します。                                               |
 | done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                |
 
@@ -517,9 +525,9 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | param | [StudyStrategyParam](#studystrategyparam) \|None     |    | この strategy の動作に必要なパラメータ。   |
 
 ### StudyStrategyParam
-| 名前           | 型                          | 必須 | 説明                         |
-|--------------|----------------------------|----|----------------------------|
-| target_value | ScalerValue \| VectorValue | ✓  | 探索対象の値。`find_exact` で利用する。 |
+| 名前           | 型                       | 必須 | 説明                         |
+|--------------|-------------------------|----|----------------------------|
+| target_value | [ResultType](#エイリアスの一覧) | ✓  | 探索対象の値。`find_exact` で利用する。 |
 
 ### SuggestStrategyModel
 | 名前    | 型                                             | 必須 | 説明                        |
@@ -528,16 +536,16 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | param | [SuggestStrategyParam](#suggeststrategyparam) | ✓  | この strategy の動作に必要なパラメータ。 |
 
 ### SuggestStrategyParam
-| 名前             | 型    | 必須 | 説明                                                                                                                    |
-|----------------|------|----|-----------------------------------------------------------------------------------------------------------------------|
-| strict_aligned | bool | ✓  | `Trial` 提案時のパラメータ空間を必ず `ParameterAlignedSpace` にするかどうか。この値が `False` かつパラメータ空間が１次元のときのみ `ParameterJaggedSpace` が使用される。 |
+| 名前             | 型    | 必須 | 説明                                                                                                                                                                                 |
+|----------------|------|----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| strict_aligned | bool | ✓  | `Trial` 提案時のパラメータ空間を必ず [`ParameterAlignedSpace`](#parameteralignedspacemodel) にするかどうか。この値が `False` かつパラメータ空間が１次元のときのみ [`ParameterJaggedSpace`](#parameterjaggedspacemodel) が使用される。 |
 
 ### TrialModel
 | 名前                | 型                                                                                                                    | 必須 | 説明                                                                                   |
 |-------------------|----------------------------------------------------------------------------------------------------------------------|----|--------------------------------------------------------------------------------------|
 | study_id          | str                                                                                                                  | ✓  | 親の `Study` のID。                                                                      |
 | trial_id          | str                                                                                                                  | ✓  | `Trial` のID。                                                                         |
-| timestamp         | datetime                                                                                                             | ✓  | この `Trial` が予約された時間を表すタイムスタンプ。                                                       |
+| timestamp         | str                                                                                                                  | ✓  | この `Trial` が予約された時間を表すタイムスタンプ（内部的な型は `datetime`）。                                    |
 | trial_status      | [TrialStatus](#trialstatus-enum)                                                                                     | ✓  | この `Trial` の状態。                                                                      |
 | parameter_space   | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) \| [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) | ✓  | この `Trial` で計算する[パラメータ空間](#parameterspace)。必ず親の `Study.parameter_space` の部分空間になっている。 |
 | result_type       | Literal["scaler", "vector"]                                                                                          | ✓  | この `Trial` の戻り値が１変数か、多変数かを表す値。必ず親の `Study.result_type` と一致する。                        |
@@ -546,10 +554,10 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | result            | list[[Mapping](#mapping)] \| None                                                                                    |    | この `Trial` の結果。                                                                      |
 
 ### Mapping
-| 名前     | 型          | 必須 | 説明                       |
-|--------|------------|----|--------------------------|
-| param  | ParamType  | ✓  | パラメータの組。                 |
-| result | ResultType | ✓  | 上のパラメータの組で所定の計算を行った結果の値。 |
+| 名前     | 型                       | 必須 | 説明                       |
+|--------|-------------------------|----|--------------------------|
+| param  | [ParamType](#エイリアスの一覧)  | ✓  | パラメータの組。                 |
+| result | [ResultType](#エイリアスの一覧) | ✓  | 上のパラメータの組で所定の計算を行った結果の値。 |
 
 ### ParameterAlignedSpaceRegistry
 | 名前   | 型                                                 | 必須 | 説明                             |
@@ -563,8 +571,8 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | name  |   | str \| None                     |    | 軸の名前。                                 |
 | type  |   | Literal["bool", "int", "float"] | ✓  | この軸が生成する値の型。                          |
 | size  |   | str \| None                     | ✓  | この軸が生成するパラメータの数。`None` の場合はサイズが無限となる。 |
-| step  |   | PortableValueType               | ✓  | パラメータ間の数値の幅。                          |
-| start |   | PortableValueType               | ✓  | この軸が生成する値の最小値。                        |
+| step  |   | [PortableValueType](#エイリアスの一覧)  | ✓  | パラメータ間の数値の幅。                          |
+| start |   | [PortableValueType](#エイリアスの一覧)  | ✓  | この軸が生成する値の最小値。                        |
 
 ### ParameterAlignedSpaceModel
 | 名前                  | 型                                           | 必須 | 説明                                                                                  |
@@ -574,28 +582,41 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | check_lower_filling | bool                                        | ✓  | このパラメータ空間からパラメータを取得する際に、低い次元（`axes` の末尾）から値を取得することを強制するフラグ。内部的な利用を除き、常に `True` にする。 |
 
 ### ParameterJaggedSpaceModel
-| 名前              | 型                                           | 必須 | 説明                                     |
-|-----------------|---------------------------------------------|----|----------------------------------------|
-| type            | Literal["jagged"]                           | ✓  | パラメータ空間の種類。必ず `"jagged"` にする。          |
-| parameters      | list[tuple[PortableValueType, ...]]         | ✓  | パラメータの組のリスト。                           |
-| ambient_indices | list[list[str, ...]]                        | ✓  | `parameters` の値が母空間でどの位置にあるかを指すインデックス。 |
-| axes_info       | list[[LineSegmentModel](#linesegmentmodel)] | ✓  | 各軸の名前や型情報。                             |
+| 名前              | 型                                                | 必須 | 説明                                     |
+|-----------------|--------------------------------------------------|----|----------------------------------------|
+| type            | Literal["jagged"]                                | ✓  | パラメータ空間の種類。必ず `"jagged"` にする。          |
+| parameters      | list[tuple[[PortableValueType](#エイリアスの一覧), ...]] | ✓  | パラメータの組のリスト。                           |
+| ambient_indices | list[list[str, ...]]                             | ✓  | `parameters` の値が母空間でどの位置にあるかを指すインデックス。 |
+| axes_info       | list[[LineSegmentModel](#linesegmentmodel)]      | ✓  | 各軸の名前や型情報。                             |
 
 ### LineSegmentModel
-| 名前            |   | 型                               | 必須 | 説明                                                                                                               |
-|---------------|:--|---------------------------------|----|------------------------------------------------------------------------------------------------------------------|
-| name          |   | str \| None                     |    | 軸の名前。                                                                                                            |
-| type          |   | Literal["bool", "int", "float"] | ✓  | この軸が生成する値の型。                                                                                                     |
-| size          |   | str \| None                     | ✓  | この軸が生成するパラメータの数。`None` の場合はサイズが無限となる。                                                                            |
-| step          |   | PortableValueType               | ✓  | パラメータ間の数値の幅。                                                                                                     |
-| start         |   | PortableValueType               | ✓  | この軸が生成する値の最小値。                                                                                                   |
-| ambient_index |   | str                             | ✓  | `start` の値が母空間でどの位置にあるかを指すインデックス。                                                                                |
-| ambient_size  |   | str \| None                     |    | この軸が母空間で生成するパラメータの総数。                                                                                            |
-| is_dummy      |   | bool                            |    | この軸が [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) に属する場合に `True` になり、`name`, `type` の情報のみが有効であることを表す。 |
+| 名前            | 型                               | 必須 | 説明                                                                                                               |
+|---------------|---------------------------------|----|------------------------------------------------------------------------------------------------------------------|
+| name          | str \| None                     |    | 軸の名前。                                                                                                            |
+| type          | Literal["bool", "int", "float"] | ✓  | この軸が生成する値の型。                                                                                                     |
+| size          | str \| None                     | ✓  | この軸が生成するパラメータの数。`None` の場合はサイズが無限となる。                                                                            |
+| step          | [PortableValueType](#エイリアスの一覧)  | ✓  | パラメータ間の数値の幅。                                                                                                     |
+| start         | [PortableValueType](#エイリアスの一覧)  | ✓  | この軸が生成する値の最小値。                                                                                                   |
+| ambient_index | str                             | ✓  | `start` の値が母空間でどの位置にあるかを指すインデックス。                                                                                |
+| ambient_size  | str \| None                     |    | この軸が母空間で生成するパラメータの総数。                                                                                            |
+| is_dummy      | bool                            |    | この軸が [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) に属する場合に `True` になり、`name`, `type` の情報のみが有効であることを表す。 |
 
 ### ScalerValue
 
+| 名前         | 型                               | 必須 | 説明                                   |
+|------------|---------------------------------|----|--------------------------------------|
+| type       | Literal["scaler"]               | ✓  | 値の種別。スカラー量かベクトル量かを区別するための識別子。        |
+| value_type | Literal["bool", "int", "float"] | ✓  | 値の型。                                 |
+| value      | [PortableValueType](#エイリアスの一覧)  | ✓  | 値。                                   |
+| name       | str \| None                     |    | 値につける名前。パラメータ空間から生成されたものであれば軸の名前が入る。 |
+
 ### VectorValue
+| 名前         | 型                                    | 必須 | 説明                                   |
+|------------|--------------------------------------|----|--------------------------------------|
+| type       | Literal["vector"]                    | ✓  | 値の種別。スカラー量かベクトル量かを区別するための識別子。        |
+| value_type | Literal["bool", "int", "float"]      | ✓  | 値の型。                                 |
+| values     | list[[PortableValueType](#エイリアスの一覧)] | ✓  | 値。                                   |
+| name       | str \| None                          |    | 値につける名前。パラメータ空間から生成されたものであれば軸の名前が入る。 |
 
 ### StudyStatus (Enum)
 | 名前        | 説明                                        |
@@ -612,11 +633,11 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | done    | 完了  |
 
 ### エイリアスの一覧
-| エイリアス             | 元の型                        |
-|-------------------|----------------------------|
-| ParamType         | list[ScalerValue, ...]     |
-| ResultType        | ScalerValue \| VectorValue |
-| PortableValueType | bool \| str                |
+| エイリアス             | 元の型                                                        |
+|-------------------|------------------------------------------------------------|
+| ParamType         | list[[ScalerValue](#scalervalue), ...]                     |
+| ResultType        | [ScalerValue](#scalervalue) \| [VectorValue](#vectorvalue) |
+| PortableValueType | bool \| str                                                |
 
 ## 9. 高度な使用方法
 ### ParameterSpace の実装について
@@ -705,13 +726,129 @@ x, y のサイズが変わっていることに注目してください。それ
 最後のフィールドに `"is_dummy": true` とあることからも分かる通り、このオブジェクトは `type`, `name`, `ambient_size` のみが有効な値です。
 
 ### 半直線の利用
+パラメータ空間の軸には長さ無限の半直線を１つだけ含めることができます。この半直線は必ず最初の軸にする必要があります。半直線の定義は以下の通りです。
+```json
+{
+  "type": "int",
+  "name": "infinite_axis",
+  "size": null,
+  "step": "0x1",
+  "start": "0x0",
+  "ambient_size": null,
+  "ambient_index": "0x0"
+}
+```
+`ambient_size` が `null` になります。また `Study` 登録時などのパラメータ空間全体を表す必要があるときなどは更に `size` も `null` になります。
+> [!WARNING]
+> 半直線が含まれるパラメータ空間で、`StudyStrategy` のタイプを all_calculation にすることはできません。
 
 ### 高度な TrialRunner の実装
+#### SemiAutoMPTrialRunner
+`AutoMPTrialRunner` ではプロセスプール (`multiprocessing.pool.Pool`) をこの `TrialRunner` 内部で生成していました。
+子プロセスの生成は重い処理であるので、繰り返し使用することが分かっている場合は最初に生成したものを使いまわす方が効率的です。  
+`SemiAutoMPTrialRunner` ではこの問題を解決するためにプロセスプールを外から注入できるようになっています。
+定義の方法は `AutoMPTrialRunner` とほとんど同じで、継承元が変わるだけです。
+```diff
+from lite_dist2.type_definitions import RawParamType, RawResultType
+- from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
++ from lite_dist2.worker_node.trial_runner import SemiAutoMPTrialRunner
+
+
+- class Mandelbrot(AutoMPTrialRunner):
++ class Mandelbrot(SemiAutoMPTrialRunner):
+    _ABS_THRESHOLD = 2.0
+    _MAX_ITER = 255
+
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+        while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
+            z = z ** 2 + c
+            iter_count += 1
+        return iter_count
+```
+
+実行する際は外からプロセスプールを注入します。また `WorkerConfig.process_num` は無視されます。
+
+```diff
++ from multiprocessing.pool import Pool
+
+from lite_dist2.config import WorkerConfig
+from lite_dist2.worker_node.worker import Worker
+
+def run_worker(table_ip: str) -> None:
+    worker_config = WorkerConfig(
+        name="w_01",
+-         process_num=2,
+        max_size=10,
+        wait_seconds_on_no_trial=5,
+        table_node_request_timeout_seconds=60,
+    )
+-     worker = Worker(
+-         trial_runner=Mandelbrot(),
+-         ip=table_ip,
+-         config=worker_config,
+-     )
+-     worker.start()
++     with Pool(processes=2) as pool:
++         worker = Worker(
++             trial_runner=Mandelbrot(),
++             ip=table_ip,
++             config=worker_config,
++             pool=Pool,
++         )
++         worker.start()
+```
+
+#### ManualMPTrialRunner
+もしあなたがパラメータの組のリストを受け取って処理する部分を自分で実装したい場合（例えば、並列処理の部分を自分で実装したい）、`ManualMPTrialRunner` が利用できます。
+このクラスを利用する場合は `func` メソッドの代わりに `batch_func` メソッドを実装します。  
+例えば以下の例は `AutoMPTrialRunner` と等価です。
+```python
+import functools
+from typing import Iterator
+from multiprocessing.pool import Pool
+
+from lite_dist2.config import WorkerConfig
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import ManualMPTrialRunner
+
+
+class ManualMandelbrot(ManualMPTrialRunner):
+    def batch_func(self, raw_params: Iterator[RawParamType], config: WorkerConfig, *args: tuple, **kwargs: dict) -> list[tuple[RawParamType, RawResultType]]:
+        raw_mappings: list[tuple[RawParamType, RawResultType]] = []
+        parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
+        with Pool(processes=2) as pool:
+            for arg_tuple, result_iter in pool.imap_unordered(parameter_pass_func, raw_params):
+                raw_mappings.append((arg_tuple, result_iter))
+        return raw_mappings
+```
 
 ### Python スクリプト内でのテーブルノードの起動
-ブロッキング・ノンブロッキング
+[テーブルノードの起動](#テーブルノードの起動) では uv コマンドでテーブルノードを起動していました。
+もしこれを Python スクリプトで起動したい場合は次のようにします。
+```python
+from lite_dist2.table_node_api.start_table_api import start
+
+start()
+```
+この例ではテーブルノードはブロッキング処理で動いているので、サーバを終了しない限り `start` 関数から抜けることはありません。
+テーブルノードをノンブロッキングに起動したい場合は別スレッドでサーバを立ち上げる必要があります。  
+次の例では別スレッドでサーバを起動しています。
+```python
+from lite_dist2.table_node_api.start_table_api import start_in_thread
+
+start_in_thread()
+```
 
 ## 10. 開発
+### 必要要件
+- Python >= 3.13
+- uv >= 0.7.0
+
 ### 開発環境のセットアップ
 ```shell
 uv sync --dev
@@ -720,4 +857,8 @@ uv sync --dev
 ### テスト実行方法
 ```shell
 uv run pytest
+```
+また、以下のオプションをつけることでカバレッジを取得できます。
+```shell
+uv run pytest --cov --cov-config=pyproject.toml
 ```

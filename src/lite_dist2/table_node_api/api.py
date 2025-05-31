@@ -55,6 +55,7 @@ def handle_study_register(
     study_registry: Annotated[StudyRegisterParam, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse | JSONResponse:
     # TODO: name がかぶってたら 400 にする
+    # TODO: 無限 && all_calculate だったら 400 にする
     curr = CurriculumProvider.get()
     new_study = Study.from_model(study_registry.study.to_study_model())
     curr.insert_study(new_study)
