@@ -9,7 +9,7 @@ from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, Paramet
 from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
 from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel, ParameterRangeInt
-from lite_dist2.value_models.point import ScalerValue
+from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
@@ -308,79 +308,79 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                             ],
                         ),
                         trial_status=TrialStatus.done,
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xa", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xa", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xb", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xb", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xc", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xc", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xd", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xd", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xe", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xe", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x5", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x5", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xf", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xf", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x6", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x6", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x10", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x10", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x7", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x7", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x11", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x11", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x8", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x8", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x12", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x12", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x9", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x9", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x13", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x13", name="p"),
                             ),
                         ],
                     ),
@@ -409,44 +409,44 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                             ],
                         ),
                         trial_status=TrialStatus.done,
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x0", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x1", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x1", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x2", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x2", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x3", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x3", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x4", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x4", name="p"),
                             ),
                         ],
                     ),
@@ -475,7 +475,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                             ],
                         ),
                         trial_status=TrialStatus.running,
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                     ),
@@ -569,79 +569,79 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                             check_lower_filling=True,
                         ),
                         trial_status=TrialStatus.done,
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xa", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xa", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xb", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xb", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xc", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xc", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xd", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xd", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xe", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xe", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x5", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x5", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0xf", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0xf", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x6", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x6", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x10", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x10", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x7", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x7", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x11", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x11", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x8", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x8", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x12", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x12", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x9", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x9", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x13", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x13", name="p"),
                             ),
                         ],
                     ),
@@ -673,44 +673,44 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                             check_lower_filling=True,
                         ),
                         trial_status=TrialStatus.done,
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x0", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x1", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x1", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x2", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x2", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x3", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x3", name="p"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x4", name="p"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x4", name="p"),
                             ),
                         ],
                     ),
@@ -742,7 +742,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                             check_lower_filling=True,
                         ),
                         trial_status=TrialStatus.running,
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                     ),
@@ -1095,7 +1095,7 @@ def test_trial_table_count_grid(
                         ],
                         check_lower_filling=True,
                     ),
-                    result_type="scaler",
+                    result_type="scalar",
                     result_value_type="float",
                     worker_node_name="w01",
                 ),
@@ -1123,21 +1123,21 @@ def test_trial_table_count_grid(
                         ],
                         check_lower_filling=True,
                     ),
-                    result_type="scaler",
+                    result_type="scalar",
                     result_value_type="float",
                     worker_node_name="w01",
                     result=[
                         Mapping(
                             param=(
-                                ScalerValue(
-                                    type="scaler",
+                                ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x1",
                                     name="p1",
                                 ),
                             ),
-                            result=ScalerValue(
-                                type="scaler",
+                            result=ScalarValue(
+                                type="scalar",
                                 value_type="float",
                                 value="0x1.0000000000000p+1",
                                 name="p2",
@@ -1188,27 +1188,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x0",
                                     name="p2",
@@ -1242,7 +1242,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=None,
@@ -1273,27 +1273,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x2",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x2",
                                     name="p2",
@@ -1381,27 +1381,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x0",
                                     name="p2",
@@ -1435,7 +1435,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=None,
@@ -1466,27 +1466,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x2",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x2",
                                     name="p2",
@@ -1575,27 +1575,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x0",
                                     name="p2",
@@ -1629,7 +1629,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=None,
@@ -1660,27 +1660,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x2",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x2",
                                     name="p2",
@@ -1742,21 +1742,21 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
             [
                 Mapping(
                     param=(
-                        ScalerValue(
-                            type="scaler",
+                        ScalarValue(
+                            type="scalar",
                             value_type="int",
                             value="0x0",
                             name="x",
                         ),
-                        ScalerValue(
-                            type="scaler",
+                        ScalarValue(
+                            type="scalar",
                             value_type="int",
                             value="0x1",
                             name="y",
                         ),
                     ),
-                    result=ScalerValue(
-                        type="scaler",
+                    result=ScalarValue(
+                        type="scalar",
                         value_type="int",
                         value="0x1",
                         name="p2",
@@ -1791,27 +1791,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x0",
                                     name="p2",
@@ -1845,27 +1845,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x1",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x1",
                                     name="p2",
@@ -1899,27 +1899,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             ],
                             check_lower_filling=True,
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x2",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x2",
                                     name="p2",
@@ -2016,27 +2016,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                                 DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
                             ],
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x0",
                                     name="p2",
@@ -2057,7 +2057,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                                 DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
                             ],
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=None,
@@ -2075,27 +2075,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                                 DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
                             ],
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x2",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x2",
                                     name="p2",
@@ -2157,21 +2157,21 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
             [
                 Mapping(
                     param=(
-                        ScalerValue(
-                            type="scaler",
+                        ScalarValue(
+                            type="scalar",
                             value_type="int",
                             value="0x0",
                             name="x",
                         ),
-                        ScalerValue(
-                            type="scaler",
+                        ScalarValue(
+                            type="scalar",
                             value_type="int",
                             value="0x1",
                             name="y",
                         ),
                     ),
-                    result=ScalerValue(
-                        type="scaler",
+                    result=ScalarValue(
+                        type="scalar",
                         value_type="int",
                         value="0x1",
                         name="p2",
@@ -2193,27 +2193,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                                 DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
                             ],
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x0",
                                     name="p2",
@@ -2234,27 +2234,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                                 DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
                             ],
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x1",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x1",
                                     name="p2",
@@ -2275,27 +2275,27 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                                 DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
                             ],
                         ),
-                        result_type="scaler",
+                        result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x0",
                                         name="x",
                                     ),
-                                    ScalerValue(
-                                        type="scaler",
+                                    ScalarValue(
+                                        type="scalar",
                                         value_type="int",
                                         value="0x2",
                                         name="y",
                                     ),
                                 ),
-                                result=ScalerValue(
-                                    type="scaler",
+                                result=ScalarValue(
+                                    type="scalar",
                                     value_type="int",
                                     value="0x2",
                                     name="p2",
@@ -2407,16 +2407,16 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
                     ],
                     check_lower_filling=True,
                 ),
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
                 result=[
                     Mapping(
                         param=(
-                            ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                            ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                            ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                            ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                         ),
-                        result=ScalerValue(type="scaler", value_type="int", value="0x0", name="p2"),
+                        result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p2"),
                     ),
                 ],
             ),
@@ -2439,10 +2439,10 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
     result = [
         Mapping(
             param=(
-                ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
             ),
-            result=ScalerValue(type="scaler", value_type="int", value="0x0", name="p2"),
+            result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p2"),
         ),
     ]
 
@@ -2464,10 +2464,10 @@ def test_trial_table_receipt_trial_result_raise_not_found_trial() -> None:
     result = [
         Mapping(
             param=(
-                ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
             ),
-            result=ScalerValue(type="scaler", value_type="int", value="0x0", name="p2"),
+            result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p2"),
         ),
     ]
 
@@ -2479,7 +2479,7 @@ def test_trial_table_heck_timeout_trial() -> None:
     common_param = {
         "study_id": "s01",
         "parameter_space": _DUMMY_PARAMETER_SPACE,
-        "result_type": "scaler",
+        "result_type": "scalar",
         "result_value_type": "int",
         "result": [],
         "worker_node_name": "w01",

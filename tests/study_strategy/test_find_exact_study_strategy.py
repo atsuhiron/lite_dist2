@@ -6,7 +6,7 @@ from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
-from lite_dist2.value_models.point import ResultType, ScalerValue
+from lite_dist2.value_models.point import ResultType, ScalarValue
 from tests.const import DT
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
@@ -35,7 +35,7 @@ _TRIAL_ARGS = {
                 trials=[],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             False,
             id="Empty: False",
         ),
@@ -48,17 +48,17 @@ _TRIAL_ARGS = {
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -66,7 +66,7 @@ _TRIAL_ARGS = {
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             False,
             id="Not found: False",
         ),
@@ -79,17 +79,17 @@ _TRIAL_ARGS = {
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -97,7 +97,7 @@ _TRIAL_ARGS = {
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             True,
             id="Found: True",
         ),
@@ -110,17 +110,17 @@ _TRIAL_ARGS = {
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -128,7 +128,7 @@ _TRIAL_ARGS = {
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             False,
             id="Found but running: False",
         ),
@@ -152,7 +152,7 @@ def test_find_exact_study_strategy_is_done(
                 trials=[],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             [],
             id="Empty",
         ),
@@ -165,17 +165,17 @@ def test_find_exact_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -183,7 +183,7 @@ def test_find_exact_study_strategy_is_done(
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             [],
             id="Not found",
         ),
@@ -196,17 +196,17 @@ def test_find_exact_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -214,14 +214,14 @@ def test_find_exact_study_strategy_is_done(
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             [
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                 ),
             ],
             id="Found",
@@ -235,17 +235,17 @@ def test_find_exact_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -253,7 +253,7 @@ def test_find_exact_study_strategy_is_done(
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            ScalerValue(type="scaler", value_type="int", value="0x64"),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
             [],
             id="Found but running",
         ),

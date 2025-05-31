@@ -13,7 +13,7 @@ from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyModel, SuggestStrategyParam
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.line_segment import LineSegmentModel, ParameterRangeFloat
-from lite_dist2.value_models.point import ScalerValue
+from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 
@@ -56,7 +56,7 @@ from tests.const import DT
                     ],
                     check_lower_filling=True,
                 ),
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="int",
                 trial_table=TrialTableModel(
                     trials=[
@@ -89,28 +89,28 @@ from tests.const import DT
                                 ],
                                 check_lower_filling=True,
                             ),
-                            result_type="scaler",
+                            result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
                             result=[
                                 Mapping(
                                     param=(
-                                        ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                        ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                     ),
-                                    result=ScalerValue(
-                                        type="scaler",
+                                    result=ScalarValue(
+                                        type="scalar",
                                         value_type="float",
                                         value="0x1.0000000000000p-1",
                                     ),
                                 ),
                                 Mapping(
                                     param=(
-                                        ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                     ),
-                                    result=ScalerValue(
-                                        type="scaler",
+                                    result=ScalarValue(
+                                        type="scalar",
                                         value_type="float",
                                         value="0x1.0000000000000p-2",
                                     ),
@@ -146,7 +146,7 @@ from tests.const import DT
                                 ],
                                 check_lower_filling=True,
                             ),
-                            result_type="scaler",
+                            result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
                         ),
@@ -228,7 +228,7 @@ def test_study_suggest_receipt_single_thread() -> None:
             parameter_space=_parameter_space,
         ),
         parameter_space=_parameter_space,
-        result_type="scaler",
+        result_type="scalar",
         result_value_type="float",
         trial_table=TrialTable(trials=[], aggregated_parameter_space=None),
     )
@@ -292,7 +292,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
             parameter_space=_parameter_space,
         ),
         parameter_space=_parameter_space,
-        result_type="scaler",
+        result_type="scalar",
         result_value_type="float",
         trial_table=TrialTable(trials=[], aggregated_parameter_space=None),
     )

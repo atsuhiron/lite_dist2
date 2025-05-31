@@ -5,7 +5,7 @@ from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
-from lite_dist2.value_models.point import ScalerValue
+from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
@@ -82,16 +82,16 @@ _TRIAL_ARGS = {
                         trial_status=TrialStatus.done,
                         result=[
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -140,16 +140,16 @@ _TRIAL_ARGS = {
                         trial_status=TrialStatus.done,
                         result=[
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -159,16 +159,16 @@ _TRIAL_ARGS = {
                         trial_status=TrialStatus.done,
                         result=[
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                             ),
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x4", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x68"),
                             ),
                             Mapping(
-                                param=(ScalerValue(type="scaler", value_type="int", value="0x5", name="x"),),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x69"),
+                                param=(ScalarValue(type="scalar", value_type="int", value="0x5", name="x"),),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x69"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -231,17 +231,17 @@ _TRIAL_ARGS = {
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -252,17 +252,17 @@ _TRIAL_ARGS = {
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -350,17 +350,17 @@ _TRIAL_ARGS = {
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x64"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x65"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -371,17 +371,17 @@ _TRIAL_ARGS = {
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x66"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -471,10 +471,10 @@ def test_all_calculation_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -485,10 +485,10 @@ def test_all_calculation_study_strategy_is_done(
             [
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                 ),
             ],
             id="Single trial, single map",
@@ -502,17 +502,17 @@ def test_all_calculation_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x68"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -523,17 +523,17 @@ def test_all_calculation_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x69"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x69"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x6a"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x6a"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -544,31 +544,31 @@ def test_all_calculation_study_strategy_is_done(
             [
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                 ),
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x68"),
                 ),
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x69"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x69"),
                 ),
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x4", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x6a"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x6a"),
                 ),
             ],
             id="Multi trial, multi map",
@@ -582,17 +582,17 @@ def test_all_calculation_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x68"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -603,17 +603,17 @@ def test_all_calculation_study_strategy_is_done(
                         result=[
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x3", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x69"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x69"),
                             ),
                             Mapping(
                                 param=(
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="x"),
-                                    ScalerValue(type="scaler", value_type="int", value="0x4", name="y"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
                                 ),
-                                result=ScalerValue(type="scaler", value_type="int", value="0x6a"),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x6a"),
                             ),
                         ],
                         **_TRIAL_ARGS,
@@ -624,17 +624,17 @@ def test_all_calculation_study_strategy_is_done(
             [
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x1", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x67"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                 ),
                 Mapping(
                     param=(
-                        ScalerValue(type="scaler", value_type="int", value="0x2", name="x"),
-                        ScalerValue(type="scaler", value_type="int", value="0x2", name="y"),
+                        ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                     ),
-                    result=ScalerValue(type="scaler", value_type="int", value="0x68"),
+                    result=ScalarValue(type="scalar", value_type="int", value="0x68"),
                 ),
             ],
             id="Multi trial, multi map, except running",

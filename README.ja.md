@@ -224,7 +224,7 @@ study_register_param = StudyRegisterParam(
             type="sequential",
             suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
         ),
-        result_type="scaler",
+        result_type="scalar",
         result_value_type="int",
         parameter_space=ParameterAlignedSpaceRegistry(
             type="aligned",
@@ -262,7 +262,7 @@ curl -X POST -H "Content-Type: application/json" \
       "type": "sequential",
       "suggest_strategy_param": {"strict_aligned": true}
     },
-    "result_type": "scaler",
+    "result_type": "scalar",
     "result_value_type": "int",
     "parameter_space": {
       "type": "aligned",
@@ -336,7 +336,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
     "required_capacity": [],
     "study_strategy": {"type": "all_calculation", "study_strategy_param": null},
     "suggest_strategy": {"type": "sequential", "suggest_strategy_param": {"strict_aligned": true}},
-    "result_type": "scaler",
+    "result_type": "scalar",
     "result_value_type": "int",
     "study_id": "b4fed0ba-394d-11f0-b30f-e8d45b580c23",
     "registered_timestamp": "2025-05-25T18:50:36.034909+09:00",
@@ -371,20 +371,20 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
         {
             "param": [
                 {
-                    "type": "scaler",
+                    "type": "scalar",
                     "value_type": "float",
                     "value": "-0x1.0000000000000p+1",
                     "name": "x"
                 },
                 {
-                    "type": "scaler",
+                    "type": "scalar",
                     "value_type": "float",
                     "value": "-0x1.0000000000000p+1",
                     "name": "y"
                 }
             ],
             "result": {
-                "type": "scaler",
+                "type": "scalar",
                 "value_type": "int",
                 "value": "0x1",
                 "name": null
@@ -479,7 +479,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | required_capacity | list[str]                                                       | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
 | study_strategy    | [StudyStrategyModel](#studystrategymodel)                       | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
 | suggest_strategy  | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
-| result_type       | Literal["scaler", "vector"]                                     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
+| result_type       | Literal["scalar", "vector"]                                     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
 | result_value_type | Literal["bool", "int", "float"]                                 | ✓  | この `Study` の戻り値の型。                                                                                                              |
 | parameter_space   | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                     |
 
@@ -490,7 +490,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
 | study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
 | suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
-| result_type          | Literal["scaler", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
+| result_type          | Literal["scalar", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
 | result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                              |
 | study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                |
 | status               | [StudyStatus](#studystatus-enum)                          | ✓  | この `Study` の状態。                                                                                                                 |
@@ -506,7 +506,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
 | study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
 | suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
-| result_type          | Literal["scaler", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
+| result_type          | Literal["scalar", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
 | result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                              |
 | study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                |
 | registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                               |
@@ -545,7 +545,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | timestamp         | str                                                                                                                  | ✓  | この `Trial` が予約された時間を表すタイムスタンプ（内部的な型は `datetime`）。                                    |
 | trial_status      | [TrialStatus](#trialstatus-enum)                                                                                     | ✓  | この `Trial` の状態。                                                                      |
 | parameter_space   | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) \| [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) | ✓  | この `Trial` で計算する[パラメータ空間](#parameterspace)。必ず親の `Study.parameter_space` の部分空間になっている。 |
-| result_type       | Literal["scaler", "vector"]                                                                                          | ✓  | この `Trial` の戻り値が１変数か、多変数かを表す値。必ず親の `Study.result_type` と一致する。                        |
+| result_type       | Literal["scalar", "vector"]                                                                                          | ✓  | この `Trial` の戻り値が１変数か、多変数かを表す値。必ず親の `Study.result_type` と一致する。                        |
 | result_value_type | Literal["bool", "int", "float"]                                                                                      | ✓  | この `Trial` の戻り値の型。必ず親の `Study.result_value_type` と一致する。                              |
 | worker_node_name  | str \| None                                                                                                          |    | 実行するワーカーノードの名前。                                                                      |
 | result            | list[[Mapping](#mapping)] \| None                                                                                    |    | この `Trial` の結果。                                                                      |
@@ -598,11 +598,11 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | ambient_size  | str \| None                     |    | この軸が母空間で生成するパラメータの総数。                                                                                            |
 | is_dummy      | bool                            |    | この軸が [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) に属する場合に `True` になり、`name`, `type` の情報のみが有効であることを表す。 |
 
-### ScalerValue
+### ScalarValue
 
 | 名前         | 型                               | 必須 | 説明                                   |
 |------------|---------------------------------|----|--------------------------------------|
-| type       | Literal["scaler"]               | ✓  | 値の種別。スカラー量かベクトル量かを区別するための識別子。        |
+| type       | Literal["scalar"]               | ✓  | 値の種別。スカラー量かベクトル量かを区別するための識別子。        |
 | value_type | Literal["bool", "int", "float"] | ✓  | 値の型。                                 |
 | value      | [PortableValueType](#エイリアスの一覧)  | ✓  | 値。                                   |
 | name       | str \| None                     |    | 値につける名前。パラメータ空間から生成されたものであれば軸の名前が入る。 |
@@ -632,8 +632,8 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 ### エイリアスの一覧
 | エイリアス             | 元の型                                                        |
 |-------------------|------------------------------------------------------------|
-| ParamType         | list[[ScalerValue](#scalervalue), ...]                     |
-| ResultType        | [ScalerValue](#scalervalue) \| [VectorValue](#vectorvalue) |
+| ParamType         | list[[ScalarValue](#scalarvalue), ...]                     |
+| ResultType        | [ScalarValue](#scalarvalue) \| [VectorValue](#vectorvalue) |
 | PortableValueType | bool \| str                                                |
 
 ## 9. 高度な使用方法

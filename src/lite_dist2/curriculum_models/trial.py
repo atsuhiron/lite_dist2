@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from lite_dist2.expections import LD2ModelTypeError, LD2UndefinedError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
-from lite_dist2.value_models.point import ParamType, ResultType, ScalerValue, VectorValue
+from lite_dist2.value_models.point import ParamType, ResultType, ScalarValue, VectorValue
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import RawParamType, RawResultType
@@ -32,7 +32,7 @@ class TrialModel(BaseModel):
     timestamp: datetime
     trial_status: TrialStatus
     parameter_space: ParameterAlignedSpaceModel | ParameterJaggedSpaceModel
-    result_type: Literal["scaler", "vector"]
+    result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     worker_node_name: str | None
     result: list[Mapping] | None = None
@@ -46,7 +46,7 @@ class Trial:
         timestamp: datetime,
         trial_status: TrialStatus,
         parameter_space: ParameterSpace,
-        result_type: Literal["scaler", "vector"],
+        result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         worker_node_name: str | None,
         result: list[Mapping] | None = None,
@@ -79,8 +79,8 @@ class Trial:
 
     def _create_result_value(self, raw_result: RawResultType) -> ResultType:
         match self.result_type:
-            case "scaler":
-                return ScalerValue.create_from_numeric(raw_result, self.result_value_type)
+            case "scalar":
+                return ScalarValue.create_from_numeric(raw_result, self.result_value_type)
             case "vector":
                 return VectorValue.create_from_numeric(raw_result, self.result_value_type)
             case _:

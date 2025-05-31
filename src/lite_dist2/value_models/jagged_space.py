@@ -18,7 +18,7 @@ from lite_dist2.value_models.line_segment import (
     ParameterRangeFloat,
     ParameterRangeInt,
 )
-from lite_dist2.value_models.point import ParamType, ScalerValue
+from lite_dist2.value_models.point import ParamType, ScalarValue
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -63,7 +63,7 @@ class ParameterJaggedSpace(ParameterSpace):
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         return tuple(
             [
-                ScalerValue(type="scaler", value_type=ax.type, value=val, name=ax.name)
+                ScalarValue(type="scalar", value_type=ax.type, value=val, name=ax.name)
                 for val, ax in zip(values, self.axes_info, strict=True)
             ],
         )

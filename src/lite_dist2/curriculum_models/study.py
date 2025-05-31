@@ -32,7 +32,7 @@ class Study:
         study_strategy: BaseStudyStrategy,
         suggest_strategy: BaseSuggestStrategy,
         parameter_space: ParameterAlignedSpace,
-        result_type: Literal["scaler", "vector"],
+        result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         trial_table: TrialTable,
     ) -> None:

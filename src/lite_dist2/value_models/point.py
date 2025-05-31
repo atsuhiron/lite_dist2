@@ -33,8 +33,8 @@ class BasePointValue(metaclass=abc.ABCMeta):
         pass
 
 
-class ScalerValue(BaseModel, BasePointValue):
-    type: Literal["scaler"]
+class ScalarValue(BaseModel, BasePointValue):
+    type: Literal["scalar"]
     value_type: Literal["bool", "int", "float"]
     value: PortableValueType
     name: str | None = None
@@ -43,7 +43,7 @@ class ScalerValue(BaseModel, BasePointValue):
         return numerize(self.value_type, self.value)
 
     def equal_to(self, other: BasePointValue) -> bool:
-        if not isinstance(other, ScalerValue):
+        if not isinstance(other, ScalarValue):
             return False
         return self.value_type == other.value_type and self.value == other.value
 
@@ -52,9 +52,9 @@ class ScalerValue(BaseModel, BasePointValue):
         raw_result_value: RawResultType,
         value_type: Literal["bool", "int", "float"],
         name: str | None = None,
-    ) -> ScalerValue:
+    ) -> ScalarValue:
         val = portablize(value_type, raw_result_value)
-        return ScalerValue(type="scaler", value_type=value_type, value=val, name=name)
+        return ScalarValue(type="scalar", value_type=value_type, value=val, name=name)
 
 
 class VectorValue(BaseModel, BasePointValue):
@@ -81,5 +81,5 @@ class VectorValue(BaseModel, BasePointValue):
         return VectorValue(type="vector", value_type=value_type, values=val, name=name)
 
 
-type ParamType = tuple[ScalerValue, ...]
-type ResultType = ScalerValue | VectorValue
+type ParamType = tuple[ScalarValue, ...]
+type ResultType = ScalarValue | VectorValue

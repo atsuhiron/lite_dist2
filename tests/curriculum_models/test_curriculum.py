@@ -19,7 +19,7 @@ from lite_dist2.suggest_strategies import BaseSuggestStrategy, SequentialSuggest
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
-from lite_dist2.value_models.point import ScalerValue
+from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 if TYPE_CHECKING:
@@ -76,7 +76,7 @@ class MockStudy(Study):
             MockStudyStrategy(),
             MockSuggestStrategy(),
             _DUMMY_PARAMETER_SPACE,
-            "scaler",
+            "scalar",
             "int",
             TrialTable([], None),
         )
@@ -99,7 +99,7 @@ class MockStudy(Study):
             suggest_strategy=self.suggest_strategy.to_model(),
             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
             done_timestamp=DT,
-            result_type="scaler",
+            result_type="scalar",
             result_value_type="int",
             result=[],
             done_grids=4,
@@ -142,7 +142,7 @@ def sample_curriculum_fixture() -> Curriculum:
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="int",
                 trial_table=TrialTableModel(
                     trials=[
@@ -152,28 +152,28 @@ def sample_curriculum_fixture() -> Curriculum:
                             timestamp=DT,
                             trial_status=TrialStatus.done,
                             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
-                            result_type="scaler",
+                            result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
                             result=[
                                 Mapping(
                                     param=(
-                                        ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                        ScalerValue(type="scaler", value_type="int", value="0x0", name="y"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                     ),
-                                    result=ScalerValue(
-                                        type="scaler",
+                                    result=ScalarValue(
+                                        type="scalar",
                                         value_type="float",
                                         value="0x1.0000000000000p-1",
                                     ),
                                 ),
                                 Mapping(
                                     param=(
-                                        ScalerValue(type="scaler", value_type="int", value="0x0", name="x"),
-                                        ScalerValue(type="scaler", value_type="int", value="0x1", name="y"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                     ),
-                                    result=ScalerValue(
-                                        type="scaler",
+                                    result=ScalarValue(
+                                        type="scalar",
                                         value_type="float",
                                         value="0x1.0000000000000p-2",
                                     ),
@@ -186,7 +186,7 @@ def sample_curriculum_fixture() -> Curriculum:
                             timestamp=DT,
                             trial_status=TrialStatus.running,
                             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
-                            result_type="scaler",
+                            result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
                         ),
@@ -209,7 +209,7 @@ def sample_curriculum_fixture() -> Curriculum:
             suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
             done_timestamp=DT,
-            result_type="scaler",
+            result_type="scalar",
             result_value_type="int",
             result=[],
             done_grids=4,
@@ -325,7 +325,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                     parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                     done_timestamp=DT,
-                    result_type="scaler",
+                    result_type="scalar",
                     result_value_type="int",
                     result=[],
                     done_grids=4,
@@ -339,7 +339,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                     parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                     done_timestamp=DT,
-                    result_type="scaler",
+                    result_type="scalar",
                     result_value_type="int",
                     result=[],
                     done_grids=4,
@@ -361,7 +361,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                     parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                     done_timestamp=DT,
-                    result_type="scaler",
+                    result_type="scalar",
                     result_value_type="int",
                     result=[],
                     done_grids=4,
@@ -383,7 +383,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                     parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                     done_timestamp=DT,
-                    result_type="scaler",
+                    result_type="scalar",
                     result_value_type="int",
                     result=[],
                     done_grids=4,
@@ -405,7 +405,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                     parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                     done_timestamp=DT,
-                    result_type="scaler",
+                    result_type="scalar",
                     result_value_type="int",
                     result=[],
                     done_grids=4,
@@ -433,7 +433,7 @@ def test_curriculum_pop_storage(
                 suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                 parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                 done_timestamp=DT,
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="int",
                 result=[],
                 done_grids=4,
@@ -447,7 +447,7 @@ def test_curriculum_pop_storage(
                 suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                 parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                 done_timestamp=DT,
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="int",
                 result=[],
                 done_grids=4,
@@ -526,7 +526,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
                 suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
                 parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
                 done_timestamp=DT,
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="int",
                 result=[],
                 done_grids=4,

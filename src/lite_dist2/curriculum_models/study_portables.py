@@ -21,7 +21,7 @@ class _StudyCommonModel(BaseModel):
     required_capacity: set[str]
     study_strategy: StudyStrategyModel
     suggest_strategy: SuggestStrategyModel
-    result_type: Literal["scaler", "vector"]
+    result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
 
 

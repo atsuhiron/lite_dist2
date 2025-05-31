@@ -38,7 +38,7 @@ def register_study(table_ip: str) -> None:
                 type="sequential",
                 suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
             ),
-            result_type="scaler",
+            result_type="scalar",
             result_value_type="int",
             parameter_space=ParameterAlignedSpaceRegistry(
                 type="aligned",

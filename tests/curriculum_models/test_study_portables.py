@@ -15,7 +15,7 @@ from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyP
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
 from lite_dist2.value_models.aligned_space_registry import LineSegmentRegistry, ParameterAlignedSpaceRegistry
 from lite_dist2.value_models.line_segment import LineSegmentModel
-from lite_dist2.value_models.point import ScalerValue, VectorValue
+from lite_dist2.value_models.point import ScalarValue, VectorValue
 from tests.const import DT
 
 if TYPE_CHECKING:
@@ -152,19 +152,19 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                 result=[
                     Mapping(
                         param=(
-                            ScalerValue(type="scaler", name="x", value_type="int", value="0x0"),
-                            ScalerValue(type="scaler", name="y", value_type="float", value="0x0.0p+0"),
+                            ScalarValue(type="scalar", name="x", value_type="int", value="0x0"),
+                            ScalarValue(type="scalar", name="y", value_type="float", value="0x0.0p+0"),
                         ),
-                        result=ScalerValue(type="scaler", value_type="bool", value=True),
+                        result=ScalarValue(type="scalar", value_type="bool", value=True),
                     ),
                 ],
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="bool",
                 study_strategy=StudyStrategyModel(
                     type="find_exact",
                     study_strategy_param=StudyStrategyParam(
-                        target_value=ScalerValue(
-                            type="scaler",
+                        target_value=ScalarValue(
+                            type="scalar",
                             value_type="bool",
                             value=True,
                         ),
@@ -206,13 +206,13 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                     ],
                     check_lower_filling=True,
                 ),
-                result_type="scaler",
+                result_type="scalar",
                 result_value_type="bool",
                 study_strategy=StudyStrategyModel(
                     type="find_exact",
                     study_strategy_param=StudyStrategyParam(
-                        target_value=ScalerValue(
-                            type="scaler",
+                        target_value=ScalarValue(
+                            type="scalar",
                             value_type="bool",
                             value=True,
                         ),

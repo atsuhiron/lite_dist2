@@ -18,7 +18,7 @@ from lite_dist2.value_models.line_segment import (
     ParameterRangeInt,
 )
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product
-from lite_dist2.value_models.point import ParamType, ScalerValue
+from lite_dist2.value_models.point import ParamType, ScalarValue
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -168,7 +168,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         # TODO: type="vector" にも対応させる
         return tuple(
             [
-                ScalerValue.create_from_numeric(val, ax.type, ax.name)
+                ScalarValue.create_from_numeric(val, ax.type, ax.name)
                 for val, ax in zip(values, self.axes, strict=True)
             ],
         )
