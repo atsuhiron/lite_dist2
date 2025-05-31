@@ -69,7 +69,11 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         if config.process_num is None or config.process_num > 1:
             parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
             with Pool(processes=config.process_num) as pool, tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in pool.imap_unordered(parameter_pass_func, parameter_space.grid()):
+                for arg_tuple, result_iter in pool.imap_unordered(
+                    func=parameter_pass_func,
+                    iterable=parameter_space.grid(),
+                    chunksize=config.chunk_size,
+                ):
                     raw_mappings.append((arg_tuple, result_iter))
                     p_bar.update(1)
             return raw_mappings
@@ -94,7 +98,11 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         if pool is not None:
             parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
             with tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in pool.imap_unordered(parameter_pass_func, parameter_space.grid()):
+                for arg_tuple, result_iter in pool.imap_unordered(
+                    func=parameter_pass_func,
+                    iterable=parameter_space.grid(),
+                    chunksize=config.chunk_size,
+                ):
                     raw_mappings.append((arg_tuple, result_iter))
                     p_bar.update(1)
             return raw_mappings

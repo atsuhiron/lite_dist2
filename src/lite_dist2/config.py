@@ -52,6 +52,10 @@ class WorkerConfig(BaseModel):
         default=None,
         description="The number of processes on using `AutoMPTrialRunner`. If `None`, run trial at single thread.",
     )
+    chunk_size: int = Field(
+        default=1,
+        description="The size of the chunks to be passed to each process.",
+    )
     max_size: int = Field(
         default=1,
         description="The maximum size of a trial.",

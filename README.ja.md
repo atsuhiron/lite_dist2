@@ -411,6 +411,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 |------------------------------------|-------------|--------|-------------------------------------------------------------------------------------------|
 | name                               | str \| None | None   | ワーカーノードの名前。                                                                               |
 | process_num                        | int \| None | None   | `AutoMPTrialRunner` を使用した際に生成されるプロセス数。`None` であれば `os.cpu_count()` の値を利用する。               |
+| chunk_size                         | int         | 1      | プロセスに渡すチャンクのサイズ。`AutoMPTrialRunner` 及び `SemiAutoMPTrialRunner` を使用した際に有効になる。              |
 | max_size                           | int         | 1      | `Trial` の最大サイズ。`SuggestStrategy` で `"strict_aligned": true` を設定していた場合、これより小さいサイズになることがある。 |
 | disable_function_progress_bar      | bool        | False  | 進捗バーを非表示にするかどうか。                                                                          |
 | retaining_capacity                 | list[str]   | []     | そのワーカーノードが持っている能力(内部的な型は `set[str]`)。１つのテーブルノードで複数種類の `Study` を処理するときに利用する。               |
