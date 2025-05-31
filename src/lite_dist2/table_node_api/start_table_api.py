@@ -14,8 +14,13 @@ logger = logging.getLogger(__name__)
 
 
 def _get_local_ip() -> str:
-    # TODO: 前のバージョンと併用する。
-    return socket.gethostbyname(socket.gethostname())
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            return s.getsockname()[0]
+    except OSError:
+        logger.warning("Cannot reach DNS Server. It may show localhost IP.")
+        return socket.gethostbyname(socket.gethostname())
 
 
 async def _periodic_save() -> None:
