@@ -54,12 +54,13 @@ def handle_status() -> CurriculumSummaryResponse | JSONResponse:
 def handle_study_register(
     study_registry: Annotated[StudyRegisterParam, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse | JSONResponse:
-    # TODO: name がかぶってたら 400 にする
     # TODO: 無限 && all_calculate だったら 400 にする
     curr = CurriculumProvider.get()
     new_study = Study.from_model(study_registry.study.to_study_model())
-    curr.insert_study(new_study)
-    return _response(StudyRegisteredResponse(study_id=new_study.study_id), 200)
+
+    if curr.try_insert_study(new_study):
+        return _response(StudyRegisteredResponse(study_id=new_study.study_id), 200)
+    raise HTTPException(status_code=400, detail=f'The name("{new_study.name}") of study is already registered.')
 
 
 @app.post("/trial/reserve", response_model=TrialReserveResponse)

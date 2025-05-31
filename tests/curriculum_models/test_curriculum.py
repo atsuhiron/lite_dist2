@@ -542,3 +542,96 @@ def test_curriculum_get_study_status_raises() -> None:
     curr = Curriculum(studies=[], storages=[])
     with pytest.raises(LD2ParameterError):
         _ = curr.get_study_status(None, None)
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        pytest.param("n01", False),
+        pytest.param("n02", False),
+        pytest.param("n03", False),
+        pytest.param("n04", False),
+        pytest.param("n07", True),
+        pytest.param(None, True),
+    ],
+)
+def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
+    _study_param = {
+        "required_capacity": {"hash"},
+        "registered_timestamp": DT,
+        "study_strategy": AllCalculationStudyStrategy(None),
+        "suggest_strategy": SequentialSuggestStrategy(
+            SuggestStrategyParam(strict_aligned=True),
+            _DUMMY_PARAMETER_SPACE,
+        ),
+        "parameter_space": _DUMMY_PARAMETER_SPACE,
+        "result_type": "scalar",
+        "result_value_type": "int",
+        "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+    }
+    curr = Curriculum(
+        studies=[
+            Study(
+                study_id="s02",
+                name="n02",
+                status=StudyStatus.running,
+                **_study_param,
+            ),
+            Study(
+                study_id="s03",
+                name="n03",
+                status=StudyStatus.wait,
+                **_study_param,
+            ),
+            Study(
+                study_id="s04",
+                name="n04",
+                status=StudyStatus.done,
+                **_study_param,
+            ),
+            Study(
+                study_id="s05",
+                name=None,
+                status=StudyStatus.done,
+                **_study_param,
+            ),
+        ],
+        storages=[
+            StudyStorage(
+                study_id="s01",
+                name="n01",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scalar",
+                result_value_type="int",
+                result=[],
+                done_grids=4,
+            ),
+            StudyStorage(
+                study_id="s06",
+                name=None,
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scalar",
+                result_value_type="int",
+                result=[],
+                done_grids=4,
+            ),
+        ],
+    )
+    new_study = Study(
+        name=name,
+        study_id="s07",
+        status=StudyStatus.running,
+        **_study_param,
+    )
+    actual = curr.try_insert_study(new_study)
+    assert actual == expected

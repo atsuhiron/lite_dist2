@@ -51,9 +51,15 @@ class Curriculum:
                     return study
         return None
 
-    def insert_study(self, study: Study) -> None:
+    def try_insert_study(self, study: Study) -> bool:
         with self._lock:
+            study_names = {st.name for st in self.studies if st.name is not None}
+            storage_names = {st.name for st in self.storages if st.name is not None}
+            if study.name is not None and (study.name in study_names or study.name in storage_names):
+                return False
+
             self.studies.append(study)
+        return True
 
     def to_storage_if_done(self) -> None:
         with self._lock:

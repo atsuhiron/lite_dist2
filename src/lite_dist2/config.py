@@ -48,7 +48,7 @@ class WorkerConfig(BaseModel):
         default=None,
         description="Name of the worker node",
     )
-    process_num: int | None = Field(  # TODO: Noneのときの動作が多分正しくない
+    process_num: int | None = Field(
         default=None,
         description="The number of processes on using `AutoMPTrialRunner`. If `None`, run trial at single thread.",
     )
