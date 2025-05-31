@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Any
 
 from lite_dist2.expections import LD2TableNodeServerError
 from lite_dist2.worker_node.table_node_client import TableNodeClient
@@ -34,15 +34,15 @@ class Worker:
         self.pool = pool
         self.config = config
 
-    def start(self) -> None:
+    def start(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> None:
         if not self.client.ping():
             msg = "Table node server not responding"
             raise LD2TableNodeServerError(msg)
 
         while True:
-            self._step()
+            self._step(*args, **kwargs)
 
-    def _step(self) -> None:
+    def _step(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> None:
         trial = self.client.reserve_trial(
             self.config.max_size,
             self.config.retaining_capacity,
@@ -53,5 +53,5 @@ class Worker:
             time.sleep(self.config.wait_seconds_on_no_trial)
             return
 
-        done_trial = self.trial_runner.run(trial, self.config, self.pool)
+        done_trial = self.trial_runner.run(trial, self.config, self.pool, *args, **kwargs)
         self.client.register_trial(done_trial, self.config.table_node_request_timeout_seconds)

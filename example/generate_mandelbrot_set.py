@@ -1,5 +1,6 @@
 import time
 from pathlib import Path
+from typing import Any
 
 from lite_dist2.common import float2hex, int2hex
 from lite_dist2.config import TableConfig, TableConfigProvider, WorkerConfig
@@ -68,7 +69,7 @@ class Mandelbrot(AutoMPTrialRunner):
     _ABS_THRESHOLD = 2.0
     _MAX_ITER = 255
 
-    def func(self, parameters: RawParamType) -> RawResultType:
+    def func(self, parameters: RawParamType, *_: tuple[Any, ...], **__: dict[str, Any]) -> RawResultType:
         x = float(parameters[0])
         y = float(parameters[1])
         c = complex(x, y)
