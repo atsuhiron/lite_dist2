@@ -1,5 +1,3 @@
-from lite_dist2.type_definitions import RawParamTypefrom typing import Iterator
-
 # lite_dist2
 Simple distributed computing system
 
@@ -431,7 +429,6 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | /study          | GET  | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                                        | [StudyResponse](#studyresponse)                         | `Study` の情報を取得する        |
 
 ## 8. API のスキーマ
-
 ### StudyRegisterParam
 | 名前    | 型                               | 必須 | 説明            |
 |-------|---------------------------------|----|---------------|
@@ -858,7 +855,7 @@ uv sync --dev
 ```shell
 uv run pytest
 ```
-また、以下のオプションをつけることでカバレッジを取得できます。
+また、以下のオプションをつけることでカバレッジ情報を取得できます。
 ```shell
 uv run pytest --cov --cov-config=pyproject.toml
 ```
