@@ -1,7 +1,9 @@
+import argparse
 import asyncio
 import logging
 import socket
 import threading
+from pathlib import Path
 
 import uvicorn
 
@@ -48,7 +50,13 @@ def _run_periodic_timeout_check() -> None:
 
 
 def start() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", help="Path to table node config file.", type=str, default=None)
+    args = parser.parse_args()
+    table_config_path = None if args.config is None else Path(args.config)
+
     logger.info("Table Node IP: %s", _get_local_ip())
+    table_config = TableConfigProvider.get(table_config_path)
 
     # save thread
     save_thread = threading.Thread(target=_run_periodic_save, daemon=True)
@@ -58,7 +66,7 @@ def start() -> None:
     timeout_thread = threading.Thread(target=_run_periodic_timeout_check, daemon=True)
     timeout_thread.start()
 
-    port = TableConfigProvider.get().port
+    port = table_config.port
     uvicorn.run(app, host="0.0.0.0", port=port)  # noqa: S104
 
 

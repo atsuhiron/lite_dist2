@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 from pydantic import BaseModel, Field
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class TableConfig(BaseModel):
@@ -24,7 +28,7 @@ class TableConfig(BaseModel):
         ge=1,
     )
     curriculum_path: Path = Field(
-        default=Path(__file__).parent.parent.parent / "curriculum.json",
+        default=Path.cwd() / "curriculum.json",
         description="Path to the curriculum json file",
     )
     curriculum_save_interval_seconds: int = Field(
@@ -34,11 +38,14 @@ class TableConfig(BaseModel):
     )
 
     @staticmethod
-    def load_from_file() -> TableConfig:
-        path = Path(__file__).parent.parent.parent / "table_config.json"
+    def load_from_file(path: Path | None) -> TableConfig:
+        if path is None:
+            path = Path.cwd() / "table_config.json"
         if not path.exists():
-            msg = f"Table config file not found: {path}"
-            raise FileNotFoundError(msg)
+            logger.info("TableConfig not found, creating it now")
+            default_config = TableConfig()
+            with path.open(mode="w") as f:
+                json.dump(default_config.model_dump(mode="json"), f, indent=4)
         with path.open() as f:
             return TableConfig.model_validate(json.load(f))
 
@@ -88,7 +95,7 @@ class TableConfigProvider:
         cls._TABLE = config
 
     @classmethod
-    def get(cls) -> TableConfig:
+    def get(cls, table_config_path: Path | None = None) -> TableConfig:
         if cls._TABLE is None:
-            cls._TABLE = TableConfig.load_from_file()
+            cls._TABLE = TableConfig.load_from_file(table_config_path)
         return cls._TABLE

@@ -198,7 +198,13 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ```
-のような表示がされます。`Table Node IP: xxx.xxx.xxx.xxx` の部分がこのノードのプライベートIPです。**続くワーカーノードの起動ではこの値を利用します。**
+のような表示がされます。`Table Node IP: xxx.xxx.xxx.xxx` の部分がこのノードのプライベートIPです。**続くワーカーノードの起動ではこの値を利用します。**  
+
+テーブルノードの設定ファイルがもし所定のパス（`your_project_root/table_config.json`）にあれば起動時に読み込みます。
+無ければ起動前に作成され、デフォルト値が書き込まれます。この値は起動コマンドの `-c` オプションで変更できます。
+```shell
+uv run start-table -c path/to/table_config.json
+```
 
 ### Study の登録
 管理ノードからテーブルノードに /study/register で `Study` を登録します。登録は Python でクライアントクラスを経由して行う方法と、curl などの API ツールを使用する方法があります。  

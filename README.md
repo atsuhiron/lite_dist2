@@ -202,7 +202,13 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ```
-will be displayed. The `Table Node IP: xxx.xxx.xxx.xxx.xxx` is the private IP of this node. **This value will be used in subsequent worker node startups.**
+will be displayed. The `Table Node IP: xxx.xxx.xxx.xxx.xxx` is the private IP of this node. **This value will be used in subsequent worker node startups.**  
+
+If the table node configuration file is in the given path (`your_project_root/table_config.json`), it will be read at startup.
+If not, it is created before startup and default values are written. This value can be changed with the `-c` option of the startup command.
+```shell
+uv run start-table -c path/to/table_config.json
+```
 
 ### Register Study
 Register `Study` from an administrative node to a table node with /study/register. You can register a study in Python via a client class or by using an API tool such as curl.    
