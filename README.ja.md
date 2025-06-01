@@ -35,7 +35,8 @@ flowchart LR
 4. 2~3を終了するまで繰り返したら、最後に結果を取得する（/study）
 
 ## 3. 主要概念
-LiteDist2 を説明するさいにはいくつかの用語が必要です。既に出てきた `Study`、`Trial` がそれです。
+LiteDist2 を説明する際にはいくつかの用語が必要です。既に出てきた `Study`、`Trial` がそれです。
+このセクションではそれらの用語について説明します。
 
 ### Curriculum
 複数の `Study` を束ねたもので、実行予定、実行中、実行済みのタスクの一覧です。テーブルノード全体の状態とも言います。
@@ -45,8 +46,8 @@ LiteDist2 を説明するさいにはいくつかの用語が必要です。既�
 ### Study
 ワーカーノードを使って処理する大きなタスクのことです。
 必ず１次元以上のパラメータ空間を持ち、その空間内のグリッドの座標がワーカーノードに与えられ、所定の計算を行います。
-１つのテーブルノードで、複数種類の計算を実行させることも可能で、その場合は `Study` に `required_capacity: set[str]` を設定します。
-ワーカノードも同様に自分が実行できる計算の種類を `retaining_capacity: set[str]` として宣言することができ、
+１つのテーブルノードで、複数種類の計算を実行させることも可能で、その場合は `Study` に `required_capacity: list[str]` を設定します。
+ワーカノードも同様に自分が実行できる計算の種類を `retaining_capacity: list[str]` として宣言することができ、
 これにより各ノードの能力に応じたタスクを実行させることができます。
 
 ### Trial
@@ -414,7 +415,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | chunk_size                         | int         | 1      | プロセスに渡すチャンクのサイズ。`AutoMPTrialRunner` 及び `SemiAutoMPTrialRunner` を使用した際に有効になる。              |
 | max_size                           | int         | 1      | `Trial` の最大サイズ。`SuggestStrategy` で `"strict_aligned": true` を設定していた場合、これより小さいサイズになることがある。 |
 | disable_function_progress_bar      | bool        | False  | 進捗バーを非表示にするかどうか。                                                                          |
-| retaining_capacity                 | list[str]   | []     | そのワーカーノードが持っている能力(内部的な型は `set[str]`)。１つのテーブルノードで複数種類の `Study` を処理するときに利用する。               |
+| retaining_capacity                 | list[str]   | []     | そのワーカーノードが持っている能力をタグ(内部的な型は `set[str]`)。１つのテーブルノードで複数種類の `Study` を処理するときに利用する。            |
 | wait_seconds_on_no_trial           | int         | 5      | テーブルノードに実行できる `Study` が無かった際に次の `Trial` 取得を待機する時間。                                        |
 | table_node_request_timeout_seconds | int         | 30     | テーブルノードに対するリクエストのタイムアウト時間。                                                                |
 
@@ -474,52 +475,52 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | ok | bool | ✓  |    |
 
 ### StudyRegistry
-| 名前                | 型                                                               | 必須 | 説明                                                                                                                              |
-|-------------------|-----------------------------------------------------------------|----|---------------------------------------------------------------------------------------------------------------------------------|
-| name              | str \| None                                                     |    | この `Study` の名前                                                                                                                  |
-| required_capacity | list[str]                                                       | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
-| study_strategy    | [StudyStrategyModel](#studystrategymodel)                       | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
-| suggest_strategy  | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
-| result_type       | Literal["scalar", "vector"]                                     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
-| result_value_type | Literal["bool", "int", "float"]                                 | ✓  | この `Study` の戻り値の型。                                                                                                              |
-| parameter_space   | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                     |
+| 名前                | 型                                                               | 必須 | 説明                                                                                                                                   |
+|-------------------|-----------------------------------------------------------------|----|--------------------------------------------------------------------------------------------------------------------------------------|
+| name              | str \| None                                                     |    | この `Study` の名前                                                                                                                       |
+| required_capacity | list[str]                                                       | ✓  | この `Study` を実行するのに必要な能力を表すタグ。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| study_strategy    | [StudyStrategyModel](#studystrategymodel)                       | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                             |
+| suggest_strategy  | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                         |
+| result_type       | Literal["scalar", "vector"]                                     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                       |
+| result_value_type | Literal["bool", "int", "float"]                                 | ✓  | この `Study` の戻り値の型。                                                                                                                   |
+| parameter_space   | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
 
 ### StudySummary
-| 名前                   | 型                                                         | 必須 | 説明                                                                                                                              |
-|----------------------|-----------------------------------------------------------|----|---------------------------------------------------------------------------------------------------------------------------------|
-| name                 | str \| None                                               |    | この `Study` の名前                                                                                                                  |
-| required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
-| study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
-| suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
-| result_type          | Literal["scalar", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
-| result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                              |
-| study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                |
-| status               | [StudyStatus](#studystatus-enum)                          | ✓  | この `Study` の状態。                                                                                                                 |
-| registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                               |
-| parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                     |
-| total_grids          | int \| None                                               |    | この `Study` で計算する可能性のあるパラメータの組の数。パラメータ空間が無限の場合は `None`。                                                                          |
-| done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                |
+| 名前                   | 型                                                         | 必須 | 説明                                                                                                                                   |
+|----------------------|-----------------------------------------------------------|----|--------------------------------------------------------------------------------------------------------------------------------------|
+| name                 | str \| None                                               |    | この `Study` の名前                                                                                                                       |
+| required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力を表すタグ。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                             |
+| suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                         |
+| result_type          | Literal["scalar", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                       |
+| result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                                   |
+| study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                     |
+| status               | [StudyStatus](#studystatus-enum)                          | ✓  | この `Study` の状態。                                                                                                                      |
+| registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                    |
+| parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
+| total_grids          | int \| None                                               |    | この `Study` で計算する可能性のあるパラメータの組の数。パラメータ空間が無限の場合は `None`。                                                                               |
+| done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                     |
 
 ### StudyStorage
-| 名前                   | 型                                                         | 必須 | 説明                                                                                                                              |
-|----------------------|-----------------------------------------------------------|----|---------------------------------------------------------------------------------------------------------------------------------|
-| name                 | str \| None                                               |    | この `Study` の名前                                                                                                                  |
-| required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
-| study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                        |
-| suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                    |
-| result_type          | Literal["scalar", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                  |
-| result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                              |
-| study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                |
-| registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                               |
-| parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                     |
-| done_timestamp       | str                                                       | ✓  | この `Study` が完了したじこくを表すタイムスタンプ（内部的な型は `datetime`）。                                                                               |
-| result               | list[[Mapping](#mapping)]                                 | ✓  | 計算結果一覧。`StudyStrategy` が `all_calculation` である場合は下の `done_grids` とこのリストの長さが一致します。                                               |
-| done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                |
+| 名前                   | 型                                                         | 必須 | 説明                                                                                                                                   |
+|----------------------|-----------------------------------------------------------|----|--------------------------------------------------------------------------------------------------------------------------------------|
+| name                 | str \| None                                               |    | この `Study` の名前                                                                                                                       |
+| required_capacity    | list[str]                                                 | ✓  | この `Study` を実行するのに必要な能力を表すタグ。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                             |
+| suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                         |
+| result_type          | Literal["scalar", "vector"]                               | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                       |
+| result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                                   |
+| study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                     |
+| registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                    |
+| parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
+| done_timestamp       | str                                                       | ✓  | この `Study` が完了した時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                     |
+| result               | list[[Mapping](#mapping)]                                 | ✓  | 計算結果一覧。`StudyStrategy` が `all_calculation` である場合は下の `done_grids` とこのリストの長さが一致します。                                                    |
+| done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                     |
 
 ### StudyStrategyModel
 | 名前    | 型                                                    | 必須 | 説明                          |
 |-------|------------------------------------------------------|----|-----------------------------|
-| type  | Literal["all_calculation", "find_exact", "minimize"] | ✓  | 対象の `Study` が実行する計算の種類を表す値。 |
+| type  | Literal["all_calculation", "find_exact", "minimize"] | ✓  | 対象の `Study` で実行する計算の種類を表す値。 |
 | param | [StudyStrategyParam](#studystrategyparam) \|None     |    | この strategy の動作に必要なパラメータ。   |
 
 ### StudyStrategyParam
@@ -600,7 +601,6 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | is_dummy      | bool                            |    | この軸が [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) に属する場合に `True` になり、`name`, `type` の情報のみが有効であることを表す。 |
 
 ### ScalarValue
-
 | 名前         | 型                               | 必須 | 説明                                   |
 |------------|---------------------------------|----|--------------------------------------|
 | type       | Literal["scalar"]               | ✓  | 値の種別。スカラー量かベクトル量かを区別するための識別子。        |
@@ -617,12 +617,12 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | name       | str \| None                          |    | 値につける名前。パラメータ空間から生成されたものであれば軸の名前が入る。 |
 
 ### StudyStatus (Enum)
-| 名前        | 説明                                        |
-|-----------|-------------------------------------------|
-| wait      | 実行待ち                                      |
-| running   | 実行中                                       |
-| done      | 完了                                        |
-| not_found | 対象の `Study` が存在しないとき。/study のレスポンスにのみ現れる。 |
+| 名前        | 説明                                      |
+|-----------|-----------------------------------------|
+| wait      | 実行待ち                                    |
+| running   | 実行中                                     |
+| done      | 完了                                      |
+| not_found | 対象の `Study` が存在しない。/study のレスポンスにのみ現れる。 |
 
 ### TrialStatus (Enum)
 | 名前      | 説明  |
@@ -826,7 +826,7 @@ class ManualMandelbrot(ManualMPTrialRunner):
 ```
 
 ### Python スクリプト内でのテーブルノードの起動
-[テーブルノードの起動](#テーブルノードの起動) では uv コマンドでテーブルノードを起動していました。
+[テーブルノードの起動](#テーブルノードの起動) では uv コマンドでテーブルノードを起動していました。  
 もしこれを Python スクリプトで起動したい場合は次のようにします。
 ```python
 from lite_dist2.table_node_api.start_table_api import start

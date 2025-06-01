@@ -50,7 +50,7 @@ class WorkerConfig(BaseModel):
     )
     process_num: int | None = Field(
         default=None,
-        description="The number of processes on using `AutoMPTrialRunner`. If `None`, run trial at single thread.",
+        description="The number of processes on using `AutoMPTrialRunner`. If `None`, use `os.cpu_count()`.",
     )
     chunk_size: int = Field(
         default=1,
@@ -75,7 +75,7 @@ class WorkerConfig(BaseModel):
     )
     table_node_request_timeout_seconds: int = Field(
         default=30,
-        description="Timeout seconds before a table node request times out.",
+        description="Timeout for requests to table nodes.",
         ge=1,
     )
 
