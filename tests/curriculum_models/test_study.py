@@ -92,9 +92,9 @@ from tests.const import DT
                             result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
-                            result=[
+                            results=[
                                 Mapping(
-                                    param=(
+                                    params=(
                                         ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                         ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                     ),
@@ -105,7 +105,7 @@ from tests.const import DT
                                     ),
                                 ),
                                 Mapping(
-                                    param=(
+                                    params=(
                                         ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                         ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                     ),

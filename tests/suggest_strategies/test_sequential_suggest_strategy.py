@@ -480,17 +480,17 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
+                                params=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
+                                params=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
+                                params=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                         ],
@@ -594,17 +594,17 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
+                                params=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
+                                params=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
+                                params=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                         ],
@@ -667,23 +667,23 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
@@ -760,23 +760,23 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
@@ -800,23 +800,23 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x69"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x6a"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
@@ -927,23 +927,23 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
@@ -980,23 +980,23 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x69"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x6a"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
                                 ),
@@ -1107,23 +1107,23 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
                                 ),
@@ -1213,30 +1213,30 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                 ),

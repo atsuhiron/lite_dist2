@@ -7,7 +7,8 @@ LiteDist2 は簡易的な分散処理システムです。LAN内に配置され�
 ## 2. アーキテクチャ
 ### 管理ノード（Management Node）
 `Study` の登録や結果の取得を行います。この動作は `TableNodeClient` に実装されているのでそれを使用してもいいですし 、
-curl や talend などのAPIツールを使用することもできます（[API リファレンス](#7-api-リファレンス)を参照してください）。
+curl や talend などのAPIツールを使用することもできます（[API リファレンス](#7-api-リファレンス)を参照してください）。  
+一連の処理の始まりと終わり（タスクの登録と結果の受け取り）を担う部分なので「クライアント」と呼んでもいいかもしれません。
 
 ### テーブルノード（Table Node）
 `Study` を細切れにした `Trial` や `Study` をまとめた `Curriculum` を管理するノードです。`Trial` の提案とその結果の集約を行います。
@@ -374,9 +375,9 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
         "check_lower_filling": true
     },
     "done_timestamp": "2025-05-25T18:50:42.078755+09:00",
-    "result": [
+    "results": [
         {
-            "param": [
+            "params": [
                 {
                     "type": "scalar",
                     "value_type": "float",
@@ -556,12 +557,12 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | result_type       | Literal["scalar", "vector"]                                                                                          | ✓  | この `Trial` の戻り値が１変数か、多変数かを表す値。必ず親の `Study.result_type` と一致する。                        |
 | result_value_type | Literal["bool", "int", "float"]                                                                                      | ✓  | この `Trial` の戻り値の型。必ず親の `Study.result_value_type` と一致する。                              |
 | worker_node_name  | str \| None                                                                                                          |    | 実行するワーカーノードの名前。                                                                      |
-| result            | list[[Mapping](#mapping)] \| None                                                                                    |    | この `Trial` の結果。                                                                      |
+| results           | list[[Mapping](#mapping)] \| None                                                                                    |    | この `Trial` の結果。                                                                      |
 
 ### Mapping
 | 名前     | 型                       | 必須 | 説明                       |
 |--------|-------------------------|----|--------------------------|
-| param  | [ParamType](#エイリアスの一覧)  | ✓  | パラメータの組。                 |
+| params | [ParamType](#エイリアスの一覧)  | ✓  | パラメータの組。                 |
 | result | [ResultType](#エイリアスの一覧) | ✓  | 上のパラメータの組で所定の計算を行った結果の値。 |
 
 ### ParameterAlignedSpaceRegistry

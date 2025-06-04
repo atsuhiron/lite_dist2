@@ -45,16 +45,16 @@ _TRIAL_ARGS = {
                     Trial(
                         trial_id="t01",
                         trial_status=TrialStatus.done,
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
@@ -76,16 +76,16 @@ _TRIAL_ARGS = {
                     Trial(
                         trial_id="t01",
                         trial_status=TrialStatus.done,
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
@@ -107,16 +107,16 @@ _TRIAL_ARGS = {
                     Trial(
                         trial_id="t01",
                         trial_status=TrialStatus.running,
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
@@ -162,16 +162,16 @@ def test_find_exact_study_strategy_is_done(
                     Trial(
                         trial_id="t01",
                         trial_status=TrialStatus.done,
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x65"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
@@ -193,16 +193,16 @@ def test_find_exact_study_strategy_is_done(
                     Trial(
                         trial_id="t01",
                         trial_status=TrialStatus.done,
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
@@ -217,7 +217,7 @@ def test_find_exact_study_strategy_is_done(
             ScalarValue(type="scalar", value_type="int", value="0x64"),
             [
                 Mapping(
-                    param=(
+                    params=(
                         ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                         ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                     ),
@@ -232,16 +232,16 @@ def test_find_exact_study_strategy_is_done(
                     Trial(
                         trial_id="t01",
                         trial_status=TrialStatus.running,
-                        result=[
+                        results=[
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),
                                 result=ScalarValue(type="scalar", value_type="int", value="0x64"),
                             ),
                             Mapping(
-                                param=(
+                                params=(
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                     ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                 ),

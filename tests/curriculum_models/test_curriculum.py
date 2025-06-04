@@ -155,9 +155,9 @@ def sample_curriculum_fixture() -> Curriculum:
                             result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
-                            result=[
+                            results=[
                                 Mapping(
-                                    param=(
+                                    params=(
                                         ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                         ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                                     ),
@@ -168,7 +168,7 @@ def sample_curriculum_fixture() -> Curriculum:
                                     ),
                                 ),
                                 Mapping(
-                                    param=(
+                                    params=(
                                         ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
                                         ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
                                     ),

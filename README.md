@@ -7,7 +7,8 @@ LiteDist2 is a simple distributed processing system that uses three types of nod
 ## 2. Architecture
 ### Management Node
 Register a `Study` and retrieve the results. This behavior is implemented in `TableNodeClient`, 
-so you can use that, or you can use API tools such as curl or talend (see [API reference](#7-api-reference)).
+so you can use that, or you can use API tools such as curl or talend (see [API reference](#7-api-reference)).  
+You may call it a "client" because it is the part that is responsible for the beginning and end of a series of processes (registering tasks and receiving results).
 
 ### Table Node
 This node manages the `Trial`, which is a fragment of a `Study`, and the `Curriculum`, which is a collection of `Study`. 
@@ -378,9 +379,9 @@ The result retrieved by /study is in the following format (only one `result` is 
         "check_lower_filling": true
     },
     "done_timestamp": "2025-05-25T18:50:42.078755+09:00",
-    "result": [
+    "results": [
         {
-            "param": [
+            "params": [
                 {
                     "type": "scalar",
                     "value_type": "float",
@@ -560,12 +561,12 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | result_type       | Literal["scalar", "vector"]                                                                                          | ✓        | A value indicating whether the return value of this `Trial` is scalar or vector. It always matches the parent `Study.result_type`. |
 | result_value_type | Literal["bool", "int", "float"]                                                                                      | ✓        | The return type of this `Trial`. It always matches the parent `Study.result_value_type`.                                           |
 | worker_node_name  | str \| None                                                                                                          |          | Name of the worker node to run.                                                                                                    |
-| result            | list[[Mapping](#mapping)] \| None                                                                                    |          | The result of this `Trial`.                                                                                                        |
+| results           | list[[Mapping](#mapping)] \| None                                                                                    |          | The results of this `Trial`.                                                                                                       |
 
 ### Mapping
 | name   | type                           | required | description                                                             |
 |--------|--------------------------------|----------|-------------------------------------------------------------------------|
-| param  | [ParamType](#list-of-aliases)  | ✓        | parameter tuple.                                                        |
+| params | [ParamType](#list-of-aliases)  | ✓        | parameter tuple.                                                        |
 | result | [ResultType](#list-of-aliases) | ✓        | The value resulting from a given calculation with this parameter tuple. |
 
 ### ParameterAlignedSpaceRegistry

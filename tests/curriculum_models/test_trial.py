@@ -27,13 +27,13 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
-                result=[
+                results=[
                     Mapping(
-                        param=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
+                        params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
                         result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                     ),
                     Mapping(
-                        param=(ScalarValue(type="scalar", value_type="int", value="0x1"),),
+                        params=(ScalarValue(type="scalar", value_type="int", value="0x1"),),
                         result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                     ),
                 ],
@@ -52,7 +52,7 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
-                result=None,
+                results=None,
             ),
             ScalarValue(type="scalar", value_type="int", value="0x66"),
             None,
@@ -68,7 +68,7 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
-                result=[],
+                results=[],
             ),
             ScalarValue(type="scalar", value_type="int", value="0x66"),
             None,
@@ -84,20 +84,20 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
-                result=[
+                results=[
                     Mapping(
-                        param=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
+                        params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
                         result=ScalarValue(type="scalar", value_type="int", value="0x66"),
                     ),
                     Mapping(
-                        param=(ScalarValue(type="scalar", value_type="int", value="0x1"),),
+                        params=(ScalarValue(type="scalar", value_type="int", value="0x1"),),
                         result=ScalarValue(type="scalar", value_type="int", value="0x67"),
                     ),
                 ],
             ),
             ScalarValue(type="scalar", value_type="int", value="0x66"),
             Mapping(
-                param=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
+                params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
                 result=ScalarValue(type="scalar", value_type="int", value="0x66"),
             ),
             id="found: scalar",
@@ -112,20 +112,20 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="vector",
                 result_value_type="int",
                 worker_node_name="w01",
-                result=[
+                results=[
                     Mapping(
-                        param=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
+                        params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
                         result=VectorValue(type="vector", value_type="int", values=["0x66", "0x2328"]),
                     ),
                     Mapping(
-                        param=(ScalarValue(type="scalar", value_type="int", value="0x1"),),
+                        params=(ScalarValue(type="scalar", value_type="int", value="0x1"),),
                         result=VectorValue(type="vector", value_type="int", values=["0x67", "0x2329"]),
                     ),
                 ],
             ),
             VectorValue(type="vector", value_type="int", values=["0x66", "0x2328"]),
             Mapping(
-                param=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
+                params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
                 result=VectorValue(type="vector", value_type="int", values=["0x66", "0x2328"]),
             ),
             id="found: vector",
@@ -187,9 +187,9 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
             result_type="scalar",
             result_value_type="float",
             worker_node_name="w01",
-            result=[
+            results=[
                 Mapping(
-                    param=(
+                    params=(
                         ScalarValue(
                             type="scalar",
                             value_type="int",
@@ -257,9 +257,9 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
             result_type="scalar",
             result_value_type="int",
             worker_node_name="w01",
-            result=[
+            results=[
                 Mapping(
-                    param=(
+                    params=(
                         ScalarValue(
                             type="scalar",
                             value_type="int",

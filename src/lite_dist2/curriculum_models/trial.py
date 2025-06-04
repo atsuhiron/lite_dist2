@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class Mapping(BaseModel):
-    param: ParamType
+    params: ParamType
     result: ResultType
 
 
@@ -35,7 +35,7 @@ class TrialModel(BaseModel):
     result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     worker_node_name: str | None
-    result: list[Mapping] | None = None
+    results: list[Mapping] | None = None
 
 
 class Trial:
@@ -49,7 +49,7 @@ class Trial:
         result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         worker_node_name: str | None,
-        result: list[Mapping] | None = None,
+        results: list[Mapping] | None = None,
     ) -> None:
         self.study_id = study_id
         self.trial_id = trial_id
@@ -59,14 +59,14 @@ class Trial:
         self.result_type = result_type
         self.result_value_type = result_value_type
         self.worker_node_name = worker_node_name
-        self.result = result
+        self.result = results
 
     def convert_mappings_from(self, raw_mappings: list[tuple[RawParamType, RawResultType]]) -> list[Mapping]:
         mappings = []
         for raw_param, raw_res in raw_mappings:
             param = self.parameter_space.value_tuple_to_param_type(raw_param)
             result = self._create_result_value(raw_res)
-            mappings.append(Mapping(param=param, result=result))
+            mappings.append(Mapping(params=param, result=result))
         return mappings
 
     def set_result(self, mappings: list[Mapping]) -> None:
@@ -112,7 +112,7 @@ class Trial:
             result_type=self.result_type,
             result_value_type=self.result_value_type,
             worker_node_name=self.worker_node_name,
-            result=self.result,
+            results=self.result,
         )
 
     @staticmethod
@@ -133,5 +133,5 @@ class Trial:
             result_type=model.result_type,
             result_value_type=model.result_value_type,
             worker_node_name=model.worker_node_name,
-            result=model.result,
+            results=model.results,
         )

@@ -275,7 +275,7 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                 done_timestamp=DT + timedelta(days=1),
                 result=[
                     Mapping(
-                        param=(
+                        params=(
                             ScalarValue(type="scalar", name="x", value_type="int", value="0x0"),
                             ScalarValue(type="scalar", name="y", value_type="float", value="0x0.0p+0"),
                         ),
