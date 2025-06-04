@@ -8,7 +8,6 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "certifi==2025.4.26",
     "fastapi>=0.115.11",
     "pydantic>=2.10.6",
     "requests>=2.32.3",
@@ -42,6 +41,6 @@ start-table = "lite_dist2.table_node_api.start_table_api:start"
 [tool.coverage.paths]
 source = [
     "src/"
-    ]
+]
 [tool.coverage.report]
 skip_empty = true
