@@ -22,8 +22,8 @@ class TableNodeClient:
     INSTANT_API_TIMEOUT_SECONDS = 10
     HEADERS: ClassVar[dict[str, str]] = {"Content-Type": "application/json; charset=utf-8"}
 
-    def __init__(self, ip: str, name: str) -> None:
-        self.domain = "http://" + ip
+    def __init__(self, ip: str, port: int | str, name: str) -> None:
+        self.domain = f"http://{ip}:{port}"
         self.name = name
 
     def ping(self) -> bool:

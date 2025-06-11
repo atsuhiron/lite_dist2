@@ -23,6 +23,7 @@ class Worker:
         self,
         trial_runner: Annotated[BaseTrialRunner, "Runner for executing trials"],
         ip: Annotated[str, "IP address of the table node server"],
+        port: Annotated[int | str, "Port number  of the table node server"],
         config: Annotated[WorkerConfig, "Configuration of  the worker node"],
         pool: Annotated[
             Pool | None,
@@ -30,7 +31,7 @@ class Worker:
         ] = None,
     ) -> None:
         self.trial_runner = trial_runner
-        self.client = TableNodeClient(ip, config.name)
+        self.client = TableNodeClient(ip, port, config.name)
         self.pool = pool
         self.config = config
 

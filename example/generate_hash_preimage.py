@@ -22,13 +22,14 @@ from lite_dist2.worker_node.worker import Worker
 
 def set_table_config() -> None:
     config = TableConfig(
+        port=8000,
         curriculum_path=Path(__file__).parent / "example_curriculum.json",
         curriculum_save_interval_seconds=10,
     )
     TableConfigProvider.set(config)
 
 
-def register_study(table_ip: str) -> None:
+def register_study(table_ip: str, table_port: int) -> None:
     _resolution = 10
     _half_size = 2.0
 
@@ -66,7 +67,7 @@ def register_study(table_ip: str) -> None:
             ),
         ),
     )
-    client = TableNodeClient(table_ip, name="admin node")
+    client = TableNodeClient(table_ip, table_port, name="admin node")
     client.register_study(study_register_param)
 
 
@@ -88,7 +89,7 @@ class MD5Preimage(AutoMPTrialRunner):
         return int("0x" + hex_str, base=16)
 
 
-def run_worker(table_ip: str) -> None:
+def run_worker(table_ip: str, table_port: int) -> None:
     worker_config = WorkerConfig(
         name="w_01",
         process_num=2,
@@ -99,6 +100,7 @@ def run_worker(table_ip: str) -> None:
     worker = Worker(
         trial_runner=MD5Preimage(),
         ip=table_ip,
+        port=table_port,
         config=worker_config,
     )
     worker.start()
@@ -122,11 +124,11 @@ if __name__ == "__main__":
     #    NOTE: If the management node is also a worker node or a table node,
     #          `TableNodeClient.register_study` is available.
     #          Otherwise, studies can be registered using the curl command.
-    register_study(table_ip="127.0.0.1:8000")
+    register_study(table_ip="127.0.0.1", table_port=8000)
 
     # 4. run worker node
     #    Execution node type in normal use: Worker
     #    NOTE: In this example, the entire process should be completed within 10 seconds.
     #          10 seconds later, example_curriculum.json should be saved in the same directory as this file.
     #          The saving interval can be changed from the `TableConfig.curriculum_save_interval_seconds`.
-    run_worker(table_ip="127.0.0.1:8000")
+    run_worker(table_ip="127.0.0.1", table_port=8000)
