@@ -101,7 +101,7 @@ class Study:
             done_timestamp=publish_timestamp(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
-            result=self.study_strategy.extract_mappings(self.trial_table),
+            results=self.study_strategy.extract_mappings(self.trial_table),
             done_grids=self.trial_table.count_grid(),
         )
 

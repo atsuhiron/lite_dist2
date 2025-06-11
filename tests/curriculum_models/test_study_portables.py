@@ -273,7 +273,7 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                     check_lower_filling=True,
                 ),
                 done_timestamp=DT + timedelta(days=1),
-                result=[
+                results=[
                     Mapping(
                         params=(
                             ScalarValue(type="scalar", name="x", value_type="int", value="0x0"),

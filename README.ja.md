@@ -521,7 +521,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                    |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
 | done_timestamp       | str                                                       | ✓  | この `Study` が完了した時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                     |
-| result               | list[[Mapping](#mapping)]                                 | ✓  | 計算結果一覧。`StudyStrategy` が `all_calculation` である場合は下の `done_grids` とこのリストの長さが一致します。                                                    |
+| results              | list[[Mapping](#mapping)]                                 | ✓  | 計算結果一覧。`StudyStrategy` が `all_calculation` である場合は下の `done_grids` とこのリストの長さが一致します。                                                    |
 | done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                     |
 
 ### StudyStrategyModel

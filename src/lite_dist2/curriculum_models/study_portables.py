@@ -92,7 +92,7 @@ class StudyStorage(_StudyCommonModel):
     registered_timestamp: datetime
     parameter_space: ParameterAlignedSpaceModel
     done_timestamp: datetime
-    result: list[Mapping]
+    results: list[Mapping]
     done_grids: int
 
     def to_summary(self) -> StudySummary:
