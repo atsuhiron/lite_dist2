@@ -109,7 +109,7 @@ if __name__ == "__main__":
     #    Execution node type in normal use: Table
     #    NOTE: In most cases, use `start()` (or `uv run start`) instead of `start_in_thread()`
     #          since table nodes and worker nodes are separated.
-    start_in_thread()
+    table_thread = start_in_thread()
     time.sleep(1)  # wait for activate
 
     # 3. Register study to table node

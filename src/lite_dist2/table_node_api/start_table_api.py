@@ -2,8 +2,9 @@ import argparse
 import asyncio
 import logging
 import socket
-import threading
 from pathlib import Path
+from threading import Event, Thread
+from typing import Any
 
 import uvicorn
 
@@ -59,20 +60,33 @@ def start() -> None:
     table_config = TableConfigProvider.get(table_config_path)
 
     # save thread
-    save_thread = threading.Thread(target=_run_periodic_save, daemon=True)
+    save_thread = Thread(target=_run_periodic_save, daemon=True)
     save_thread.start()
 
     # timeout check thread
-    timeout_thread = threading.Thread(target=_run_periodic_timeout_check, daemon=True)
+    timeout_thread = Thread(target=_run_periodic_timeout_check, daemon=True)
     timeout_thread.start()
 
     port = table_config.port
     uvicorn.run(app, host="0.0.0.0", port=port)  # noqa: S104
 
 
-def start_in_thread() -> None:
-    table_thread = threading.Thread(target=start, daemon=True)
+class StoppableThread(Thread):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._stop_event = Event()
+
+    def stop(self) -> None:
+        self._stop_event.set()
+
+    def stopped(self) -> bool:
+        return self._stop_event.is_set()
+
+
+def start_in_thread() -> StoppableThread:
+    table_thread = StoppableThread(target=start, daemon=True)
     table_thread.start()
+    return table_thread
 
 
 if __name__ == "__main__":
