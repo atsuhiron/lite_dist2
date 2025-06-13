@@ -96,7 +96,7 @@ def run_worker(table_ip: str, table_port: int) -> None:
         port=table_port,
         config=worker_config,
     )
-    worker.start()
+    worker.start(stop_at_no_trial=True)
 
 
 if __name__ == "__main__":
@@ -125,3 +125,10 @@ if __name__ == "__main__":
     #          10 seconds later, example_curriculum.json should be saved in the same directory as this file.
     #          The saving interval can be changed from the `TableConfig.curriculum_save_interval_seconds`.
     run_worker(table_ip="127.0.0.1", table_port=8000)
+
+    # 5. Stop table node
+    #    Execution node type in normal use: Table
+    #    NOTE: Used to explicitly terminate a table node.
+    #          In this example, however, the node is running on a daemon thread,
+    #          so there is no need to terminate it explicitly.
+    # table_thread.stop()

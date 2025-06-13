@@ -9,7 +9,12 @@ from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial
 from lite_dist2.expections import LD2TableNodeClientError, LD2TableNodeServerError
 from lite_dist2.table_node_api.table_param import StudyRegisterParam, TrialRegisterParam, TrialReserveParam
-from lite_dist2.table_node_api.table_response import StudyRegisteredResponse, StudyResponse, TrialReserveResponse
+from lite_dist2.table_node_api.table_response import (
+    OkResponse,
+    StudyRegisteredResponse,
+    StudyResponse,
+    TrialReserveResponse,
+)
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar
@@ -68,6 +73,10 @@ class TableNodeClient:
             detail_info = f"{study_id=}" if study_id is not None else f"{name=}"
             logger.info("Study(%s) is %s", detail_info, str(study_response))
         return study_response
+
+    def save(self) -> OkResponse:
+        _, resp = self._get("/save", self.INSTANT_API_TIMEOUT_SECONDS)
+        return OkResponse.model_validate(resp)
 
     def _get(self, path: str, timeout: int, query: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
