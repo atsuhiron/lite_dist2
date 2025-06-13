@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 class BaseTrialRunner(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def func(self, parameters: RawParamType, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> RawResultType:
+    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
         pass
 
     @abc.abstractmethod
@@ -27,8 +27,8 @@ class BaseTrialRunner(metaclass=abc.ABCMeta):
         parameter_space: ParameterSpace,
         config: WorkerConfig,
         pool: Pool | None = None,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args: object,
+        **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
         pass
 
@@ -45,8 +45,8 @@ class BaseTrialRunner(metaclass=abc.ABCMeta):
         trial: Trial,
         config: WorkerConfig,
         pool: Pool | None = None,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args: object,
+        **kwargs: object,
     ) -> Trial:
         raw_mappings = self.wrap_func(trial.parameter_space, config, pool, *args, **kwargs)
         mappings = trial.convert_mappings_from(raw_mappings)
@@ -60,8 +60,8 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         parameter_space: ParameterSpace,
         config: WorkerConfig,
         _: Pool | None = None,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args: object,
+        **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         total = parameter_space.get_total()
@@ -89,8 +89,8 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         parameter_space: ParameterSpace,
         config: WorkerConfig,
         pool: Pool | None = None,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args: object,
+        **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         total = parameter_space.get_total()
@@ -121,8 +121,8 @@ class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         self,
         raw_params: Iterator[RawParamType],
         config: WorkerConfig,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args: object,
+        **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
         pass
 
@@ -131,7 +131,7 @@ class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         parameter_space: ParameterSpace,
         config: WorkerConfig,
         _: Pool | None = None,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args: object,
+        **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
         return self.batch_func(parameter_space.grid(), config, *args, **kwargs)

@@ -4,7 +4,6 @@ import logging
 import socket
 from pathlib import Path
 from threading import Event, Thread
-from typing import Any
 
 import uvicorn
 
@@ -72,7 +71,7 @@ def start() -> None:
 
 
 class StoppableThread(Thread):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
         self._stop_event = Event()
 

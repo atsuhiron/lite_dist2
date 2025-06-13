@@ -12,7 +12,6 @@ ignore = [
     "ERA001",   # Ocurring False Positive
     "FBT001",   # flag parameter
     "FBT002",   # flag parameter
-    "ANN401",   # Any argument
 ]
 
 [lint.per-file-ignores]
