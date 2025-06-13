@@ -480,6 +480,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
@@ -594,6 +595,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
@@ -667,6 +669,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(
@@ -760,6 +763,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(
@@ -800,6 +804,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(
@@ -927,6 +932,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(
@@ -980,6 +986,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(
@@ -1107,6 +1114,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(
@@ -1213,6 +1221,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         result_type="scalar",
                         result_value_type="int",
                         worker_node_name="w01",
+                        worker_node_id="w01",
                         results=[
                             Mapping(
                                 params=(

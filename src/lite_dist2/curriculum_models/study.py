@@ -58,7 +58,12 @@ class Study:
     def is_done(self) -> bool:
         return self.study_strategy.is_done(self.trial_table, self.parameter_space)
 
-    def suggest_next_trial(self, num: int | None, worker_node_name: str | None) -> Trial | None:
+    def suggest_next_trial(
+        self,
+        num: int | None,
+        worker_node_name: str | None,
+        worker_node_id: str,
+    ) -> Trial | None:
         with self._table_lock:
             self.status = StudyStatus.running
 
@@ -75,6 +80,7 @@ class Study:
                 result_type=self.result_type,
                 result_value_type=self.result_value_type,
                 worker_node_name=worker_node_name,
+                worker_node_id=worker_node_id,
             )
             self.trial_table.register(trial)
         if self.trial_table.is_not_defined_aps():
@@ -83,7 +89,7 @@ class Study:
 
     def receipt_trial(self, trial: Trial) -> None:
         with self._table_lock:
-            self.trial_table.receipt_trial_result(trial.trial_id, trial.result)
+            self.trial_table.receipt_trial_result(trial.trial_id, trial.result, trial.worker_node_id)
             self.trial_table.simplify_aps()
 
     def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:

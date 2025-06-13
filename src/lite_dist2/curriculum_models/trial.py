@@ -35,6 +35,7 @@ class TrialModel(BaseModel):
     result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     worker_node_name: str | None
+    worker_node_id: str
     results: list[Mapping] | None = None
 
 
@@ -49,6 +50,7 @@ class Trial:
         result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         worker_node_name: str | None,
+        worker_node_id: str,
         results: list[Mapping] | None = None,
     ) -> None:
         self.study_id = study_id
@@ -59,6 +61,7 @@ class Trial:
         self.result_type = result_type
         self.result_value_type = result_value_type
         self.worker_node_name = worker_node_name
+        self.worker_node_id = worker_node_id
         self.result = results
 
     def convert_mappings_from(self, raw_mappings: list[tuple[RawParamType, RawResultType]]) -> list[Mapping]:
@@ -112,6 +115,7 @@ class Trial:
             result_type=self.result_type,
             result_value_type=self.result_value_type,
             worker_node_name=self.worker_node_name,
+            worker_node_id=self.worker_node_id,
             results=self.result,
         )
 
@@ -133,5 +137,6 @@ class Trial:
             result_type=model.result_type,
             result_value_type=model.result_value_type,
             worker_node_name=model.worker_node_name,
+            worker_node_id=model.worker_node_id,
             results=model.results,
         )

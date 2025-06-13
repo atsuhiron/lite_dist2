@@ -155,6 +155,7 @@ def sample_curriculum_fixture() -> Curriculum:
                             result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
+                            worker_node_id="w01",
                             results=[
                                 Mapping(
                                     params=(
@@ -189,6 +190,7 @@ def sample_curriculum_fixture() -> Curriculum:
                             result_type="scalar",
                             result_value_type="float",
                             worker_node_name="w01",
+                            worker_node_id="w01",
                         ),
                     ],
                     aggregated_parameter_space={

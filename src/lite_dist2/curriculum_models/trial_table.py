@@ -47,7 +47,7 @@ class TrialTable:
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
 
-    def receipt_trial_result(self, receipted_trial_id: str, result: list[Mapping] | None) -> None:
+    def receipt_trial_result(self, receipted_trial_id: str, result: list[Mapping] | None, worker_node_id: str) -> None:
         if result is None:
             # Do nothing
             return
@@ -55,6 +55,10 @@ class TrialTable:
         for trial in reversed(self.trials):
             if trial.trial_id != receipted_trial_id:
                 continue
+            if trial.worker_node_id != worker_node_id:
+                p = "worker_node_id"
+                t = "This trial is reserved by other worker"
+                raise LD2ParameterError(p, t)
             if trial.trial_status == TrialStatus.done:
                 p = "receipted_trial_id"
                 t = f"Cannot override result of done trial(id={receipted_trial_id})"

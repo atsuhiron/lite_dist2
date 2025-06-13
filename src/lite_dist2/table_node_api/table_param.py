@@ -30,6 +30,10 @@ class TrialReserveParam(BaseParam):
         default=None,
         description="Name of the worker node. ",
     )
+    worker_node_id: str = Field(
+        ...,
+        description="ID of the worker node",
+    )
 
 
 class TrialRegisterParam(BaseModel):
