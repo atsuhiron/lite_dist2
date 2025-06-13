@@ -162,6 +162,32 @@ class Curriculum:
         save_end_time = time.perf_counter()
         logger.info("Saved curriculum in %.3f msec", (save_end_time - save_start_time) / 1000)
 
+    def cancel_study(self, study_id: str | None, name: str | None) -> bool:
+        studies = []
+        found = False
+        if study_id is not None:
+            with self._lock:
+                for study in self.studies:
+                    if study.study_id == study_id:
+                        found = True
+                        continue
+                    studies.append(study)
+                self.studies = studies
+            return found
+
+        if name is not None:
+            with self._lock:
+                for study in self.studies:
+                    if study.name == name:
+                        found = True
+                        continue
+                    studies.append(study)
+                self.studies = studies
+            return found
+        p = "study_id, name"
+        e = "Both are None"
+        raise LD2ParameterError(p, e)
+
     @staticmethod
     def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
         load_start_time = time.perf_counter()

@@ -10,7 +10,7 @@ from lite_dist2.curriculum_models.curriculum import Curriculum, CurriculumModel
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage
 from lite_dist2.curriculum_models.study_status import StudyStatus
-from lite_dist2.curriculum_models.trial import Mapping, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
@@ -37,6 +37,60 @@ _DUMMY_STUDY_STRATEGY_MODEL = StudyStrategyModel(type="all_calculation", study_s
 _DUMMY_SUGGEST_STRATEGY_MODEL = SuggestStrategyModel(
     type="sequential",
     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
+)
+_SUMMY_TRIAL_TABLE = TrialTable(
+    trials=[
+        Trial(
+            study_id="01",
+            trial_id="01",
+            timestamp=DT,
+            trial_status=TrialStatus.done,
+            parameter_space=_DUMMY_PARAMETER_SPACE,
+            result_type="scalar",
+            result_value_type="float",
+            worker_node_name="w01",
+            worker_node_id="w01",
+            results=[
+                Mapping(
+                    params=(
+                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
+                    ),
+                    result=ScalarValue(
+                        type="scalar",
+                        value_type="float",
+                        value="0x1.0000000000000p-1",
+                    ),
+                ),
+                Mapping(
+                    params=(
+                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
+                    ),
+                    result=ScalarValue(
+                        type="scalar",
+                        value_type="float",
+                        value="0x1.0000000000000p-2",
+                    ),
+                ),
+            ],
+        ),
+        Trial(
+            study_id="01",
+            trial_id="01",
+            timestamp=DT,
+            trial_status=TrialStatus.running,
+            parameter_space=_DUMMY_PARAMETER_SPACE,
+            result_type="scalar",
+            result_value_type="float",
+            worker_node_name="w01",
+            worker_node_id="w01",
+        ),
+    ],
+    aggregated_parameter_space={
+        -1: [],
+        0: [_DUMMY_PARAMETER_SPACE],
+    },
 )
 
 
@@ -469,6 +523,157 @@ def test_curriculum_pop_storage_raises() -> None:
     curr = Curriculum(studies=[], storages=[])
     with pytest.raises(LD2ParameterError):
         _ = curr.pop_storage(None, None)
+
+
+@pytest.mark.parametrize(
+    ("study_id", "name", "expected_cancel_result", "expected_studies"),
+    [
+        pytest.param(
+            "s01",
+            None,
+            True,
+            [
+                Study(
+                    study_id="s02",
+                    name="n02",
+                    required_capacity=set(),
+                    status=StudyStatus.running,
+                    registered_timestamp=DT,
+                    study_strategy=AllCalculationStudyStrategy(_DUMMY_STUDY_STRATEGY_MODEL.study_strategy_param),
+                    suggest_strategy=SequentialSuggestStrategy(
+                        _DUMMY_SUGGEST_STRATEGY_MODEL.suggest_strategy_param,
+                        _DUMMY_PARAMETER_SPACE,
+                    ),
+                    parameter_space=_DUMMY_PARAMETER_SPACE,
+                    result_type="scalar",
+                    result_value_type="int",
+                    trial_table=_SUMMY_TRIAL_TABLE,
+                ),
+            ],
+            id="cancel by id",
+        ),
+        pytest.param(
+            None,
+            "n02",
+            True,
+            [
+                Study(
+                    study_id="s01",
+                    name="n01",
+                    required_capacity=set(),
+                    status=StudyStatus.wait,
+                    registered_timestamp=DT,
+                    study_strategy=AllCalculationStudyStrategy(_DUMMY_STUDY_STRATEGY_MODEL.study_strategy_param),
+                    suggest_strategy=SequentialSuggestStrategy(
+                        _DUMMY_SUGGEST_STRATEGY_MODEL.suggest_strategy_param,
+                        _DUMMY_PARAMETER_SPACE,
+                    ),
+                    parameter_space=_DUMMY_PARAMETER_SPACE,
+                    result_type="scalar",
+                    result_value_type="int",
+                    trial_table=_SUMMY_TRIAL_TABLE,
+                ),
+            ],
+            id="cancel by name",
+        ),
+        pytest.param(
+            "xxxx",
+            None,
+            False,
+            [
+                Study(
+                    study_id="s01",
+                    name="n01",
+                    required_capacity=set(),
+                    status=StudyStatus.wait,
+                    registered_timestamp=DT,
+                    study_strategy=AllCalculationStudyStrategy(_DUMMY_STUDY_STRATEGY_MODEL.study_strategy_param),
+                    suggest_strategy=SequentialSuggestStrategy(
+                        _DUMMY_SUGGEST_STRATEGY_MODEL.suggest_strategy_param,
+                        _DUMMY_PARAMETER_SPACE,
+                    ),
+                    parameter_space=_DUMMY_PARAMETER_SPACE,
+                    result_type="scalar",
+                    result_value_type="int",
+                    trial_table=_SUMMY_TRIAL_TABLE,
+                ),
+                Study(
+                    study_id="s02",
+                    name="n02",
+                    required_capacity=set(),
+                    status=StudyStatus.running,
+                    registered_timestamp=DT,
+                    study_strategy=AllCalculationStudyStrategy(_DUMMY_STUDY_STRATEGY_MODEL.study_strategy_param),
+                    suggest_strategy=SequentialSuggestStrategy(
+                        _DUMMY_SUGGEST_STRATEGY_MODEL.suggest_strategy_param,
+                        _DUMMY_PARAMETER_SPACE,
+                    ),
+                    parameter_space=_DUMMY_PARAMETER_SPACE,
+                    result_type="scalar",
+                    result_value_type="int",
+                    trial_table=_SUMMY_TRIAL_TABLE,
+                ),
+            ],
+            id="Not found",
+        ),
+    ],
+)
+def test_curriculum_cancel_study(
+    study_id: str | None,
+    name: str | None,
+    expected_cancel_result: bool,
+    expected_studies: list[Study],
+) -> None:
+    curr = Curriculum(
+        storages=[],
+        studies=[
+            Study(
+                study_id="s01",
+                name="n01",
+                required_capacity=set(),
+                status=StudyStatus.wait,
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(_DUMMY_STUDY_STRATEGY_MODEL.study_strategy_param),
+                suggest_strategy=SequentialSuggestStrategy(
+                    _DUMMY_SUGGEST_STRATEGY_MODEL.suggest_strategy_param,
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=_SUMMY_TRIAL_TABLE,
+            ),
+            Study(
+                study_id="s02",
+                name="n02",
+                required_capacity=set(),
+                status=StudyStatus.running,
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(_DUMMY_STUDY_STRATEGY_MODEL.study_strategy_param),
+                suggest_strategy=SequentialSuggestStrategy(
+                    _DUMMY_SUGGEST_STRATEGY_MODEL.suggest_strategy_param,
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=_SUMMY_TRIAL_TABLE,
+            ),
+        ],
+    )
+
+    actual_cancel_result = curr.cancel_study(study_id, name)
+    assert actual_cancel_result == expected_cancel_result
+
+    assert len(curr.studies) == len(expected_studies)
+    for actual_study, expected_study in zip(curr.studies, expected_studies, strict=True):
+        assert actual_study.to_model() == expected_study.to_model()
+
+
+def test_curriculum_cancel_study_raises() -> None:
+    curr = Curriculum(studies=[], storages=[])
+    with pytest.raises(LD2ParameterError):
+        _ = curr.cancel_study(None, None)
 
 
 @pytest.mark.parametrize(

@@ -428,15 +428,16 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | table_node_request_timeout_seconds | int         | 30     | テーブルノードに対するリクエストのタイムアウト時間。                                                                |
 
 ## 7. API リファレンス
-| パス              | メソッド | パラメータ                                                                       | ボディ                                       | レスポンス                                                   | 説明                      |
-|-----------------|------|-----------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|-------------------------|
-| /ping           | GET  | なし                                                                          | なし                                        | [OkResponse](#okresponse)                               | 死活監視用API                |
-| /save           | GET  | なし                                                                          | なし                                        | [OkResponse](#okresponse)                               | `Curriculum` を保存する      |
-| /status         | GET  | なし                                                                          | なし                                        | [CurriculumSummaryResponse](#curriculumsummaryresponse) | `Curriculum` の概要情報を取得する |
-| /study/register | POST | なし                                                                          | [StudyRegisterParam](#studyregisterparam) | [StudyRegisteredResponse](#studyregisteredresponse)     | `Study` を登録する           |
-| /trial/reserve  | POST | なし                                                                          | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | `Trial` を予約する           |
-| /trial/register | POST | なし                                                                          | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | 完了した `Trial` を登録する      |
-| /study          | GET  | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                                        | [StudyResponse](#studyresponse)                         | `Study` の情報を取得する        |
+| パス              | メソッド   | パラメータ                                                                             | ボディ                                       | レスポンス                                                   | 説明                      |
+|-----------------|--------|-----------------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|-------------------------|
+| /ping           | GET    | なし                                                                                | なし                                        | [OkResponse](#okresponse)                               | 死活監視用API                |
+| /save           | GET    | なし                                                                                | なし                                        | [OkResponse](#okresponse)                               | `Curriculum` を保存する      |
+| /status         | GET    | なし                                                                                | なし                                        | [CurriculumSummaryResponse](#curriculumsummaryresponse) | `Curriculum` の概要情報を取得する |
+| /study/register | POST   | なし                                                                                | [StudyRegisterParam](#studyregisterparam) | [StudyRegisteredResponse](#studyregisteredresponse)     | `Study` を登録する           |
+| /trial/reserve  | POST   | なし                                                                                | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | `Trial` を予約する           |
+| /trial/register | POST   | なし                                                                                | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | 完了した `Trial` を登録する      |
+| /study          | GET    | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能       | なし                                        | [StudyResponse](#studyresponse)                         | `Study` の情報を取得する        |
+| /study          | DELETE | `study_id`: キャンセルしたい `Study` のID<br>`name`: キャンセルしたい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                                        | [OkResponse](#okresponse)                               | `Study` をキャンセルする        |
 
 ## 8. API のスキーマ
 ### StudyRegisterParam

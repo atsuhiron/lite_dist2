@@ -441,6 +441,7 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | /trial/reserve  | POST   |                                                                                                                         | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | Reserve `Trial`.                  |
 | /trial/register | POST   |                                                                                                                         | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | Register completed `Trial`.       |
 | /study          | GET    | `study_id`: ID of `Study` to retrieve.<br>`name`: Name of `Study` to retrieve.<br>Only one of the two can be specified. |                                           | [StudyResponse](#studyresponse)                         | Retrieve `Study`.                 |
+| /study          | DELETE | `study_id`: ID of `Study` to cancel.<br>`name`: Name of `Study` to cancel.<br>Only one of the two can be specified.     |                                           | [OkResponse](#okresponse)                               | Cancel `Study`.                   |
 
 ## 8. API Schema
 ### StudyRegisterParam

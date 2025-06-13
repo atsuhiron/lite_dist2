@@ -119,3 +119,24 @@ def handle_study(
     if study_status == StudyStatus.not_found:
         return _response(resp, status_code=404)
     return _response(resp, 202)
+
+
+@app.delete("/study", response_model=OkResponse)
+def handle_study_cancel(
+    study_id: Annotated[str | None, Query(description="`study_id` of the target study")] = None,
+    name: Annotated[str | None, Query(description="`name` of the target study")] = None,
+) -> OkResponse | JSONResponse:
+    if study_id is None and name is None:
+        raise HTTPException(status_code=400, detail="One of study_id or name should be set.")
+    if study_id is not None and name is not None:
+        raise HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
+
+    curr = CurriculumProvider.get()
+    try:
+        found_and_cancel = curr.cancel_study(study_id, name)
+    except LD2ParameterError:
+        return _response(OkResponse(ok=False), 400)
+
+    if found_and_cancel:
+        return _response(OkResponse(ok=True), 200)
+    return _response(OkResponse(ok=False), 404)
