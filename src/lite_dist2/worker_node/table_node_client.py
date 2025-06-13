@@ -27,9 +27,8 @@ class TableNodeClient:
     INSTANT_API_TIMEOUT_SECONDS = 10
     HEADERS: ClassVar[dict[str, str]] = {"Content-Type": "application/json; charset=utf-8"}
 
-    def __init__(self, ip: str, port: int | str, name: str) -> None:
+    def __init__(self, ip: str, port: int | str) -> None:
         self.domain = f"http://{ip}:{port}"
-        self.name = name
 
     def ping(self) -> bool:
         try:
@@ -45,11 +44,19 @@ class TableNodeClient:
         logger.info("Registered study: %s", resp.study_id)
         return resp
 
-    def reserve_trial(self, max_size: int, retaining_capacity: set[str], timeout_seconds: int) -> Trial | None:
+    def reserve_trial(
+        self,
+        worker_id: str,
+        worker_name: str | None,
+        max_size: int,
+        retaining_capacity: set[str],
+        timeout_seconds: int,
+    ) -> Trial | None:
         param = TrialReserveParam(
             retaining_capacity=retaining_capacity,
             max_size=max_size,
-            worker_node_name=self.name,
+            worker_node_name=worker_name,
+            worker_node_id=worker_id,
         )
         status_code, d = self._post("/trial/reserve", timeout_seconds, param.model_dump(mode="json"))
 
@@ -64,7 +71,9 @@ class TableNodeClient:
 
     def register_trial(self, trial: Trial, timeout_seconds: int) -> None:
         param = TrialRegisterParam(trial=trial.to_model())
-        _ = self._post("/trial/register", timeout_seconds, param.model_dump(mode="json"))
+        status_code, _ = self._post("/trial/register", timeout_seconds, param.model_dump(mode="json"))
+        if status_code != requests.codes.ok:
+            logger.warning("Failed to register trial. This trial might be timed out or study might be cancelled.")
 
     def study(self, study_id: str | None = None, name: str | None = None) -> StudyResponse | None:
         _, resp = self._get("/study", self.INSTANT_API_TIMEOUT_SECONDS, {"study_id": study_id, "name": name})

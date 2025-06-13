@@ -259,7 +259,7 @@ study_register_param = StudyRegisterParam(
         ),
     ),
 )
-client = TableNodeClient("xxx.xxx.xxx.xxx:8000", name="admin node")
+client = TableNodeClient(ip="xxx.xxx.xxx.xxx", port=8000)
 client.register_study(study_register_param)
 ```
 In curl:
@@ -310,7 +310,8 @@ worker_config = WorkerConfig(
 )
 worker = Worker(
     trial_runner=Mandelbrot(),
-    ip="xxx.xxx.xxx.xxx:8000",
+    ip="xxx.xxx.xxx.xxx",
+    port=8000,
     config=worker_config,
 )
 worker.start()
@@ -325,7 +326,7 @@ As before, this process can be done in Python via a client class or using API to
 In Python:
 ```python
 from lite_dist2.worker_node.table_node_client import TableNodeClient
-client = TableNodeClient("xxx.xxx.xxx.xxx:8000", name="admin node")
+client = TableNodeClient(ip="xxx.xxx.xxx.xxx", port=8000)
 study = client.study(name="mandelbrot")
 ```
 
@@ -452,7 +453,8 @@ If you look at `result`, you will see that it contains both `param` and `result`
 |--------------------|-------------|----------|-------------------------------------------------------------------------------------------|
 | retaining_capacity | list[str]   | ✓        | Types of tasks that can be performed by that worker node (internally of type `set[str]`). |
 | max_size           | int         | ✓        | Maximum size of parameter space to be reserved.                                           |
-| worker_node_name   | str \| None |          | name of the worker node.                                                                  |
+| worker_node_name   | str \| None |          | Name of the worker node.                                                                  |
+| worker_node_id     | str         |          | ID of the worker node.                                                                    |
 
 ### TrialRegisterParam
 | name  | type                      | required | description                            |
@@ -561,6 +563,7 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | result_type       | Literal["scalar", "vector"]                                                                                          | ✓        | A value indicating whether the return value of this `Trial` is scalar or vector. It always matches the parent `Study.result_type`. |
 | result_value_type | Literal["bool", "int", "float"]                                                                                      | ✓        | The return type of this `Trial`. It always matches the parent `Study.result_value_type`.                                           |
 | worker_node_name  | str \| None                                                                                                          |          | Name of the worker node to run.                                                                                                    |
+| worker_node_id    | str                                                                                                                  |          | ID of the worker node to run.                                                                                                      |
 | results           | list[[Mapping](#mapping)] \| None                                                                                    |          | The results of this `Trial`.                                                                                                       |
 
 ### Mapping

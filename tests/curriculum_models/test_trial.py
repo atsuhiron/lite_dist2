@@ -27,6 +27,7 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
+                worker_node_id="w01",
                 results=[
                     Mapping(
                         params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
@@ -52,6 +53,7 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
+                worker_node_id="w01",
                 results=None,
             ),
             ScalarValue(type="scalar", value_type="int", value="0x66"),
@@ -68,6 +70,7 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
+                worker_node_id="w01",
                 results=[],
             ),
             ScalarValue(type="scalar", value_type="int", value="0x66"),
@@ -84,6 +87,7 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="scalar",
                 result_value_type="int",
                 worker_node_name="w01",
+                worker_node_id="w01",
                 results=[
                     Mapping(
                         params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
@@ -112,6 +116,7 @@ _dummy_space = ParameterJaggedSpace(
                 result_type="vector",
                 result_value_type="int",
                 worker_node_name="w01",
+                worker_node_id="w01",
                 results=[
                     Mapping(
                         params=(ScalarValue(type="scalar", value_type="int", value="0x0"),),
@@ -163,6 +168,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
             result_type="scalar",
             result_value_type="bool",
             worker_node_name="w01",
+            worker_node_id="w01",
         ),
         TrialModel(
             study_id="my_study_id1",
@@ -187,6 +193,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
             result_type="scalar",
             result_value_type="float",
             worker_node_name="w01",
+            worker_node_id="w01",
             results=[
                 Mapping(
                     params=(
@@ -231,6 +238,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
             result_type="scalar",
             result_value_type="int",
             worker_node_name="w01",
+            worker_node_id="w01",
         ),
         TrialModel(
             study_id="my_study_id3",
@@ -257,6 +265,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
             result_type="scalar",
             result_value_type="int",
             worker_node_name="w01",
+            worker_node_id="w01",
             results=[
                 Mapping(
                     params=(

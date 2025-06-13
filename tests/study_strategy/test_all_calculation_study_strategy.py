@@ -23,6 +23,7 @@ _TRIAL_ARGS = {
     "result_type": "scalar",
     "result_value_type": "int",
     "worker_node_name": "w01",
+    "worker_node_id": "w01",
 }
 
 

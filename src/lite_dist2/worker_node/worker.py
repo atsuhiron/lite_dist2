@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
+import uuid
 from typing import TYPE_CHECKING, Annotated
 
 from lite_dist2.expections import LD2TableNodeServerError
@@ -31,9 +32,10 @@ class Worker:
         ] = None,
     ) -> None:
         self.trial_runner = trial_runner
-        self.client = TableNodeClient(ip, port, config.name)
+        self.client = TableNodeClient(ip, port)
         self.pool = pool
         self.config = config
+        self.id = str(uuid.uuid1())
 
     def start(self, stop_at_no_trial: bool = False, *args: object, **kwargs: object) -> None:
         if not self.client.ping():
@@ -52,6 +54,8 @@ class Worker:
 
     def _step(self, *args: object, **kwargs: object) -> bool:
         trial = self.client.reserve_trial(
+            self.id,
+            self.config.name,
             self.config.max_size,
             self.config.retaining_capacity,
             self.config.table_node_request_timeout_seconds,

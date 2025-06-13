@@ -10,6 +10,7 @@ from lite_dist2.curriculum_models.curriculum import CurriculumProvider
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial
+from lite_dist2.expections import LD2ParameterError
 from lite_dist2.table_node_api.table_param import StudyRegisterParam, TrialRegisterParam, TrialReserveParam
 from lite_dist2.table_node_api.table_response import (
     CurriculumSummaryResponse,
@@ -74,7 +75,7 @@ def handle_trial_reserve(
     if study is None:
         return _response(TrialReserveResponse(trial=None), 202)
 
-    trial = study.suggest_next_trial(param.max_size, param.worker_node_name)
+    trial = study.suggest_next_trial(param.max_size, param.worker_node_name, param.worker_node_id)
     if trial is None:
         return _response(TrialReserveResponse(trial=None), 202)
     return _response(TrialReserveResponse(trial=trial.to_model()), 200)
@@ -90,7 +91,10 @@ def handle_trial_register(
     if study is None:
         raise HTTPException(status_code=404, detail=f"Study not found: study_id={trial.study_id}")
 
-    study.receipt_trial(Trial.from_model(trial))
+    try:
+        study.receipt_trial(Trial.from_model(trial))
+    except LD2ParameterError:
+        return _response(OkResponse(ok=False), 400)
     curr.to_storage_if_done()
     return _response(OkResponse(ok=True), 200)
 

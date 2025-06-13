@@ -255,7 +255,7 @@ study_register_param = StudyRegisterParam(
         ),
     ),
 )
-client = TableNodeClient("xxx.xxx.xxx.xxx:8000", name="admin node")
+client = TableNodeClient("xxx.xxx.xxx.xxx", port=8000)
 client.register_study(study_register_param)
 ```
 curl の場合:
@@ -306,7 +306,8 @@ worker_config = WorkerConfig(
 )
 worker = Worker(
     trial_runner=Mandelbrot(),
-    ip="xxx.xxx.xxx.xxx:8000",
+    ip="xxx.xxx.xxx.xxx",
+    port=8000,
     config=worker_config,
 )
 worker.start()
@@ -321,7 +322,7 @@ worker.start()
 Python の場合:
 ```python
 from lite_dist2.worker_node.table_node_client import TableNodeClient
-client = TableNodeClient("xxx.xxx.xxx.xxx:8000", name="admin node")
+client = TableNodeClient("xxx.xxx.xxx.xxx", port=8000)
 study = client.study(name="mandelbrot")
 ```
 
@@ -449,6 +450,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | retaining_capacity | list[str]   | ✓  | そのワーカーノードが対応できるタスクの種類 (内部的な型は `set[str]`)。 |
 | max_size           | int         | ✓  | 予約するパラメータ空間の最大サイズ。                         |
 | worker_node_name   | str \| None |    | ワーカーノードの名前。                                |
+| worker_node_id     | str         |    | ワーカーノードのID。                                |
 
 ### TrialRegisterParam
 | 名前    | 型                         | 必須 | 説明                    |
@@ -557,6 +559,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | result_type       | Literal["scalar", "vector"]                                                                                          | ✓  | この `Trial` の戻り値が１変数か、多変数かを表す値。必ず親の `Study.result_type` と一致する。                        |
 | result_value_type | Literal["bool", "int", "float"]                                                                                      | ✓  | この `Trial` の戻り値の型。必ず親の `Study.result_value_type` と一致する。                              |
 | worker_node_name  | str \| None                                                                                                          |    | 実行するワーカーノードの名前。                                                                      |
+| worker_node_id    | str                                                                                                                  |    | 実行するワーカーノードのID。                                                                      |
 | results           | list[[Mapping](#mapping)] \| None                                                                                    |    | この `Trial` の結果。                                                                      |
 
 ### Mapping
