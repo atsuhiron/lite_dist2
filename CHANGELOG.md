@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1] - 2025-06-14
+
+### Fixed
+- Fixed a bug that table threads were not terminated([#4](https://github.com/atsuhiron/lite_dist2/pull/5)).
+
 ## [0.2.0] - 2025-06-14
 
 ### Added
