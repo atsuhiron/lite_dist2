@@ -77,7 +77,6 @@ class StoppableThread(Thread):
 
     def stop(self) -> None:
         self._stop_event.set()
-        self.join()
 
     def stopped(self) -> bool:
         return self._stop_event.is_set()

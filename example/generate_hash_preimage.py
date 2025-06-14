@@ -139,3 +139,4 @@ if __name__ == "__main__":
     #          In this example, however, the node is running on a daemon thread,
     #          so there is no need to terminate it explicitly.
     # table_thread.stop()
+    # table_thread.join()
