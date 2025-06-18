@@ -16,6 +16,7 @@ def simplify[T: Mergeable](mergeables: list[T], *args: object) -> list[T]:
     new_aps: list[Mergeable] = []
     mergeables_duplicated_group: dict[int, set[int]] = {}
     sub_space_num = len(mergeables)
+    mergeables = sorted(mergeables, key=lambda spc: spc.get_start_index(*args))
 
     for i in range(sub_space_num):
         for j in range(i + 1, sub_space_num):
