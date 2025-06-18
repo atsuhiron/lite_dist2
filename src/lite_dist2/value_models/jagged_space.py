@@ -48,6 +48,9 @@ class ParameterJaggedSpace(ParameterSpace):
             return (self.parameters == other.parameters) and (self.axes_info == other.axes_info)
         return False
 
+    def __hash__(self) -> int:
+        return hash((*self.parameters, *self.ambient_indices, *self.axes_info))
+
     def get_dim(self) -> int:
         return len(self.axes_info)
 

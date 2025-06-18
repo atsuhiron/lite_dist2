@@ -7,6 +7,17 @@ from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, Parameter
 from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel
 
 
+def test_parameter_jagged_space_hash() -> None:
+    space = ParameterJaggedSpace(
+        parameters=[(1,)],
+        ambient_indices=[(1,)],
+        axes_info=[
+            DummyLineSegment(name="x", type="int", step=1, ambient_size=100),
+        ],
+    )
+    _ = hash(space)
+
+
 @pytest.mark.parametrize(
     ("space", "expected"),
     [
