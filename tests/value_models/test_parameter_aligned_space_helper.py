@@ -353,6 +353,30 @@ def test_simplify(
             ],
             id="continuing 3",
         ),
+        pytest.param(
+            [
+                FlattenSegment(0, 204),
+                FlattenSegment(204, 51),
+                FlattenSegment(255, 51),
+                FlattenSegment(306, 51),
+            ],
+            [
+                FlattenSegment(0, 357),
+            ],
+            id="continuing 4 sorted",
+        ),
+        pytest.param(
+            [
+                FlattenSegment(306, 51),
+                FlattenSegment(0, 204),
+                FlattenSegment(255, 51),
+                FlattenSegment(204, 51),
+            ],
+            [
+                FlattenSegment(0, 357),
+            ],
+            id="continuing 4 unsorted",
+        ),
     ],
 )
 def test_simplify_simple_flatten(segments: list[FlattenSegment], expected: list[FlattenSegment]) -> None:

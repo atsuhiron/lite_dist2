@@ -52,15 +52,11 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
                         break
                 max_available_next = max(infinite_available_next)
             else:
-                max_available_next: int = max(
-                    filter(lambda next_index: next_index - start <= max_num, available_next),
-                )
+                max_available_next = self._calc_max_available_next(available_next, start, max_num)
 
         else:
             available_next = self._generate_available_next_finite(start)
-            max_available_next: int = max(
-                filter(lambda next_index: next_index - start <= max_num, available_next),
-            )
+            max_available_next = self._calc_max_available_next(available_next, start, max_num)
 
         start_loom = self.parameter_space.loom_by_flatten_index(
             start,
@@ -89,6 +85,14 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         if len(parameters) == 0:
             return None
         return ParameterJaggedSpace(parameters, ambient_indices, self.parameter_space.dummy_info)
+
+    @staticmethod
+    def _calc_max_available_next(available_next: tuple[int, ...], start: int, max_num: int) -> int:
+        available = list(filter(lambda next_index: next_index - start <= max_num, available_next))
+        if len(available) == 0:
+            msg = "No available"
+            raise LD2InvalidSpaceError(msg)
+        return max(available)
 
     @staticmethod
     def _nullable_min(a: int | None, b: int | None) -> int:
