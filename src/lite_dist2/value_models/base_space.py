@@ -84,6 +84,9 @@ class FlattenSegment(Mergeable):
             return (self.start == other.start) and (self.size == other.size)
         return False
 
+    def __hash__(self) -> int:
+        return hash((self.start, self.size))
+
     def get_start_index(self, *_: object) -> int:
         return self.start
 
