@@ -1,9 +1,15 @@
 # Changelog
 
+## [0.2.2] - 2025-06-18
+
+### Fixed
+- Fixed a bug that occurred when using multiple worker nodes ([#7](https://github.com/atsuhiron/lite_dist2/pull/7)).
+- Bump up `ruff` version to 0.12.0. and fix some new warnings ([#8](https://github.com/atsuhiron/lite_dist2/pull/8)).
+
 ## [0.2.1] - 2025-06-14
 
 ### Fixed
-- Fixed a bug that table threads were not terminated([#4](https://github.com/atsuhiron/lite_dist2/pull/5)).
+- Fixed a bug that table threads were not terminated ([#4](https://github.com/atsuhiron/lite_dist2/pull/5)).
 
 ## [0.2.0] - 2025-06-14
 
