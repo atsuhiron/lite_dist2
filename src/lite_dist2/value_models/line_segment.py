@@ -340,14 +340,17 @@ class ParameterRangeFloat(LineSegment):
 
     def grid(self) -> Generator[PrimitiveValueType, None, None]:
         i = 0
+        ambient_start = self.start - self.ambient_index * self.step
         while self.size is None or i < self.size:
-            yield self.start + i * self.step
+            yield ambient_start + (i + self.ambient_index) * self.step
             i += 1
 
     def indexed_grid(self) -> Generator[tuple[int, PrimitiveValueType], None, None]:
         i = 0
+        ambient_start = self.start - self.ambient_index * self.step
         while self.size is None or i < self.size:
-            yield i + self.ambient_index, self.start + i * self.step
+            ambient_index = i + self.ambient_index
+            yield ambient_index, ambient_start + ambient_index * self.step
             i += 1
 
     def slice(self, start_index: int, size: int) -> ParameterRangeFloat:

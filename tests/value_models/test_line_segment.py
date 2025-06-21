@@ -391,6 +391,33 @@ def test_line_segment_indexed_grid_infinite(
     assert actual == expected
 
 
+def test_line_segment_grid_without_rounding_error() -> None:
+    ambient = ParameterRangeFloat(
+        type="float",
+        size=13,
+        step=0.5 / 13,
+        start=-0.25,
+        ambient_index=0,
+        ambient_size=13,
+    )
+    ambient_grid = list(ambient.grid())
+
+    derived = ParameterRangeFloat(
+        type="float",
+        size=6,
+        step=0.5 / 13,
+        start=0.5 / 13 * 7 - 0.25,
+        ambient_index=7,
+        ambient_size=13,
+    )
+    derived_grid = list(derived.grid())
+
+    amb_idx = 7
+    assert len(ambient_grid[amb_idx:]) == len(derived_grid)
+    for i in range(5):
+        assert ambient_grid[i + amb_idx] == derived_grid[i]
+
+
 @pytest.mark.parametrize(
     "model",
     [
