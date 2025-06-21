@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.3] - 2025-06-21
+
+### Fixed
+- Fixed a bug that caused grid values to change slightly (rounding error) depending on the segment start position ([#10](https://github.com/atsuhiron/lite_dist2/pull/10)).
+
 ## [0.2.2] - 2025-06-18
 
 ### Fixed
