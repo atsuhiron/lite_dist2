@@ -7,6 +7,9 @@ from typing import TYPE_CHECKING, Any
 
 import tqdm
 
+from lite_dist2.expections import LD2TypeError
+from lite_dist2.type_definitions import ConstParamType
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
@@ -52,6 +55,13 @@ class BaseTrialRunner(metaclass=abc.ABCMeta):
         mappings = trial.convert_mappings_from(raw_mappings)
         trial.set_result(mappings)
         return trial
+
+    @staticmethod
+    def get_typed[T](key: str, value_type: type[T], d: dict[str, object]) -> T:
+        v = d.get(key)
+        if isinstance(v, value_type):
+            return v
+        raise LD2TypeError(key, ConstParamType.__value__, type(v))
 
 
 class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):

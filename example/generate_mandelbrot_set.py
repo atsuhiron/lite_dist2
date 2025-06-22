@@ -1,6 +1,5 @@
 import time
 from pathlib import Path
-from typing import Any
 
 from lite_dist2.common import float2hex, int2hex
 from lite_dist2.config import TableConfig, TableConfigProvider, WorkerConfig
@@ -12,6 +11,7 @@ from lite_dist2.table_node_api.start_table_api import start_in_thread
 from lite_dist2.table_node_api.table_param import StudyRegisterParam
 from lite_dist2.type_definitions import RawParamType, RawResultType
 from lite_dist2.value_models.aligned_space_registry import LineSegmentRegistry, ParameterAlignedSpaceRegistry
+from lite_dist2.value_models.const_param import ConstParam, ConstParamElement
 from lite_dist2.worker_node.table_node_client import TableNodeClient
 from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 from lite_dist2.worker_node.worker import Worker
@@ -41,6 +41,12 @@ def register_study(table_ip: str, table_port: int) -> None:
             ),
             result_type="scalar",
             result_value_type="int",
+            const_param=ConstParam(
+                consts=[
+                    ConstParamElement(type="float", key="abs_threshold", value=float2hex(2.0)),
+                    ConstParamElement(type="int", key="max_iter", value=int2hex(255)),
+                ],
+            ),
             parameter_space=ParameterAlignedSpaceRegistry(
                 type="aligned",
                 axes=[
@@ -67,16 +73,15 @@ def register_study(table_ip: str, table_port: int) -> None:
 
 
 class Mandelbrot(AutoMPTrialRunner):
-    _ABS_THRESHOLD = 2.0
-    _MAX_ITER = 255
-
-    def func(self, parameters: RawParamType, *_: tuple[Any, ...], **__: dict[str, Any]) -> RawResultType:
+    def func(self, parameters: RawParamType, *_: object, **kwargs: object) -> RawResultType:
+        abs_threshold = self.get_typed("abs_threshold", float, kwargs)
+        max_iter = self.get_typed("max_iter", int, kwargs)
         x = float(parameters[0])
         y = float(parameters[1])
         c = complex(x, y)
         z = complex(0, 0)
         iter_count = 0
-        while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
+        while abs(z) <= abs_threshold and iter_count < max_iter:
             z = z**2 + c
             iter_count += 1
         return iter_count

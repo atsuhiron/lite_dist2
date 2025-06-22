@@ -464,6 +464,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -579,6 +580,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -658,6 +660,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
@@ -752,6 +755,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
@@ -793,6 +797,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="02",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(1, 1), (1, 2), (1, 3)],
                             ambient_indices=[(1, 1), (1, 2), (1, 3)],
@@ -908,6 +913,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -962,6 +968,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="02",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1103,6 +1110,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
@@ -1197,6 +1205,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1325,6 +1334,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="00",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1357,6 +1367,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1389,6 +1400,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="02",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1421,6 +1433,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="03",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1453,6 +1466,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="04",
                         timestamp=DT,
                         trial_status=TrialStatus.running,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1485,6 +1499,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="05",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1517,6 +1532,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         trial_id="06",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(

@@ -234,6 +234,7 @@ study_register_param = StudyRegisterParam(
         ),
         result_type="scalar",
         result_value_type="int",
+        const_param=None,
         parameter_space=ParameterAlignedSpaceRegistry(
             type="aligned",
             axes=[
@@ -493,6 +494,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | suggest_strategy  | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                         |
 | result_type       | Literal["scalar", "vector"]                                     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                       |
 | result_value_type | Literal["bool", "int", "float"]                                 | ✓  | この `Study` の戻り値の型。                                                                                                                   |
+| const_param       | [ConstParam](#constparam)  \| None                              | ✓  | ワーカーノードで利用する定数の一覧。                                                                                                                   |
 | parameter_space   | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
 
 ### StudySummary
@@ -507,6 +509,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                     |
 | status               | [StudyStatus](#studystatus-enum)                          | ✓  | この `Study` の状態。                                                                                                                      |
 | registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                    |
+| const_param          | [ConstParam](#constparam)  \| None                        | ✓  | ワーカーノードで利用する定数の一覧。                                                                                                                   |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
 | total_grids          | int \| None                                               |    | この `Study` で計算する可能性のあるパラメータの組の数。パラメータ空間が無限の場合は `None`。                                                                               |
 | done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                     |
@@ -522,6 +525,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | result_value_type    | Literal["bool", "int", "float"]                           | ✓  | この `Study` の戻り値の型。                                                                                                                   |
 | study_id             | str                                                       | ✓  | この `Study` の ID。                                                                                                                     |
 | registered_timestamp | str                                                       | ✓  | この `Study` が登録された時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                    |
+| const_param          | [ConstParam](#constparam)  \| None                        | ✓  | ワーカーノードで利用する定数の一覧。                                                                                                                   |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
 | done_timestamp       | str                                                       | ✓  | この `Study` が完了した時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                     |
 | results              | list[[Mapping](#mapping)]                                 | ✓  | 計算結果一覧。`StudyStrategy` が `all_calculation` である場合は下の `done_grids` とこのリストの長さが一致します。                                                    |
@@ -556,6 +560,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | trial_id          | str                                                                                                                  | ✓  | `Trial` のID。                                                                         |
 | timestamp         | str                                                                                                                  | ✓  | この `Trial` が予約された時間を表すタイムスタンプ（内部的な型は `datetime`）。                                    |
 | trial_status      | [TrialStatus](#trialstatus-enum)                                                                                     | ✓  | この `Trial` の状態。                                                                      |
+| const_param       | [ConstParam](#constparam)  \| None                                                                                   | ✓  | ワーカーノードで利用する定数の一覧。                                                                   |
 | parameter_space   | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) \| [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) | ✓  | この `Trial` で計算する[パラメータ空間](#parameterspace)。必ず親の `Study.parameter_space` の部分空間になっている。 |
 | result_type       | Literal["scalar", "vector"]                                                                                          | ✓  | この `Trial` の戻り値が１変数か、多変数かを表す値。必ず親の `Study.result_type` と一致する。                        |
 | result_value_type | Literal["bool", "int", "float"]                                                                                      | ✓  | この `Trial` の戻り値の型。必ず親の `Study.result_value_type` と一致する。                              |
@@ -626,6 +631,18 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | value_type | Literal["bool", "int", "float"]      | ✓  | 値の型。                                 |
 | values     | list[[PortableValueType](#エイリアスの一覧)] | ✓  | 値。                                   |
 | name       | str \| None                          |    | 値につける名前。パラメータ空間から生成されたものであれば軸の名前が入る。 |
+
+### ConstParam
+| 名前     | 型                                             | 必須 | 説明      |
+|--------|-----------------------------------------------|----|---------|
+| consts | list[[ConstParamElement](#constparamelement)] | ✓  | 定数のリスト。 |
+
+### ConstParamElement
+| 名前    | 型                                      | 必須 | 説明                |
+|-------|----------------------------------------|----|-------------------|
+| type  | Literal["int", "float", "bool", "str"] | ✓  | 定数の型を区別するための識別子。  |
+| key   | str                                    | ✓  | 定数を取り出す際に利用するキー。  |
+| value | str \| bool                            | ✓  | portablize された定数。 |
 
 ### StudyStatus (Enum)
 | 名前        | 説明                                      |
@@ -834,6 +851,82 @@ class ManualMandelbrot(ManualMPTrialRunner):
             for arg_tuple, result_iter in pool.imap_unordered(parameter_pass_func, raw_params):
                 raw_mappings.append((arg_tuple, result_iter))
         return raw_mappings
+```
+
+### 定数の登録と利用
+何かの大規模計算をするにあたって定数を利用しないことは稀でしょう。上記の `Mandelbrot` クラスのように `TrialRunner` に定数を持たせるのはその実現方法の1つです（`_ABS_THRESHOLD` や `_MAX_ITER`）。
+しかし、`TrialRunner` はワーカーノードにデプロイされているものなので、この定数を変更したい場合は全てのワーカーノードを再デプロイしなおさなくてはなりません。  
+この問題はこの定数を `Study` に持たせることで解決できます。[Study の登録時](#study-の登録) に以下のインスタンスを `StudyRegister` に渡します。
+```python
+from lite_dist2.common import float2hex, int2hex
+from lite_dist2.value_models.const_param import ConstParam, ConstParamElement
+
+const_param = ConstParam(
+    consts=[
+        ConstParamElement(type="float", key="abs_threshold", value=float2hex(2.0)),
+        ConstParamElement(type="int", key="max_iter", value=int2hex(255)),
+    ],
+)
+```
+あるいは辞書から生成することも可能です。
+```python
+from lite_dist2.value_models.const_param import ConstParam
+
+_const_dict = {
+    "abs_threshold": 2.0,
+    "max_iter": 255
+}
+const_param = ConstParam.from_dict(_const_dict)
+```
+これらの定数は、`int`、`float`、`bool` のほかに `str` も使用できます。  
+`TrialRunner` ではキーワード引数からこの値を取得できます。
+```diff
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+
+
+class Mandelbrot(AutoMPTrialRunner):
+-     _ABS_THRESHOLD = 2.0
+-     _MAX_ITER = 255
+-
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
++         abs_threshold = self.get_typed("abs_threshold", float, kwargs)
++         max_iter = self.get_typed("max_iter", int, kwargs)
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+-         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
++         while abs(z) <= abs_threshold and iter_count < max_iter:
+            z = z ** 2 + c
+            iter_count += 1
+        return iter_count
+```
+ここで、`BaseTrialRunner` に定義されている `get_typed` メソッドを利用しています。これは型を厳密に指定するためのヘルパーメソッドです。
+型チェッカーや例外処理を気にしないのであれば次の書き方でも問題ありません。
+```diff
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+
+
+class Mandelbrot(AutoMPTrialRunner):
+-     _ABS_THRESHOLD = 2.0
+-     _MAX_ITER = 255
+-
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
++         abs_threshold = kwargs["abs_threshold"]
++         max_iter = kwargs["max_iter"]
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+-         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
++         while abs(z) <= abs_threshold and iter_count < max_iter:
+            z = z ** 2 + c
+            iter_count += 1
+        return iter_count
 ```
 
 ### Python スクリプト内でのテーブルノードの起動

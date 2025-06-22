@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
     from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
     from lite_dist2.suggest_strategies import BaseSuggestStrategy
+    from lite_dist2.value_models.const_param import ConstParam
 
 
 class Study:
@@ -31,6 +32,7 @@ class Study:
         registered_timestamp: datetime,
         study_strategy: BaseStudyStrategy,
         suggest_strategy: BaseSuggestStrategy,
+        const_param: ConstParam | None,
         parameter_space: ParameterAlignedSpace,
         result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
@@ -43,6 +45,7 @@ class Study:
         self.registered_timestamp = registered_timestamp
         self.study_strategy = study_strategy
         self.suggest_strategy = suggest_strategy
+        self.const_param = const_param
         self.parameter_space = parameter_space
         self.result_type = result_type
         self.result_value_type = result_value_type
@@ -76,6 +79,7 @@ class Study:
                 trial_id=self._publish_trial_id(),
                 timestamp=publish_timestamp(),
                 trial_status=TrialStatus.running,
+                const_param=self.const_param,
                 parameter_space=parameter_sub_space,
                 result_type=self.result_type,
                 result_value_type=self.result_value_type,
@@ -103,6 +107,7 @@ class Study:
             registered_timestamp=self.registered_timestamp,
             study_strategy=self.study_strategy.to_model(),
             suggest_strategy=self.suggest_strategy.to_model(),
+            const_param=self.const_param,
             parameter_space=self.parameter_space.to_model(),
             done_timestamp=publish_timestamp(),
             result_type=self.result_type,
@@ -121,6 +126,7 @@ class Study:
             registered_timestamp=self.registered_timestamp,
             study_strategy=self.study_strategy.to_model(),
             suggest_strategy=self.suggest_strategy.to_model(),
+            const_param=self.const_param,
             parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
@@ -137,6 +143,7 @@ class Study:
             registered_timestamp=self.registered_timestamp,
             study_strategy=self.study_strategy.to_model(),
             suggest_strategy=self.suggest_strategy.to_model(),
+            const_param=self.const_param,
             parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
@@ -181,6 +188,7 @@ class Study:
             registered_timestamp=study_model.registered_timestamp,
             study_strategy=Study._create_study_strategy(study_model.study_strategy),
             suggest_strategy=Study._create_suggest_strategy(study_model.suggest_strategy, parameter_space),
+            const_param=study_model.const_param,
             parameter_space=parameter_space,
             result_type=study_model.result_type,
             result_value_type=study_model.result_value_type,
