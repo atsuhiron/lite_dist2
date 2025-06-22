@@ -2,7 +2,6 @@ import binascii
 import hashlib
 import time
 from pathlib import Path
-from typing import Any
 
 from lite_dist2.config import TableConfig, TableConfigProvider, WorkerConfig
 from lite_dist2.curriculum_models.study_portables import StudyRegistry
@@ -53,6 +52,7 @@ def register_study(table_ip: str, table_port: int) -> None:
             ),
             result_type="scalar",
             result_value_type="int",
+            const_param=None,
             parameter_space=ParameterAlignedSpaceRegistry(
                 type="aligned",
                 axes=[
@@ -72,7 +72,7 @@ def register_study(table_ip: str, table_port: int) -> None:
 
 
 class MD5Preimage(AutoMPTrialRunner):
-    def func(self, parameters: RawParamType, *_: tuple[Any, ...], **__: dict[str, Any]) -> RawResultType:
+    def func(self, parameters: RawParamType, *_: object, **__: object) -> RawResultType:
         preimage = int(parameters[0])
         hex_digest = hashlib.md5(self.to_bytes(preimage)).hexdigest()  # noqa: S324
         return self.from_hex(hex_digest)

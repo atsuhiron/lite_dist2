@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from lite_dist2.expections import LD2ModelTypeError, LD2UndefinedError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.const_param import ConstParam
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
 from lite_dist2.value_models.point import ParamType, ResultType, ScalarValue, VectorValue
 
@@ -31,6 +32,7 @@ class TrialModel(BaseModel):
     trial_id: str
     timestamp: datetime
     trial_status: TrialStatus
+    const_param: ConstParam | None
     parameter_space: ParameterAlignedSpaceModel | ParameterJaggedSpaceModel
     result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
@@ -46,6 +48,7 @@ class Trial:
         trial_id: str,
         timestamp: datetime,
         trial_status: TrialStatus,
+        const_param: ConstParam | None,
         parameter_space: ParameterSpace,
         result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
@@ -57,6 +60,7 @@ class Trial:
         self.trial_id = trial_id
         self.timestamp = timestamp
         self.trial_status = trial_status
+        self.const_param = const_param
         self.parameter_space = parameter_space
         self.result_type = result_type
         self.result_value_type = result_value_type
@@ -111,6 +115,7 @@ class Trial:
             trial_id=self.trial_id,
             timestamp=self.timestamp,
             trial_status=self.trial_status,
+            const_param=self.const_param,
             parameter_space=self.parameter_space.to_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
@@ -133,6 +138,7 @@ class Trial:
             trial_id=model.trial_id,
             timestamp=model.timestamp,
             trial_status=model.trial_status,
+            const_param=model.const_param,
             parameter_space=parameter_space,
             result_type=model.result_type,
             result_value_type=model.result_value_type,

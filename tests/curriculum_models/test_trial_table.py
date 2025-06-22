@@ -277,6 +277,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         study_id="s01",
                         trial_id="t01",
                         timestamp=DT,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[
                                 (1, 0),
@@ -389,6 +390,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         study_id="s01",
                         trial_id="t02",
                         timestamp=DT,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[
                                 (0, 0),
@@ -456,6 +458,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         study_id="s01",
                         trial_id="t03",
                         timestamp=DT,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[
                                 (0, 5),
@@ -548,6 +551,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         study_id="s01",
                         trial_id="t01",
                         timestamp=DT,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -653,6 +657,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         study_id="s01",
                         trial_id="t02",
                         timestamp=DT,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -723,6 +728,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         study_id="s01",
                         trial_id="t03",
                         timestamp=DT,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1087,6 +1093,7 @@ def test_trial_table_count_grid(
                     trial_id="01",
                     timestamp=DT,
                     trial_status=TrialStatus.running,
+                    const_param=None,
                     parameter_space=ParameterAlignedSpaceModel(
                         type="aligned",
                         axes=[
@@ -1116,6 +1123,7 @@ def test_trial_table_count_grid(
                     trial_id="01",
                     timestamp=DT,
                     trial_status=TrialStatus.running,
+                    const_param=None,
                     parameter_space=ParameterAlignedSpaceModel(
                         type="aligned",
                         axes=[
@@ -1175,6 +1183,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1230,6 +1239,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t02",
                         timestamp=DT,
                         trial_status=TrialStatus.running,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1262,6 +1272,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t03",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1372,6 +1383,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1427,6 +1439,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t02",
                         timestamp=DT,
                         trial_status=TrialStatus.running,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1459,6 +1472,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t03",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1569,6 +1583,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1624,6 +1639,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t02",
                         timestamp=DT,
                         trial_status=TrialStatus.running,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1656,6 +1672,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t03",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1789,6 +1806,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1844,6 +1862,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t02",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -1899,6 +1918,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t03",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
@@ -2030,6 +2050,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0)],
                             ambient_indices=[(0, 0)],
@@ -2072,6 +2093,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t02",
                         timestamp=DT,
                         trial_status=TrialStatus.running,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 1)],
                             ambient_indices=[(0, 1)],
@@ -2091,6 +2113,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t03",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 2)],
                             ambient_indices=[(0, 2)],
@@ -2211,6 +2234,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t01",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 0)],
                             ambient_indices=[(0, 0)],
@@ -2253,6 +2277,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t02",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 1)],
                             ambient_indices=[(0, 1)],
@@ -2295,6 +2320,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         trial_id="t03",
                         timestamp=DT,
                         trial_status=TrialStatus.done,
+                        const_param=None,
                         parameter_space=ParameterJaggedSpace(
                             parameters=[(0, 2)],
                             ambient_indices=[(0, 2)],
@@ -2430,6 +2456,7 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
                 trial_id="t01",
                 timestamp=DT,
                 trial_status=TrialStatus.done,
+                const_param=None,
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="x"),
@@ -2515,6 +2542,7 @@ def test_trial_table_receipt_trial_result_raise_unmatch_worker_id() -> None:
                 trial_id="t01",
                 timestamp=DT,
                 trial_status=TrialStatus.running,
+                const_param=None,
                 parameter_space=ParameterAlignedSpace(
                     axes=[
                         ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="x"),
@@ -2551,8 +2579,9 @@ def test_trial_table_receipt_trial_result_raise_unmatch_worker_id() -> None:
 
 
 def test_trial_table_check_timeout_trial() -> None:
-    common_param = {
+    _trial_args = {
         "study_id": "s01",
+        "const_param": None,
         "parameter_space": _DUMMY_PARAMETER_SPACE,
         "result_type": "scalar",
         "result_value_type": "int",
@@ -2568,31 +2597,31 @@ def test_trial_table_check_timeout_trial() -> None:
                 trial_id="running_but_created_now",
                 timestamp=now,
                 trial_status=TrialStatus.running,
-                **common_param,
+                **_trial_args,
             ),
             Trial(
                 trial_id="running_little_past",
                 timestamp=now - timedelta(seconds=30),
                 trial_status=TrialStatus.running,
-                **common_param,
+                **_trial_args,
             ),
             Trial(
                 trial_id="running_very_past",
                 timestamp=now - timedelta(seconds=3000),
                 trial_status=TrialStatus.running,
-                **common_param,
+                **_trial_args,
             ),
             Trial(
                 trial_id="done_little_past",
                 timestamp=now - timedelta(seconds=40),
                 trial_status=TrialStatus.done,
-                **common_param,
+                **_trial_args,
             ),
             Trial(
                 trial_id="done_very_past",
                 timestamp=now - timedelta(seconds=3000),
                 trial_status=TrialStatus.done,
-                **common_param,
+                **_trial_args,
             ),
         ],
         aggregated_parameter_space={},
@@ -2604,25 +2633,25 @@ def test_trial_table_check_timeout_trial() -> None:
                 trial_id="running_but_created_now",
                 timestamp=now,
                 trial_status=TrialStatus.running,
-                **common_param,
+                **_trial_args,
             ),
             Trial(
                 trial_id="running_little_past",
                 timestamp=now - timedelta(seconds=30),
                 trial_status=TrialStatus.running,
-                **common_param,
+                **_trial_args,
             ),
             Trial(
                 trial_id="done_little_past",
                 timestamp=now - timedelta(seconds=40),
                 trial_status=TrialStatus.done,
-                **common_param,
+                **_trial_args,
             ),
             Trial(
                 trial_id="done_very_past",
                 timestamp=now - timedelta(seconds=3000),
                 trial_status=TrialStatus.done,
-                **common_param,
+                **_trial_args,
             ),
         ],
         aggregated_parameter_space={},

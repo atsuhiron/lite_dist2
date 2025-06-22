@@ -44,6 +44,7 @@ if TYPE_CHECKING:
                     type="sequential",
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceRegistry(
                     type="aligned",
                     axes=[
@@ -75,6 +76,7 @@ if TYPE_CHECKING:
                     type="sequential",
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceModel(
                     type="aligned",
                     axes=[
@@ -137,6 +139,7 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                     type="sequential",
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceRegistry(
                     type="aligned",
                     axes=[
@@ -169,6 +172,7 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                     type="sequential",
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceRegistry(
                     type="aligned",
                     axes=[
@@ -194,6 +198,7 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                     type="sequential",
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceRegistry(
                     type="aligned",
                     axes=[
@@ -219,6 +224,7 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
                     type="sequential",
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceRegistry(
                     type="aligned",
                     axes=[
@@ -248,6 +254,7 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                 name="test_name",
                 required_capacity={"matrix"},
                 registered_timestamp=DT,
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceModel(
                     type="aligned",
                     axes=[
@@ -306,6 +313,7 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                 status=StudyStatus.done,
                 required_capacity={"matrix"},
                 registered_timestamp=DT,
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceModel(
                     type="aligned",
                     axes=[

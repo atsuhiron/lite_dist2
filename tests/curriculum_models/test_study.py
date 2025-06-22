@@ -32,6 +32,7 @@ from tests.const import DT
                     type="sequential",
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
+                const_param=None,
                 parameter_space=ParameterAlignedSpaceModel(
                     type="aligned",
                     axes=[
@@ -65,6 +66,7 @@ from tests.const import DT
                             trial_id="01",
                             timestamp=DT,
                             trial_status=TrialStatus.done,
+                            const_param=None,
                             parameter_space=ParameterAlignedSpaceModel(
                                 type="aligned",
                                 axes=[
@@ -123,6 +125,7 @@ from tests.const import DT
                             trial_id="01",
                             timestamp=DT,
                             trial_status=TrialStatus.running,
+                            const_param=None,
                             parameter_space=ParameterAlignedSpaceModel(
                                 type="aligned",
                                 axes=[
@@ -229,6 +232,7 @@ def test_study_suggest_receipt_single_thread() -> None:
             suggest_parameter=SuggestStrategyParam(strict_aligned=True),
             parameter_space=_parameter_space,
         ),
+        const_param=None,
         parameter_space=_parameter_space,
         result_type="scalar",
         result_value_type="float",
@@ -293,6 +297,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
             suggest_parameter=SuggestStrategyParam(strict_aligned=True),
             parameter_space=_parameter_space,
         ),
+        const_param=None,
         parameter_space=_parameter_space,
         result_type="scalar",
         result_value_type="float",

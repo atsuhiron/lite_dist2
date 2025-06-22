@@ -14,6 +14,7 @@ from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.suggest_strategies import SuggestStrategyModel
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
 from lite_dist2.value_models.aligned_space_registry import ParameterAlignedSpaceRegistry
+from lite_dist2.value_models.const_param import ConstParam
 
 
 class _StudyCommonModel(BaseModel):
@@ -21,6 +22,7 @@ class _StudyCommonModel(BaseModel):
     required_capacity: set[str]
     study_strategy: StudyStrategyModel
     suggest_strategy: SuggestStrategyModel
+    const_param: ConstParam | None
     result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
 
@@ -57,6 +59,7 @@ class StudyRegistry(_StudyCommonModel):
             registered_timestamp=publish_timestamp(),
             study_strategy=self.study_strategy,
             suggest_strategy=self.suggest_strategy,
+            const_param=self.const_param,
             parameter_space=self.parameter_space.to_parameter_aligned_space_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
@@ -104,6 +107,7 @@ class StudyStorage(_StudyCommonModel):
             registered_timestamp=self.registered_timestamp,
             study_strategy=self.study_strategy,
             suggest_strategy=self.suggest_strategy,
+            const_param=self.const_param,
             parameter_space=self.parameter_space,
             result_type=self.result_type,
             result_value_type=self.result_value_type,

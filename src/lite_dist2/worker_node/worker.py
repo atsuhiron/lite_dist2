@@ -63,6 +63,7 @@ class Worker:
         if trial is None:
             return False
 
+        kwargs |= trial.const_param.to_dict() if trial.const_param is not None else {}
         done_trial = self.trial_runner.run(trial, self.config, self.pool, *args, **kwargs)
         self.client.register_trial(done_trial, self.config.table_node_request_timeout_seconds)
         return True

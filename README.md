@@ -238,6 +238,7 @@ study_register_param = StudyRegisterParam(
         ),
         result_type="scalar",
         result_value_type="int",
+        const_param=None,
         parameter_space=ParameterAlignedSpaceRegistry(
             type="aligned",
             axes=[
@@ -497,6 +498,7 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | suggest_strategy  | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓        | The [`SuggestStrategy`](#suggeststrategy)  to use when perform this `Study`.                                                                                                               |
 | result_type       | Literal["scalar", "vector"]                                     | ✓        | A value indicating whether the return value of this `Study` is scalar or vector.                                                                                                           |
 | result_value_type | Literal["bool", "int", "float"]                                 | ✓        | The return type of `Study`.                                                                                                                                                                |
+| const_param       | [ConstParam](#constparam)  \| None                              | ✓        | List of constant using on worker node.                                                                                                                                                     |
 | parameter_space   | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓        | [ParameterSpace](#parameterspace) to calculate on this `Study`.                                                                                                                            |
 
 ### StudySummary
@@ -511,6 +513,7 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | study_id             | str                                                       | ✓        | ID of this `Study`.                                                                                                                                                                        |
 | status               | [StudyStatus](#studystatus-enum)                          | ✓        | Status of this `Study`.                                                                                                                                                                    |
 | registered_timestamp | str                                                       | ✓        | A timestamp indicating when this `Study` was registered. (internally of type `datetime`)                                                                                                   |
+| const_param          | [ConstParam](#constparam)  \| None                        | ✓        | List of constant using on worker node.                                                                                                                                                     |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓        | [ParameterSpace](#parameterspace) to calculate on this `Study`.                                                                                                                            |
 | total_grids          | int \| None                                               |          | The number of possible parameter tuples to compute in this `Study`. None` if the parameter space is infinite.                                                                              |
 | done_grids           | int                                                       | ✓        | The number of parameter tuples actually completed in this `Study`.                                                                                                                         |
@@ -526,6 +529,7 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | result_value_type    | Literal["bool", "int", "float"]                           | ✓        | The return type of `Study`.                                                                                                                                                                |
 | study_id             | str                                                       | ✓        | ID of this `Study`.                                                                                                                                                                        |
 | registered_timestamp | str                                                       | ✓        | A timestamp indicating when this `Study` was registered. (internally of type `datetime`)                                                                                                   |
+| const_param          | [ConstParam](#constparam)  \| None                        | ✓        | List of constant using on worker node.                                                                                                                                                     |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓        | [ParameterSpace](#parameterspace) to calculate on this `Study`.                                                                                                                            |
 | done_timestamp       | str                                                       | ✓        | A timestamp indicating when this `Study` was completed. (internally of type `datetime`)                                                                                                    |
 | results              | list[[Mapping](#mapping)]                                 | ✓        | List of calculation result. If `StudyStrategy` is `all_calculation`, then `done_grids` and the length of this list match.                                                                  |
@@ -560,6 +564,7 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | trial_id          | str                                                                                                                  | ✓        | ID of this `Trial`.                                                                                                                |
 | timestamp         | str                                                                                                                  | ✓        | A timestamp indicating the time this `Trial` is reserved. (internally of type `datetime`)                                          |
 | trial_status      | [TrialStatus](#trialstatus-enum)                                                                                     | ✓        | Status of this `Trial`.                                                                                                            |
+| const_param       | [ConstParam](#constparam)  \| None                                                                                   | ✓        | List of constant using on worker node.                                                                                             |
 | parameter_space   | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) \| [ParameterJaggedSpaceModel](#parameterjaggedspacemodel) | ✓        | [ParameterSpace](#parameterspace) to be calculated in this `Trial`. It is always a subspace of the parent `Study.parameter_space`. |
 | result_type       | Literal["scalar", "vector"]                                                                                          | ✓        | A value indicating whether the return value of this `Trial` is scalar or vector. It always matches the parent `Study.result_type`. |
 | result_value_type | Literal["bool", "int", "float"]                                                                                      | ✓        | The return type of this `Trial`. It always matches the parent `Study.result_value_type`.                                           |
@@ -630,6 +635,18 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | value_type | Literal["bool", "int", "float"]             | ✓        | Type of the values.                                                                            |  
 | values     | list[[PortableValueType](#list-of-aliases)] | ✓        | List of values.                                                                                |  
 | name       | str \| None                                 |          | Name assigned to the values. If generated from a parameter space, this contains the axis name. |
+
+### ConstParam
+| name   | type                                          | required | description        |
+|--------|-----------------------------------------------|----------|--------------------|
+| consts | list[[ConstParamElement](#constparamelement)] | ✓        | List of constants. |
+
+### ConstParamElement
+| name  | type                                   | required | description                                 |
+|-------|----------------------------------------|----------|---------------------------------------------|
+| type  | Literal["int", "float", "bool", "str"] | ✓        | Identifier to distinguish type of constant. |
+| key   | str                                    | ✓        | Key used to retrieve constants.             |
+| value | str \| bool                            | ✓        | Portablized constant.                       |
 
 ### StudyStatus (Enum)
 | name      | description                                                          |
@@ -839,6 +856,82 @@ class ManualMandelbrot(ManualMPTrialRunner):
             for arg_tuple, result_iter in pool.imap_unordered(parameter_pass_func, raw_params):
                 raw_mappings.append((arg_tuple, result_iter))
         return raw_mappings
+```
+
+### Register and use constants
+It is rare to do a large computation without using constants. Having a constant in `TrialRunner` like the `Mandelbrot` class above (`_ABS_THRESHOLD` or `_MAX_ITER`) is one way to achieve this.
+However, `TrialRunner` is deployed on worker nodes, so if you want to change this constant, you have to redeploy all worker nodes.  
+This problem can be solved by having this constant in `Study`. The following instance is passed to `StudyRegister` when [registering a study](#register-study).
+```python
+from lite_dist2.common import float2hex, int2hex
+from lite_dist2.value_models.const_param import ConstParam, ConstParamElement
+
+const_param = ConstParam(
+    consts=[
+        ConstParamElement(type="float", key="abs_threshold", value=float2hex(2.0)),
+        ConstParamElement(type="int", key="max_iter", value=int2hex(255)),
+    ],
+)
+```
+Alternatively, it can be generated from a dictionary.
+```python
+from lite_dist2.value_models.const_param import ConstParam
+
+_const_dict = {
+    "abs_threshold": 2.0,
+    "max_iter": 255
+}
+const_param = ConstParam.from_dict(_const_dict)
+```
+These constants can be `str` as well as `int`, `float`, and `bool`.  
+In `TrialRunner`, this value can be obtained from a keyword argument.
+```diff
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+
+
+class Mandelbrot(AutoMPTrialRunner):
+-     _ABS_THRESHOLD = 2.0
+-     _MAX_ITER = 255
+-
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
++         abs_threshold = self.get_typed("abs_threshold", float, kwargs)
++         max_iter = self.get_typed("max_iter", int, kwargs)
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+-         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
++         while abs(z) <= abs_threshold and iter_count < max_iter:
+            z = z ** 2 + c
+            iter_count += 1
+        return iter_count
+```
+Here, we use the `get_typed` method defined in `BaseTrialRunner`. This is a helper method to specify types strictly.
+If you don't mind type checkers and exception handling, you can write the following way.
+```diff
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+
+
+class Mandelbrot(AutoMPTrialRunner):
+-     _ABS_THRESHOLD = 2.0
+-     _MAX_ITER = 255
+-
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
++         abs_threshold = kwargs["abs_threshold"]
++         max_iter = kwargs["max_iter"]
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+-         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
++         while abs(z) <= abs_threshold and iter_count < max_iter:
+            z = z ** 2 + c
+            iter_count += 1
+        return iter_count
 ```
 
 ### Startup table node in your Python script
