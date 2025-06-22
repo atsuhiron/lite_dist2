@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] - 2025-06-22
+
+### Added
+- Added `CostParam` to `Study`.
+  - It is now possible to have constants in a Study that are not related to grid parameter space.
+
 ## [0.2.3] - 2025-06-21
 
 ### Fixed
