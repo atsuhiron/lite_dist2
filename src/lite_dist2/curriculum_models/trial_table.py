@@ -77,9 +77,9 @@ class TrialTable:
         raise LD2ParameterError(p, t)
 
     def count_grid(self) -> int:
-        if self.aggregated_parameter_space is None:
-            return 0
-        return sum(sum(space.total for space in spaces) for spaces in list(self.aggregated_parameter_space.values()))
+        return sum(
+            trial.parameter_space.get_total() for trial in self.trials if trial.trial_status == TrialStatus.done
+        )
 
     def count_trial(self) -> int:
         return len(self.trials)
