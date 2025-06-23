@@ -28,427 +28,48 @@ _TRIAL_ARGS = {
 }
 
 
+@pytest.fixture
+def done_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
+    return_value = request.param
+
+    def fake_count_grid(self) -> int:  # noqa: ANN001
+        return return_value
+
+    monkeypatch.setattr(TrialTable, "count_grid", fake_count_grid)
+
+
+@pytest.fixture
+def all_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
+    return_value = request.param
+
+    def fake_get_total(self) -> int:  # noqa: ANN001
+        return return_value
+
+    monkeypatch.setattr(ParameterAlignedSpace, "get_total", fake_get_total)
+
+
 @pytest.mark.parametrize(
-    ("trial_table", "parameter_space", "expected"),
+    ("done_grid_fixture", "all_grid_fixture", "expected"),
     [
-        pytest.param(
-            TrialTable(
-                trials=[],
-                aggregated_parameter_space=None,
-            ),
-            ParameterAlignedSpace(
-                axes=[
-                    ParameterRangeInt(
-                        name="x",
-                        type="int",
-                        size=6,
-                        start=0,
-                        ambient_size=6,
-                        ambient_index=0,
-                    ),
-                ],
-                check_lower_filling=True,
-            ),
-            False,
-            id="init not defined",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [],
-                },
-            ),
-            ParameterAlignedSpace(
-                axes=[
-                    ParameterRangeInt(
-                        name="x",
-                        type="int",
-                        size=6,
-                        start=0,
-                        ambient_size=6,
-                        ambient_index=0,
-                    ),
-                ],
-                check_lower_filling=True,
-            ),
-            False,
-            id="init",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[
-                    Trial(
-                        trial_id="t01",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
-                            ),
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
-                            ),
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                ],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=3,
-                                    start=0,
-                                    ambient_size=6,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                },
-            ),
-            ParameterAlignedSpace(
-                axes=[
-                    ParameterRangeInt(
-                        name="x",
-                        type="int",
-                        size=6,
-                        start=0,
-                        ambient_size=6,
-                        ambient_index=0,
-                    ),
-                ],
-                check_lower_filling=True,
-            ),
-            False,
-            id="continuing",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[
-                    Trial(
-                        trial_id="t01",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
-                            ),
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
-                            ),
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                    Trial(
-                        trial_id="t02",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
-                            ),
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x68"),
-                            ),
-                            Mapping(
-                                params=(ScalarValue(type="scalar", value_type="int", value="0x5", name="x"),),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x69"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                ],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=3,
-                                    start=0,
-                                    ambient_size=6,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=3,
-                                    start=3,
-                                    ambient_size=6,
-                                    ambient_index=3,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                },
-            ),
-            ParameterAlignedSpace(
-                axes=[
-                    ParameterRangeInt(
-                        name="x",
-                        type="int",
-                        size=6,
-                        start=0,
-                        ambient_size=6,
-                        ambient_index=0,
-                    ),
-                ],
-                check_lower_filling=True,
-            ),
-            True,
-            id="done 1D",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[
-                    Trial(
-                        trial_id="01",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
-                            ),
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                    Trial(
-                        trial_id="02",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
-                            ),
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                ],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=1,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=1,
-                                    start=1,
-                                    ambient_size=2,
-                                    ambient_index=1,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                    1: [],
-                },
-            ),
-            ParameterAlignedSpace(
-                axes=[
-                    ParameterRangeInt(
-                        name="x",
-                        type="int",
-                        size=2,
-                        start=0,
-                        ambient_size=2,
-                        ambient_index=0,
-                    ),
-                    ParameterRangeInt(
-                        name="y",
-                        type="int",
-                        size=2,
-                        start=0,
-                        ambient_size=2,
-                        ambient_index=0,
-                    ),
-                ],
-                check_lower_filling=True,
-            ),
-            True,
-            id="done 2D not aggregated",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[
-                    Trial(
-                        trial_id="01",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
-                            ),
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                    Trial(
-                        trial_id="02",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x66"),
-                            ),
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x67"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                ],
-                aggregated_parameter_space={
-                    -1: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=2,
-                                    start=0,
-                                    ambient_size=2,
-                                    ambient_index=0,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                    0: [],
-                    1: [],
-                },
-            ),
-            ParameterAlignedSpace(
-                axes=[
-                    ParameterRangeInt(
-                        name="x",
-                        type="int",
-                        size=2,
-                        start=0,
-                        ambient_size=2,
-                        ambient_index=0,
-                    ),
-                    ParameterRangeInt(
-                        name="y",
-                        type="int",
-                        size=2,
-                        start=0,
-                        ambient_size=2,
-                        ambient_index=0,
-                    ),
-                ],
-                check_lower_filling=True,
-            ),
-            True,
-            id="done 2D aggregated",
-        ),
+        pytest.param(10, 10, True, id="Done"),
+        pytest.param(9, 10, False, id="Yet"),
     ],
+    indirect=["done_grid_fixture", "all_grid_fixture"],
 )
-def test_all_calculation_study_strategy_is_done(
-    trial_table: TrialTable,
-    parameter_space: ParameterAlignedSpace,
+def test_all_calculation_study_strategy_is_done2(
+    done_grid_fixture: int,
+    all_grid_fixture: int,
     expected: bool,
 ) -> None:
     strategy = AllCalculationStudyStrategy(study_strategy_param=None)
+    trial_table = TrialTable(trials=[], aggregated_parameter_space=None)
+    parameter_space = ParameterAlignedSpace(
+        axes=[
+            ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+            ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+        ],
+        check_lower_filling=True,
+    )
     actual = strategy.is_done(trial_table, parameter_space)
     assert actual == expected
 

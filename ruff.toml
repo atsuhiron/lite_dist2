@@ -21,6 +21,7 @@ ignore = [
 "tests/**.py" = [
     "S101",     # pytest use assert
     "SLF001",   # test private method
+    "ARG001",   # Fixture
 ]
 "example/**.py" = [
     "INP001",   # Example is not package

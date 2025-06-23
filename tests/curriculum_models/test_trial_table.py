@@ -833,241 +833,179 @@ def test_trial_table_find_least_division(
     [
         pytest.param(
             TrialTable(
-                trials=[],  # ここでは使わないので空
-                aggregated_parameter_space=None,
-            ),
-            0,
-            id="Empty_aps=None",
-        ),
-        pytest.param(
-            TrialTable(
                 trials=[],
-                aggregated_parameter_space={-1: [], 0: []},
+                aggregated_parameter_space=None,  # ここでは使わないので None
             ),
             0,
             id="Empty",
         ),
         pytest.param(
             TrialTable(
-                trials=[],
-                aggregated_parameter_space={
-                    -1: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=10,
-                                    ambient_index=0,
-                                    ambient_size=10,
-                                    start=0,
-                                    step=1,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                    0: [],
-                },
-            ),
-            10,
-            id="Universal 1D",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=10,
-                                    ambient_index=0,
-                                    ambient_size=None,
-                                    start=0,
-                                    step=1,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                },
-            ),
-            10,
-            id="Infinite 1D",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=10,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    step=1,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=10,
-                                    ambient_index=50,
-                                    ambient_size=100,
-                                    start=50,
-                                    step=1,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                },
-            ),
-            20,
-            id="Segmented 1D",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=10,
-                                    ambient_index=0,
-                                    ambient_size=None,
-                                    start=0,
-                                    step=1,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=10,
-                                    ambient_index=50,
-                                    ambient_size=None,
-                                    start=50,
-                                    step=1,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                },
-            ),
-            20,
-            id="Infinite segmented 1D",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[],
-                aggregated_parameter_space={
-                    -1: [
-                        ParameterAlignedSpace(
+                trials=[
+                    Trial(
+                        study_id="s01",
+                        trial_id="t01",
+                        timestamp=DT,
+                        const_param=None,
+                        parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
                                     name="x",
                                     type="int",
-                                    size=10,
-                                    ambient_index=0,
-                                    ambient_size=10,
-                                    start=0,
                                     step=1,
-                                ),
-                                ParameterRangeInt(
-                                    name="y",
-                                    type="int",
-                                    size=10,
-                                    ambient_index=0,
-                                    ambient_size=10,
-                                    start=0,
-                                    step=1,
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                    0: [],
-                    1: [],
-                },
-            ),
-            100,
-            id="Universal 2D",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    name="x",
-                                    type="int",
                                     size=1,
-                                    ambient_index=1,
+                                    start=0,
+                                    ambient_index=0,
                                     ambient_size=10,
-                                    start=1,
-                                    step=1,
                                 ),
                                 ParameterRangeInt(
                                     name="y",
                                     type="int",
-                                    size=10,
+                                    step=1,
+                                    size=1,
+                                    start=0,
                                     ambient_index=0,
                                     ambient_size=10,
-                                    start=0,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
                         ),
-                    ],
-                    1: [
-                        ParameterAlignedSpace(
+                        trial_status=TrialStatus.done,
+                        result_type="scalar",
+                        result_value_type="int",
+                        worker_node_name="w01",
+                        worker_node_id="w01",
+                        results=[
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p"),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t02",
+                        timestamp=DT,
+                        const_param=None,
+                        parameter_space=ParameterAlignedSpace(
                             axes=[
                                 ParameterRangeInt(
                                     name="x",
                                     type="int",
+                                    step=1,
                                     size=1,
+                                    start=0,
                                     ambient_index=0,
                                     ambient_size=10,
-                                    start=0,
-                                    step=1,
                                 ),
                                 ParameterRangeInt(
                                     name="y",
                                     type="int",
-                                    size=5,
+                                    step=1,
+                                    size=1,
+                                    start=0,
                                     ambient_index=0,
                                     ambient_size=10,
-                                    start=0,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
                         ),
-                    ],
-                },
+                        trial_status=TrialStatus.running,
+                        result_type="scalar",
+                        result_value_type="int",
+                        worker_node_name="w01",
+                        worker_node_id="w01",
+                        results=None,
+                    ),
+                ],
+                aggregated_parameter_space=None,
             ),
-            15,
-            id="Segmented 2D",
+            1,
+            id="count only done aligned",
+        ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        study_id="s01",
+                        trial_id="t02",
+                        timestamp=DT,
+                        const_param=None,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[
+                                (0, 3),
+                                (0, 4),
+                            ],
+                            ambient_indices=[
+                                (0, 3),
+                                (0, 4),
+                            ],
+                            axes_info=[
+                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                            ],
+                        ),
+                        trial_status=TrialStatus.done,
+                        result_type="scalar",
+                        result_value_type="int",
+                        worker_node_name="w01",
+                        worker_node_id="w01",
+                        results=[
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p"),
+                            ),
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p"),
+                            ),
+                        ],
+                    ),
+                    Trial(
+                        study_id="s01",
+                        trial_id="t03",
+                        timestamp=DT,
+                        const_param=None,
+                        parameter_space=ParameterJaggedSpace(
+                            parameters=[
+                                (0, 5),
+                                (0, 6),
+                                (0, 7),
+                                (0, 8),
+                                (0, 9),
+                            ],
+                            ambient_indices=[
+                                (0, 5),
+                                (0, 6),
+                                (0, 7),
+                                (0, 8),
+                                (0, 9),
+                            ],
+                            axes_info=[
+                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                            ],
+                        ),
+                        trial_status=TrialStatus.running,
+                        result_type="scalar",
+                        result_value_type="int",
+                        worker_node_name="w01",
+                        worker_node_id="w01",
+                    ),
+                ],
+                aggregated_parameter_space=None,
+            ),
+            2,
+            id="count only done jagged",
         ),
     ],
 )
