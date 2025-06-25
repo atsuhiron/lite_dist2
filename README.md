@@ -810,7 +810,7 @@ from lite_dist2.type_definitions import RawParamType, RawResultType
     _ABS_THRESHOLD = 2.0
     _MAX_ITER = 255
 
-    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
+    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
         x = float(parameters[0])
         y = float(parameters[1])
         c = complex(x, y)
@@ -869,7 +869,7 @@ from lite_dist2.worker_node.trial_runner import ManualMPTrialRunner
 
 
 class ManualMandelbrot(ManualMPTrialRunner):
-    def batch_func(self, raw_params: Iterator[RawParamType], config: WorkerConfig, *args: tuple, **kwargs: dict) -> list[tuple[RawParamType, RawResultType]]:
+    def batch_func(self, raw_params: Iterator[RawParamType], config: WorkerConfig, *args: object, **kwargs: object) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
         with Pool(processes=2) as pool:
@@ -914,7 +914,7 @@ class Mandelbrot(AutoMPTrialRunner):
 -     _ABS_THRESHOLD = 2.0
 -     _MAX_ITER = 255
 -
-    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
+    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
 +         abs_threshold = self.get_typed("abs_threshold", float, kwargs)
 +         max_iter = self.get_typed("max_iter", int, kwargs)
         x = float(parameters[0])
@@ -939,7 +939,7 @@ class Mandelbrot(AutoMPTrialRunner):
 -     _ABS_THRESHOLD = 2.0
 -     _MAX_ITER = 255
 -
-    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
+    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
 +         abs_threshold = kwargs["abs_threshold"]
 +         max_iter = kwargs["max_iter"]
         x = float(parameters[0])
