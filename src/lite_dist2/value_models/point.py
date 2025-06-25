@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel
 
 from lite_dist2.common import numerize, portablize
+from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.type_definitions import PortableValueType
 
 if TYPE_CHECKING:
@@ -23,6 +24,22 @@ class BasePointValue(metaclass=abc.ABCMeta):
     def equal_to(self, other: BasePointValue) -> bool:
         pass
 
+    @abc.abstractmethod
+    def get_value_size(self) -> int:
+        pass
+
+    @abc.abstractmethod
+    def get_value_types(self) -> tuple[Literal["bool", "int", "float"], ...]:
+        pass
+
+    @abc.abstractmethod
+    def get_value_list(self) -> list[PortableValueType]:
+        pass
+
+    @abc.abstractmethod
+    def to_dummy(self) -> BasePointValue:
+        pass
+
     @staticmethod
     @abc.abstractmethod
     def create_from_numeric(
@@ -31,6 +48,18 @@ class BasePointValue(metaclass=abc.ABCMeta):
         name: str | None = None,
     ) -> BasePointValue:
         pass
+
+    @staticmethod
+    def get_default_value(value_type: Literal["bool", "int", "float"]) -> PortableValueType:
+        match value_type:
+            case "bool":
+                return False
+            case "int":
+                return "0x0"
+            case "float":
+                return "0x0.0p+0"
+            case _:
+                raise LD2ModelTypeError(value_type)
 
 
 class ScalarValue(BaseModel, BasePointValue):
@@ -46,6 +75,23 @@ class ScalarValue(BaseModel, BasePointValue):
         if not isinstance(other, ScalarValue):
             return False
         return self.value_type == other.value_type and self.value == other.value
+
+    def get_value_size(self) -> int:
+        return 1
+
+    def get_value_types(self) -> tuple[Literal["bool", "int", "float"], ...]:
+        return (self.value_type,)
+
+    def get_value_list(self) -> list[PortableValueType]:
+        return [self.value]
+
+    def to_dummy(self) -> ScalarValue:
+        return ScalarValue(
+            type="scalar",
+            value_type=self.value_type,
+            value=self.get_default_value(self.value_type),
+            name=self.name,
+        )
 
     @staticmethod
     def create_from_numeric(
@@ -70,6 +116,23 @@ class VectorValue(BaseModel, BasePointValue):
         if not isinstance(other, VectorValue):
             return False
         return self.value_type == other.value_type and self.values == other.values
+
+    def get_value_size(self) -> int:
+        return len(self.values)
+
+    def get_value_types(self) -> tuple[Literal["bool", "int", "float"], ...]:
+        return (self.value_type,) * self.get_value_size()
+
+    def get_value_list(self) -> list[PortableValueType]:
+        return self.values
+
+    def to_dummy(self) -> BasePointValue:
+        return VectorValue(
+            type="vector",
+            value_type=self.value_type,
+            values=[self.get_default_value(self.value_type) for _ in self.values],
+            name=self.name,
+        )
 
     @staticmethod
     def create_from_numeric(

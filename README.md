@@ -344,71 +344,84 @@ If it has finished, you will get `"status": "done"` and the `result` will contai
 ### How to see the result
 The result retrieved by /study is in the following format (only one `result` is shown for the sake of space).
 ```json
-
 {
-    "name": "mandelbrot",
-    "required_capacity": [],
-    "study_strategy": {"type": "all_calculation", "study_strategy_param": null},
-    "suggest_strategy": {"type": "sequential", "suggest_strategy_param": {"strict_aligned": true}},
-    "result_type": "scalar",
-    "result_value_type": "int",
-    "study_id": "b4fed0ba-394d-11f0-b30f-e8d45b580c23",
-    "registered_timestamp": "2025-05-25T18:50:36.034909+09:00",
-    "parameter_space": {
-        "type": "aligned",
-        "axes": [
-            {
-                "name": "x",
-                "type": "float",
-                "size": "0xa",
-                "step": "0x1.999999999999ap-2",
-                "start": "-0x1.0000000000000p+1",
-                "ambient_index": "0x0",
-                "ambient_size": "0xa",
-                "is_dummy": false
-            },
-            {
-                "name": "y",
-                "type": "float",
-                "size": "0xa",
-                "step": "0x1.999999999999ap-2",
-                "start": "-0x1.0000000000000p+1",
-                "ambient_index": "0x0",
-                "ambient_size": "0xa",
-                "is_dummy": false
-            }
-        ],
-        "check_lower_filling": true
-    },
-    "done_timestamp": "2025-05-25T18:50:42.078755+09:00",
-    "results": [
-        {
-            "params": [
-                {
-                    "type": "scalar",
-                    "value_type": "float",
-                    "value": "-0x1.0000000000000p+1",
-                    "name": "x"
-                },
-                {
-                    "type": "scalar",
-                    "value_type": "float",
-                    "value": "-0x1.0000000000000p+1",
-                    "name": "y"
-                }
-            ],
-            "result": {
-                "type": "scalar",
-                "value_type": "int",
-                "value": "0x1",
-                "name": null
-            }
-        }
+  "name": "mandelbrot",
+  "required_capacity": [],
+  "study_strategy": {
+    "type": "all_calculation",
+    "study_strategy_param": null
+  },
+  "suggest_strategy": {
+    "type": "sequential",
+    "suggest_strategy_param": {
+      "strict_aligned": true
+    }
+  },
+  "result_type": "scalar",
+  "result_value_type": "int",
+  "study_id": "b4fed0ba-394d-11f0-b30f-e8d45b580c23",
+  "registered_timestamp": "2025-05-25T18:50:36.034909+09:00",
+  "parameter_space": {
+    "type": "aligned",
+    "axes": [
+      {
+        "name": "x",
+        "type": "float",
+        "size": "0xa",
+        "step": "0x1.999999999999ap-2",
+        "start": "-0x1.0000000000000p+1",
+        "ambient_index": "0x0",
+        "ambient_size": "0xa",
+        "is_dummy": false
+      },
+      {
+        "name": "y",
+        "type": "float",
+        "size": "0xa",
+        "step": "0x1.999999999999ap-2",
+        "start": "-0x1.0000000000000p+1",
+        "ambient_index": "0x0",
+        "ambient_size": "0xa",
+        "is_dummy": false
+      }
     ],
-    "done_grids": 100
+    "check_lower_filling": true
+  },
+  "done_timestamp": "2025-05-25T18:50:42.078755+09:00",
+  "results": {
+    "params_info": [
+      {
+        "type": "scalar",
+        "value_type": "float",
+        "value": "0x0.0p+0",
+        "name": "x"
+      },
+      {
+        "type": "scalar",
+        "value_type": "float",
+        "value": "0x0.0p+0",
+        "name": "y"
+      }
+    ],
+    "result_info": {
+      "type": "scalar",
+      "value_type": "int",
+      "value": "0x0",
+      "name": null
+    },
+    "values": [
+      [
+        "-0x1.0000000000000p+1",
+        "-0x1.0000000000000p+1",
+        "0x0"
+      ]
+    ]
+  },
+  "done_grids": 100
 }
 ```
-If you look at `result`, you will see that it contains both `param` and `result`. That is the result of the calculation in `param[].value` is `result.value`.
+If you look at the `results`, you will see that it contains `param_info` and `result_info`. These are input and output type information, and the values are dummies.
+The actual values are stored in `results.values`, and are ordered by param and result. In the example above, the values are `x`, `y`, and `result` from head.
 
 ## 6. Configuration
 ### TableConfig
@@ -532,7 +545,7 @@ If you look at `result`, you will see that it contains both `param` and `result`
 | const_param          | [ConstParam](#constparam)  \| None                        | ✓        | List of constant using on worker node.                                                                                                                                                     |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓        | [ParameterSpace](#parameterspace) to calculate on this `Study`.                                                                                                                            |
 | done_timestamp       | str                                                       | ✓        | A timestamp indicating when this `Study` was completed. (internally of type `datetime`)                                                                                                    |
-| results              | list[[Mapping](#mapping)]                                 | ✓        | List of calculation result. If `StudyStrategy` is `all_calculation`, then `done_grids` and the length of this list match.                                                                  |
+| results              | [MappingsStorage](#mappingsstorage)                       | ✓        | List of calculation result. If `StudyStrategy` is `all_calculation`, then `done_grids` and the length of this list match.                                                                  |
 | done_grids           | int                                                       | ✓        | The number of parameter tuples actually completed in this `Study`.                                                                                                                         |
 
 ### StudyStrategyModel
@@ -577,6 +590,13 @@ If you look at `result`, you will see that it contains both `param` and `result`
 |--------|--------------------------------|----------|-------------------------------------------------------------------------|
 | params | [ParamType](#list-of-aliases)  | ✓        | parameter tuple.                                                        |
 | result | [ResultType](#list-of-aliases) | ✓        | The value resulting from a given calculation with this parameter tuple. |
+
+### MappingsStorage
+| name        | type                                              | required | description                                                                                     |
+|-------------|---------------------------------------------------|----------|-------------------------------------------------------------------------------------------------|
+| params_info | [ParamType](#list-of-aliases)                     | ✓        | Type information of parameter. Values are dummies.                                              |
+| result_info | [ResultType](#list-of-aliases)                    | ✓        | Type information of result. Values are dummies.                                                 |
+| values      | list[list[[PortableValueType](#list-of-aliases)]] | ✓        | List of parameters and results. The internal list contains the parameters and results in order. |
 
 ### ParameterAlignedSpaceRegistry
 | name | type                                              | required | description                                   |

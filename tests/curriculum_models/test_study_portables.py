@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from lite_dist2.curriculum_models.mapping import MappingsStorage
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyRegistry, StudyStorage, StudySummary
 from lite_dist2.curriculum_models.study_status import StudyStatus
-from lite_dist2.curriculum_models.trial import Mapping
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.suggest_strategies import SuggestStrategyModel
@@ -280,15 +280,16 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                     check_lower_filling=True,
                 ),
                 done_timestamp=DT + timedelta(days=1),
-                results=[
-                    Mapping(
-                        params=(
-                            ScalarValue(type="scalar", name="x", value_type="int", value="0x0"),
-                            ScalarValue(type="scalar", name="y", value_type="float", value="0x0.0p+0"),
-                        ),
-                        result=ScalarValue(type="scalar", value_type="bool", value=True),
+                results=MappingsStorage(
+                    params_info=(
+                        ScalarValue(type="scalar", name="x", value_type="int", value="0x0"),
+                        ScalarValue(type="scalar", name="y", value_type="float", value="0x0.0p+0"),
                     ),
-                ],
+                    result_info=ScalarValue(type="scalar", value_type="bool", value=False),
+                    values=[
+                        ("0x0", "0x0.0p+0", True),
+                    ],
+                ),
                 result_type="scalar",
                 result_value_type="bool",
                 study_strategy=StudyStrategyModel(

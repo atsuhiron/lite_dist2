@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial import Trial, TrialModel, TrialStatus
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.base_space import FlattenSegment
@@ -14,6 +14,7 @@ from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, 
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from lite_dist2.curriculum_models.mapping import Mapping
     from lite_dist2.value_models.point import ResultType
 
 

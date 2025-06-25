@@ -7,10 +7,11 @@ from typing import TYPE_CHECKING
 import pytest
 
 from lite_dist2.curriculum_models.curriculum import Curriculum, CurriculumModel
+from lite_dist2.curriculum_models.mapping import Mapping, MappingsStorage
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage
 from lite_dist2.curriculum_models.study_status import StudyStatus
-from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial import Trial, TrialModel, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
@@ -38,7 +39,7 @@ _DUMMY_SUGGEST_STRATEGY_MODEL = SuggestStrategyModel(
     type="sequential",
     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
 )
-_SUMMY_TRIAL_TABLE = TrialTable(
+_DUMMY_TRIAL_TABLE = TrialTable(
     trials=[
         Trial(
             study_id="01",
@@ -93,6 +94,12 @@ _SUMMY_TRIAL_TABLE = TrialTable(
         -1: [],
         0: [_DUMMY_PARAMETER_SPACE],
     },
+)
+
+_DUMMY_MAPPINGS_STORAGE = MappingsStorage(
+    params_info=(),
+    result_info=ScalarValue(type="scalar", value_type="int", value="0x0"),
+    values=[],
 )
 
 
@@ -159,7 +166,7 @@ class MockStudy(Study):
             done_timestamp=DT,
             result_type="scalar",
             result_value_type="int",
-            results=[],
+            results=_DUMMY_MAPPINGS_STORAGE,
             done_grids=4,
         )
 
@@ -275,7 +282,7 @@ def sample_curriculum_fixture() -> Curriculum:
             done_timestamp=DT,
             result_type="scalar",
             result_value_type="int",
-            results=[],
+            results=_DUMMY_MAPPINGS_STORAGE,
             done_grids=4,
         ),
     ]
@@ -393,7 +400,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     done_timestamp=DT,
                     result_type="scalar",
                     result_value_type="int",
-                    results=[],
+                    results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
                 ),
                 StudyStorage(
@@ -408,7 +415,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     done_timestamp=DT,
                     result_type="scalar",
                     result_value_type="int",
-                    results=[],
+                    results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
                 ),
             ],
@@ -431,7 +438,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     done_timestamp=DT,
                     result_type="scalar",
                     result_value_type="int",
-                    results=[],
+                    results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
                 ),
             ],
@@ -454,7 +461,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     done_timestamp=DT,
                     result_type="scalar",
                     result_value_type="int",
-                    results=[],
+                    results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
                 ),
             ],
@@ -477,7 +484,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     done_timestamp=DT,
                     result_type="scalar",
                     result_value_type="int",
-                    results=[],
+                    results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
                 ),
             ],
@@ -506,7 +513,7 @@ def test_curriculum_pop_storage(
                 done_timestamp=DT,
                 result_type="scalar",
                 result_value_type="int",
-                results=[],
+                results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
             ),
             StudyStorage(
@@ -521,7 +528,7 @@ def test_curriculum_pop_storage(
                 done_timestamp=DT,
                 result_type="scalar",
                 result_value_type="int",
-                results=[],
+                results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
             ),
         ],
@@ -564,7 +571,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     parameter_space=_DUMMY_PARAMETER_SPACE,
                     result_type="scalar",
                     result_value_type="int",
-                    trial_table=_SUMMY_TRIAL_TABLE,
+                    trial_table=_DUMMY_TRIAL_TABLE,
                 ),
             ],
             id="cancel by id",
@@ -589,7 +596,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     parameter_space=_DUMMY_PARAMETER_SPACE,
                     result_type="scalar",
                     result_value_type="int",
-                    trial_table=_SUMMY_TRIAL_TABLE,
+                    trial_table=_DUMMY_TRIAL_TABLE,
                 ),
             ],
             id="cancel by name",
@@ -614,7 +621,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     parameter_space=_DUMMY_PARAMETER_SPACE,
                     result_type="scalar",
                     result_value_type="int",
-                    trial_table=_SUMMY_TRIAL_TABLE,
+                    trial_table=_DUMMY_TRIAL_TABLE,
                 ),
                 Study(
                     study_id="s02",
@@ -631,7 +638,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     parameter_space=_DUMMY_PARAMETER_SPACE,
                     result_type="scalar",
                     result_value_type="int",
-                    trial_table=_SUMMY_TRIAL_TABLE,
+                    trial_table=_DUMMY_TRIAL_TABLE,
                 ),
             ],
             id="Not found",
@@ -662,7 +669,7 @@ def test_curriculum_cancel_study(
                 parameter_space=_DUMMY_PARAMETER_SPACE,
                 result_type="scalar",
                 result_value_type="int",
-                trial_table=_SUMMY_TRIAL_TABLE,
+                trial_table=_DUMMY_TRIAL_TABLE,
             ),
             Study(
                 study_id="s02",
@@ -679,7 +686,7 @@ def test_curriculum_cancel_study(
                 parameter_space=_DUMMY_PARAMETER_SPACE,
                 result_type="scalar",
                 result_value_type="int",
-                trial_table=_SUMMY_TRIAL_TABLE,
+                trial_table=_DUMMY_TRIAL_TABLE,
             ),
         ],
     )
@@ -759,7 +766,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
                 done_timestamp=DT,
                 result_type="scalar",
                 result_value_type="int",
-                results=[],
+                results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
             ),
         ],
@@ -841,7 +848,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
                 done_timestamp=DT,
                 result_type="scalar",
                 result_value_type="int",
-                results=[],
+                results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
             ),
             StudyStorage(
@@ -856,7 +863,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
                 done_timestamp=DT,
                 result_type="scalar",
                 result_value_type="int",
-                results=[],
+                results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
             ),
         ],

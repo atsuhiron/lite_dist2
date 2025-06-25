@@ -7,8 +7,8 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from lite_dist2.common import publish_timestamp
+from lite_dist2.curriculum_models.mapping import MappingsStorage
 from lite_dist2.curriculum_models.study_status import StudyStatus
-from lite_dist2.curriculum_models.trial import Mapping
 from lite_dist2.curriculum_models.trial_table import TrialTableModel
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.suggest_strategies import SuggestStrategyModel
@@ -95,7 +95,7 @@ class StudyStorage(_StudyCommonModel):
     registered_timestamp: datetime
     parameter_space: ParameterAlignedSpaceModel
     done_timestamp: datetime
-    results: list[Mapping]
+    results: MappingsStorage
     done_grids: int
 
     def to_summary(self) -> StudySummary:

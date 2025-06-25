@@ -1,6 +1,7 @@
 import pytest
 
-from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.mapping import Mapping
+from lite_dist2.curriculum_models.trial import Trial, TrialModel, TrialStatus
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
 from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel

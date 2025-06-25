@@ -27,6 +27,10 @@ class LD2TypeError(LD2Error):
         super().__init__(f"Invalid type: {name=}, {available_types=}, {actual=}")
 
 
+class LD2NotDoneError(LD2Error):
+    pass
+
+
 class LD2TableNodeServerError(LD2Error):
     pass
 

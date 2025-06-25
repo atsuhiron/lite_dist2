@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from lite_dist2.value_models.point import ResultType
 
 if TYPE_CHECKING:
-    from lite_dist2.curriculum_models.trial import Mapping
+    from lite_dist2.curriculum_models.mapping import MappingsStorage
     from lite_dist2.curriculum_models.trial_table import TrialTable
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
@@ -31,7 +31,7 @@ class BaseStudyStrategy(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
+    def extract_mappings(self, trial_table: TrialTable) -> MappingsStorage:
         pass
 
     @abc.abstractmethod
