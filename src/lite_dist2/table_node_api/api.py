@@ -94,7 +94,7 @@ def handle_trial_register(
     try:
         study.receipt_trial(Trial.from_model(trial))
     except LD2ParameterError:
-        return _response(OkResponse(ok=False), 400)
+        return _response(OkResponse(ok=False), 409)
     curr.to_storage_if_done()
     return _response(OkResponse(ok=True), 200)
 

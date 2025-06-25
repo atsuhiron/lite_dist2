@@ -33,7 +33,3 @@ class LD2NotDoneError(LD2Error):
 
 class LD2TableNodeServerError(LD2Error):
     pass
-
-
-class LD2TableNodeClientError(LD2Error):
-    pass
