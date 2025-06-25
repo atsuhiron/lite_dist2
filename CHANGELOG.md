@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.1] - 2025-06-25
+
+### Changed
+- Changed schema of study storage ([#15](https://github.com/atsuhiron/lite_dist2/pull/15))
+  - Rethinking the `result` schema, it reduced its size by roughly 1/4.
+
+### Fixed
+- Fixed count grid. Running trial is no longer accounted for as done ([#14](https://github.com/atsuhiron/lite_dist2/pull/14)).
+- Fixed `TableNodeClient` so that processing continues without error when a timeout of `Trial` occurs ([#16](https://github.com/atsuhiron/lite_dist2/pull/16)).
+- Fixed type hinting of README ([#17](https://github.com/atsuhiron/lite_dist2/pull/17))
+
 ## [0.3.0] - 2025-06-22
 
 ### Added
