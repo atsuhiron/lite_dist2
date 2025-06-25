@@ -1,6 +1,7 @@
 import pytest
 
-from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialStatus
+from lite_dist2.curriculum_models.mapping import Mapping
+from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam

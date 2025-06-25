@@ -6,20 +6,16 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
+from lite_dist2.curriculum_models.mapping import Mapping
 from lite_dist2.expections import LD2ModelTypeError, LD2UndefinedError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.const_param import ConstParam
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
-from lite_dist2.value_models.point import ParamType, ResultType, ScalarValue, VectorValue
+from lite_dist2.value_models.point import ResultType, ScalarValue, VectorValue
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import RawParamType, RawResultType
     from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
-
-
-class Mapping(BaseModel):
-    params: ParamType
-    result: ResultType
 
 
 class TrialStatus(str, Enum):

@@ -1,7 +1,9 @@
 import pytest
 
-from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialStatus
+from lite_dist2.curriculum_models.mapping import Mapping, MappingsStorage
+from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable
+from lite_dist2.expections import LD2NotDoneError
 from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
@@ -151,11 +153,65 @@ def test_find_exact_study_strategy_is_done(
     [
         pytest.param(
             TrialTable(
+                trials=[
+                    Trial(
+                        trial_id="t01",
+                        trial_status=TrialStatus.done,
+                        results=[
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
+                            ),
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
+                                ),
+                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
+                    ),
+                ],
+                aggregated_parameter_space=_DUMMY_APS,
+            ),
+            ScalarValue(type="scalar", value_type="int", value="0x64"),
+            MappingsStorage(
+                params_info=(
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
+                ),
+                result_info=ScalarValue(type="scalar", value_type="int", value="0x0"),
+                values=[
+                    ("0x0", "0x0", "0x64"),
+                ],
+            ),
+            id="Found",
+        ),
+    ],
+)
+def test_find_exact_study_strategy_extract_mapping(
+    trial_table: TrialTable,
+    target_value: ResultType,
+    expected: MappingsStorage,
+) -> None:
+    strategy = FindExactStudyStrategy(StudyStrategyParam(target_value=target_value))
+    actual = strategy.extract_mappings(trial_table)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("trial_table", "target_value"),
+    [
+        pytest.param(
+            TrialTable(
                 trials=[],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
             ScalarValue(type="scalar", value_type="int", value="0x64"),
-            [],
             id="Empty",
         ),
         pytest.param(
@@ -186,86 +242,11 @@ def test_find_exact_study_strategy_is_done(
                 aggregated_parameter_space=_DUMMY_APS,
             ),
             ScalarValue(type="scalar", value_type="int", value="0x64"),
-            [],
             id="Not found",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[
-                    Trial(
-                        trial_id="t01",
-                        trial_status=TrialStatus.done,
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
-                            ),
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                ],
-                aggregated_parameter_space=_DUMMY_APS,
-            ),
-            ScalarValue(type="scalar", value_type="int", value="0x64"),
-            [
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                    ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x64"),
-                ),
-            ],
-            id="Found",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[
-                    Trial(
-                        trial_id="t01",
-                        trial_status=TrialStatus.running,
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x64"),
-                            ),
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x65"),
-                            ),
-                        ],
-                        **_TRIAL_ARGS,
-                    ),
-                ],
-                aggregated_parameter_space=_DUMMY_APS,
-            ),
-            ScalarValue(type="scalar", value_type="int", value="0x64"),
-            [],
-            id="Found but running",
         ),
     ],
 )
-def test_find_exact_study_strategy_extract_mapping(
-    trial_table: TrialTable,
-    target_value: ResultType,
-    expected: list[Mapping],
-) -> None:
+def test_find_exact_study_strategy_extract_mapping_raise(trial_table: TrialTable, target_value: ResultType) -> None:
     strategy = FindExactStudyStrategy(StudyStrategyParam(target_value=target_value))
-    actual = strategy.extract_mappings(trial_table)
-    assert actual == expected
+    with pytest.raises(LD2NotDoneError):
+        _ = strategy.extract_mappings(trial_table)

@@ -2,17 +2,21 @@ import threading
 
 import pytest
 
+from lite_dist2.curriculum_models.mapping import Mapping
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_portables import StudyModel
 from lite_dist2.curriculum_models.study_status import StudyStatus
-from lite_dist2.curriculum_models.trial import Mapping, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial import TrialModel, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyModel, SuggestStrategyParam
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
-from lite_dist2.value_models.line_segment import LineSegmentModel, ParameterRangeFloat
+from lite_dist2.value_models.line_segment import (
+    LineSegmentModel,
+    ParameterRangeFloat,
+)
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 

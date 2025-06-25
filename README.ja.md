@@ -338,73 +338,87 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 終了していた場合は `"status": "done"` になり、`result` に実行結果が格納されます。
 
 ### 結果の見方
-/study で取得した結果は次のような形式です（`result` は１つだけ表示しています）。
-```json
+/study で取得した結果は次のような形式です（`results.values` は１つだけ表示しています）。
 
+```json
 {
-    "name": "mandelbrot",
-    "required_capacity": [],
-    "study_strategy": {"type": "all_calculation", "study_strategy_param": null},
-    "suggest_strategy": {"type": "sequential", "suggest_strategy_param": {"strict_aligned": true}},
-    "result_type": "scalar",
-    "result_value_type": "int",
-    "study_id": "b4fed0ba-394d-11f0-b30f-e8d45b580c23",
-    "registered_timestamp": "2025-05-25T18:50:36.034909+09:00",
-    "parameter_space": {
-        "type": "aligned",
-        "axes": [
-            {
-                "name": "x",
-                "type": "float",
-                "size": "0xa",
-                "step": "0x1.999999999999ap-2",
-                "start": "-0x1.0000000000000p+1",
-                "ambient_index": "0x0",
-                "ambient_size": "0xa",
-                "is_dummy": false
-            },
-            {
-                "name": "y",
-                "type": "float",
-                "size": "0xa",
-                "step": "0x1.999999999999ap-2",
-                "start": "-0x1.0000000000000p+1",
-                "ambient_index": "0x0",
-                "ambient_size": "0xa",
-                "is_dummy": false
-            }
-        ],
-        "check_lower_filling": true
-    },
-    "done_timestamp": "2025-05-25T18:50:42.078755+09:00",
-    "results": [
-        {
-            "params": [
-                {
-                    "type": "scalar",
-                    "value_type": "float",
-                    "value": "-0x1.0000000000000p+1",
-                    "name": "x"
-                },
-                {
-                    "type": "scalar",
-                    "value_type": "float",
-                    "value": "-0x1.0000000000000p+1",
-                    "name": "y"
-                }
-            ],
-            "result": {
-                "type": "scalar",
-                "value_type": "int",
-                "value": "0x1",
-                "name": null
-            }
-        }
+  "name": "mandelbrot",
+  "required_capacity": [],
+  "study_strategy": {
+    "type": "all_calculation",
+    "study_strategy_param": null
+  },
+  "suggest_strategy": {
+    "type": "sequential",
+    "suggest_strategy_param": {
+      "strict_aligned": true
+    }
+  },
+  "result_type": "scalar",
+  "result_value_type": "int",
+  "study_id": "b4fed0ba-394d-11f0-b30f-e8d45b580c23",
+  "registered_timestamp": "2025-05-25T18:50:36.034909+09:00",
+  "parameter_space": {
+    "type": "aligned",
+    "axes": [
+      {
+        "name": "x",
+        "type": "float",
+        "size": "0xa",
+        "step": "0x1.999999999999ap-2",
+        "start": "-0x1.0000000000000p+1",
+        "ambient_index": "0x0",
+        "ambient_size": "0xa",
+        "is_dummy": false
+      },
+      {
+        "name": "y",
+        "type": "float",
+        "size": "0xa",
+        "step": "0x1.999999999999ap-2",
+        "start": "-0x1.0000000000000p+1",
+        "ambient_index": "0x0",
+        "ambient_size": "0xa",
+        "is_dummy": false
+      }
     ],
-    "done_grids": 100
+    "check_lower_filling": true
+  },
+  "done_timestamp": "2025-05-25T18:50:42.078755+09:00",
+  "results": {
+    "params_info": [
+      {
+        "type": "scalar",
+        "value_type": "float",
+        "value": "0x0.0p+0",
+        "name": "x"
+      },
+      {
+        "type": "scalar",
+        "value_type": "float",
+        "value": "0x0.0p+0",
+        "name": "y"
+      }
+    ],
+    "result_info": {
+      "type": "scalar",
+      "value_type": "int",
+      "value": "0x0",
+      "name": null
+    },
+    "values": [
+      [
+        "-0x1.0000000000000p+1",
+        "-0x1.0000000000000p+1",
+        "0x0"
+      ]
+    ]
+  },
+  "done_grids": 100
 }
 ```
-`result` に注目すると、`param` と `result` が含まれていることが分かります。つまり、「`param[].value` での値が `result.value`」ということです。
+`results` に注目すると、`param_info` と `result_info` が含まれていることが分かります。これらは入力と出力の型情報で、値はダミーです。
+実際の値は `results.values` に格納されたおり、param と result が順番に並んでいます。上の例では先頭から順に `x`, `y`, `result` です。
 
 ## 6. 設定
 ### TableConfig
@@ -528,7 +542,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | const_param          | [ConstParam](#constparam)  \| None                        | ✓  | ワーカーノードで利用する定数の一覧。                                                                                                                   |
 | parameter_space      | [ParameterAlignedSpaceModel](#parameteralignedspacemodel) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
 | done_timestamp       | str                                                       | ✓  | この `Study` が完了した時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                     |
-| results              | list[[Mapping](#mapping)]                                 | ✓  | 計算結果一覧。`StudyStrategy` が `all_calculation` である場合は下の `done_grids` とこのリストの長さが一致します。                                                    |
+| results              | [MappingsStorage](#mappingsstorage)                       | ✓  | 計算結果一覧。                                                                                                                              |
 | done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                     |
 
 ### StudyStrategyModel
@@ -573,6 +587,13 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 |--------|-------------------------|----|--------------------------|
 | params | [ParamType](#エイリアスの一覧)  | ✓  | パラメータの組。                 |
 | result | [ResultType](#エイリアスの一覧) | ✓  | 上のパラメータの組で所定の計算を行った結果の値。 |
+
+### MappingsStorage
+| 名前          | 型                                          | 必須 | 説明                                      |
+|-------------|--------------------------------------------|----|-----------------------------------------|
+| params_info | [ParamType](#エイリアスの一覧)                     | ✓  | パラメータの型情報。値はダミー。                        |
+| result_info | [ResultType](#エイリアスの一覧)                    | ✓  | 結果の型情報。値はダミー                            |
+| values      | list[list[[PortableValueType](#エイリアスの一覧)]] | ✓  | パラメータと結果の一覧。内部のリストはパラメータと結果が順番に格納されている。 |
 
 ### ParameterAlignedSpaceRegistry
 | 名前   | 型                                                 | 必須 | 説明                             |

@@ -1,11 +1,13 @@
 import pytest
 
-from lite_dist2.curriculum_models.trial import Mapping, Trial, TrialStatus
+from lite_dist2.curriculum_models.mapping import Mapping, MappingsStorage
+from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable
+from lite_dist2.expections import LD2NotDoneError
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
-from lite_dist2.value_models.point import ScalarValue
+from lite_dist2.value_models.point import ScalarValue, VectorValue
 from tests.const import DT
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
@@ -79,14 +81,6 @@ def test_all_calculation_study_strategy_is_done2(
     [
         pytest.param(
             TrialTable(
-                trials=[],
-                aggregated_parameter_space=_DUMMY_APS,
-            ),
-            [],
-            id="Empty",
-        ),
-        pytest.param(
-            TrialTable(
                 trials=[
                     Trial(
                         trial_id="t01",
@@ -105,15 +99,16 @@ def test_all_calculation_study_strategy_is_done2(
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            [
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
-                    ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x67"),
+            MappingsStorage(
+                params_info=(
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                 ),
-            ],
+                result_info=ScalarValue(type="scalar", value_type="int", value="0x0"),
+                values=[
+                    ("0x1", "0x1", "0x67"),
+                ],
+            ),
             id="Single trial, single map",
         ),
         pytest.param(
@@ -164,37 +159,124 @@ def test_all_calculation_study_strategy_is_done2(
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            [
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
-                    ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x67"),
+            MappingsStorage(
+                params_info=(
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                 ),
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
+                result_info=ScalarValue(type="scalar", value_type="int", value="0x0"),
+                values=[
+                    ("0x1", "0x1", "0x67"),
+                    ("0x2", "0x2", "0x68"),
+                    ("0x3", "0x3", "0x69"),
+                    ("0x4", "0x4", "0x6a"),
+                ],
+            ),
+            id="Multi trial, multi map, scalar",
+        ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        trial_id="t01",
+                        trial_status=TrialStatus.done,
+                        results=[
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
+                                ),
+                                result=VectorValue(type="vector", value_type="int", values=["0x67", "0x67"]),
+                            ),
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
+                                ),
+                                result=VectorValue(type="vector", value_type="int", values=["0x68", "0x68"]),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
                     ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x68"),
-                ),
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
+                    Trial(
+                        trial_id="t02",
+                        trial_status=TrialStatus.done,
+                        results=[
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
+                                ),
+                                result=VectorValue(type="vector", value_type="int", values=["0x69", "0x69"]),
+                            ),
+                            Mapping(
+                                params=(
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),
+                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
+                                ),
+                                result=VectorValue(type="vector", value_type="int", values=["0x6a", "0x6a"]),
+                            ),
+                        ],
+                        **_TRIAL_ARGS,
                     ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x69"),
+                ],
+                aggregated_parameter_space=_DUMMY_APS,
+            ),
+            MappingsStorage(
+                params_info=(
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
+                    ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
                 ),
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
+                result_info=VectorValue(type="vector", value_type="int", values=["0x0", "0x0"]),
+                values=[
+                    ("0x1", "0x1", "0x67", "0x67"),
+                    ("0x2", "0x2", "0x68", "0x68"),
+                    ("0x3", "0x3", "0x69", "0x69"),
+                    ("0x4", "0x4", "0x6a", "0x6a"),
+                ],
+            ),
+            id="Multi trial, multi map, vector",
+        ),
+    ],
+)
+def test_find_exact_study_strategy_extract_mapping(
+    trial_table: TrialTable,
+    expected: MappingsStorage,
+) -> None:
+    strategy = AllCalculationStudyStrategy(None)
+    actual = strategy.extract_mappings(trial_table)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "trial_table",
+    [
+        pytest.param(
+            TrialTable(
+                trials=[],
+                aggregated_parameter_space=_DUMMY_APS,
+            ),
+            id="Empty",
+        ),
+        pytest.param(
+            TrialTable(
+                trials=[
+                    Trial(
+                        trial_id="t01",
+                        trial_status=TrialStatus.done,
+                        results=None,
+                        **_TRIAL_ARGS,
                     ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x6a"),
-                ),
-            ],
-            id="Multi trial, multi map",
+                    Trial(
+                        trial_id="t02",
+                        trial_status=TrialStatus.done,
+                        results=None,
+                        **_TRIAL_ARGS,
+                    ),
+                ],
+                aggregated_parameter_space=_DUMMY_APS,
+            ),
+            id="None first",
         ),
         pytest.param(
             TrialTable(
@@ -222,52 +304,18 @@ def test_all_calculation_study_strategy_is_done2(
                     ),
                     Trial(
                         trial_id="t02",
-                        trial_status=TrialStatus.running,
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x3", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x69"),
-                            ),
-                            Mapping(
-                                params=(
-                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="x"),
-                                    ScalarValue(type="scalar", value_type="int", value="0x4", name="y"),
-                                ),
-                                result=ScalarValue(type="scalar", value_type="int", value="0x6a"),
-                            ),
-                        ],
+                        trial_status=TrialStatus.done,
+                        results=None,
                         **_TRIAL_ARGS,
                     ),
                 ],
                 aggregated_parameter_space=_DUMMY_APS,
             ),
-            [
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x1", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x1", name="y"),
-                    ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x67"),
-                ),
-                Mapping(
-                    params=(
-                        ScalarValue(type="scalar", value_type="int", value="0x2", name="x"),
-                        ScalarValue(type="scalar", value_type="int", value="0x2", name="y"),
-                    ),
-                    result=ScalarValue(type="scalar", value_type="int", value="0x68"),
-                ),
-            ],
-            id="Multi trial, multi map, except running",
+            id="None",
         ),
     ],
 )
-def test_find_exact_study_strategy_extract_mapping(
-    trial_table: TrialTable,
-    expected: list[Mapping],
-) -> None:
+def test_find_exact_study_strategy_extract_mapping_raise(trial_table: TrialTable) -> None:
     strategy = AllCalculationStudyStrategy(None)
-    actual = strategy.extract_mappings(trial_table)
-    assert actual == expected
+    with pytest.raises(LD2NotDoneError):
+        _ = strategy.extract_mappings(trial_table)
