@@ -21,7 +21,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
 _DUMMY_APS = {-1: [], 0: [], 1: []}
 _TRIAL_ARGS = {
     "study_id": "s01",
-    "timestamp": DT,
+    "reserved_timestamp": DT,
     "const_param": None,
     "parameter_space": _DUMMY_PARAMETER_SPACE,
     "result_type": "scalar",

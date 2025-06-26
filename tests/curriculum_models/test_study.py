@@ -68,7 +68,7 @@ from tests.const import DT
                         TrialModel(
                             study_id="01",
                             trial_id="01",
-                            timestamp=DT,
+                            reserved_timestamp=DT,
                             trial_status=TrialStatus.done,
                             const_param=None,
                             parameter_space=ParameterAlignedSpaceModel(
@@ -127,7 +127,7 @@ from tests.const import DT
                         TrialModel(
                             study_id="01",
                             trial_id="01",
-                            timestamp=DT,
+                            reserved_timestamp=DT,
                             trial_status=TrialStatus.running,
                             const_param=None,
                             parameter_space=ParameterAlignedSpaceModel(

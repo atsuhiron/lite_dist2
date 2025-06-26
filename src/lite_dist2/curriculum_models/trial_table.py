@@ -68,6 +68,7 @@ class TrialTable:
             # Normal
             trial.result = result
             trial.trial_status = TrialStatus.done
+            trial.set_registered_timestamp()
             self.aggregated_parameter_space[self.trials[0].parameter_space.get_dim() - 1].extend(
                 trial.parameter_space.to_aligned_list(),
             )

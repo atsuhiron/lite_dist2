@@ -22,7 +22,7 @@ _dummy_space = ParameterJaggedSpace(
             Trial(
                 study_id="s01",
                 trial_id="t01",
-                timestamp=DT,
+                reserved_timestamp=DT,
                 trial_status=TrialStatus.running,
                 const_param=None,
                 parameter_space=_dummy_space,
@@ -49,7 +49,7 @@ _dummy_space = ParameterJaggedSpace(
             Trial(
                 study_id="s01",
                 trial_id="t01",
-                timestamp=DT,
+                reserved_timestamp=DT,
                 trial_status=TrialStatus.done,
                 const_param=None,
                 parameter_space=_dummy_space,
@@ -67,7 +67,7 @@ _dummy_space = ParameterJaggedSpace(
             Trial(
                 study_id="s01",
                 trial_id="t01",
-                timestamp=DT,
+                reserved_timestamp=DT,
                 trial_status=TrialStatus.done,
                 const_param=None,
                 parameter_space=_dummy_space,
@@ -85,7 +85,7 @@ _dummy_space = ParameterJaggedSpace(
             Trial(
                 study_id="s01",
                 trial_id="t01",
-                timestamp=DT,
+                reserved_timestamp=DT,
                 trial_status=TrialStatus.done,
                 const_param=None,
                 parameter_space=_dummy_space,
@@ -115,7 +115,7 @@ _dummy_space = ParameterJaggedSpace(
             Trial(
                 study_id="s01",
                 trial_id="t01",
-                timestamp=DT,
+                reserved_timestamp=DT,
                 trial_status=TrialStatus.done,
                 const_param=None,
                 parameter_space=_dummy_space,
@@ -154,7 +154,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
         TrialModel(
             study_id="my_study_id0",
             trial_id="01",
-            timestamp=DT,
+            reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
             parameter_space=ParameterAlignedSpaceModel(
@@ -180,7 +180,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
         TrialModel(
             study_id="my_study_id1",
             trial_id="01",
-            timestamp=DT,
+            reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
             parameter_space=ParameterAlignedSpaceModel(
@@ -224,7 +224,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
         TrialModel(
             study_id="my_study_id2",
             trial_id="02",
-            timestamp=DT,
+            reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
             parameter_space=ParameterJaggedSpaceModel(
@@ -252,7 +252,7 @@ def test_trial_find_target_value(trial: Trial, target: ResultType, expected: Map
         TrialModel(
             study_id="my_study_id3",
             trial_id="01",
-            timestamp=DT,
+            reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
             parameter_space=ParameterJaggedSpaceModel(
