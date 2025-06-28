@@ -15,6 +15,7 @@ from lite_dist2.table_node_api.table_param import StudyRegisterParam, TrialRegis
 from lite_dist2.table_node_api.table_response import (
     CurriculumSummaryResponse,
     OkResponse,
+    ProgressSummaryResponse,
     StudyRegisteredResponse,
     StudyResponse,
     TrialReserveResponse,
@@ -49,6 +50,14 @@ def handle_save() -> OkResponse:
 def handle_status() -> CurriculumSummaryResponse | JSONResponse:
     curr = CurriculumProvider.get()
     return _response(CurriculumSummaryResponse(summaries=curr.to_summaries()), 200)
+
+
+@app.get("/status/progress", response_model=ProgressSummaryResponse)
+def handle_status_progress(
+    cutoff_sec: Annotated[int, Query(description="Time range of Trial used for ETA estimation.")] = 600,
+) -> ProgressSummaryResponse | JSONResponse:
+    curr = CurriculumProvider.get()
+    return _response(curr.report_progress(cutoff_sec), 200)
 
 
 @app.post("/study/register", response_model=StudyRegisteredResponse)

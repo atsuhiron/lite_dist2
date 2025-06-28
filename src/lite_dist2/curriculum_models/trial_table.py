@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.curriculum_models.trial import Trial, TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial import Trial, TrialDoneRecord, TrialModel, TrialStatus
 from lite_dist2.expections import LD2ParameterError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.base_space import FlattenSegment
@@ -153,6 +153,9 @@ class TrialTable:
                 outdated_ids.append(trial.trial_id)
         self.trials = new_trials
         return outdated_ids
+
+    def gen_done_record_list(self, cutoff_datetime: datetime) -> list[TrialDoneRecord]:
+        return [trial.to_done_record() for trial in self.trials if trial.done_in_after(cutoff_datetime)]
 
     def to_model(self) -> TrialTableModel:
         if self.aggregated_parameter_space is None:

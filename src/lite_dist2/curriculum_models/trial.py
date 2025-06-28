@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 from lite_dist2.common import publish_timestamp
 from lite_dist2.curriculum_models.mapping import Mapping
-from lite_dist2.expections import LD2ModelTypeError, LD2UndefinedError
+from lite_dist2.expections import LD2ModelTypeError, LD2NotDoneError, LD2UndefinedError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.const_param import ConstParam
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
@@ -22,6 +22,22 @@ if TYPE_CHECKING:
 class TrialStatus(str, Enum):
     running = "running"
     done = "done"
+
+
+class TrialDoneRecord(BaseModel):
+    trial_id: str
+    reserved_timestamp: datetime
+    worker_node_name: str | None
+    worker_node_id: str
+    registered_timestamp: datetime
+    grid_size: int
+
+    def calc_duration_sec(self) -> float:
+        dt = self.registered_timestamp - self.reserved_timestamp
+        return dt.total_seconds()
+
+    def calc_grid_per_sec(self) -> float:
+        return self.grid_size / self.calc_duration_sec()
 
 
 class TrialModel(BaseModel):
@@ -111,6 +127,24 @@ class Trial:
             if mapping.result.equal_to(target_value):
                 return mapping
         return None
+
+    def to_done_record(self) -> TrialDoneRecord:
+        if self.trial_status != TrialStatus.done or self.registered_timestamp is None:
+            raise LD2NotDoneError
+
+        return TrialDoneRecord(
+            trial_id=self.trial_id,
+            reserved_timestamp=self.reserved_timestamp,
+            worker_node_name=self.worker_node_name,
+            worker_node_id=self.worker_node_id,
+            registered_timestamp=self.registered_timestamp,
+            grid_size=self.parameter_space.get_total(),
+        )
+
+    def done_in_after(self, cutoff_datetime: datetime) -> bool:
+        if self.trial_status != TrialStatus.done or self.registered_timestamp is None:
+            return False
+        return cutoff_datetime < self.registered_timestamp
 
     def to_model(self) -> TrialModel:
         return TrialModel(
