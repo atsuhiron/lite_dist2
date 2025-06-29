@@ -443,16 +443,17 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | table_node_request_timeout_seconds | int         | 30     | テーブルノードに対するリクエストのタイムアウト時間。                                                                |
 
 ## 7. API リファレンス
-| パス              | メソッド   | パラメータ                                                                             | ボディ                                       | レスポンス                                                   | 説明                      |
-|-----------------|--------|-----------------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|-------------------------|
-| /ping           | GET    | なし                                                                                | なし                                        | [OkResponse](#okresponse)                               | 死活監視用API                |
-| /save           | GET    | なし                                                                                | なし                                        | [OkResponse](#okresponse)                               | `Curriculum` を保存する      |
-| /status         | GET    | なし                                                                                | なし                                        | [CurriculumSummaryResponse](#curriculumsummaryresponse) | `Curriculum` の概要情報を取得する |
-| /study/register | POST   | なし                                                                                | [StudyRegisterParam](#studyregisterparam) | [StudyRegisteredResponse](#studyregisteredresponse)     | `Study` を登録する           |
-| /trial/reserve  | POST   | なし                                                                                | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | `Trial` を予約する           |
-| /trial/register | POST   | なし                                                                                | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | 完了した `Trial` を登録する      |
-| /study          | GET    | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能       | なし                                        | [StudyResponse](#studyresponse)                         | `Study` の情報を取得する        |
-| /study          | DELETE | `study_id`: キャンセルしたい `Study` のID<br>`name`: キャンセルしたい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                                        | [OkResponse](#okresponse)                               | `Study` をキャンセルする        |
+| パス               | メソッド   | パラメータ                                                                             | ボディ                                       | レスポンス                                                   | 説明                      |
+|------------------|--------|-----------------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|-------------------------|
+| /ping            | GET    | なし                                                                                | なし                                        | [OkResponse](#okresponse)                               | 死活監視用API                |
+| /save            | GET    | なし                                                                                | なし                                        | [OkResponse](#okresponse)                               | `Curriculum` を保存する      |
+| /status          | GET    | なし                                                                                | なし                                        | [CurriculumSummaryResponse](#curriculumsummaryresponse) | `Curriculum` の概要情報を取得する |
+| /status/progress | GET    | `cutoff_sec`: 終了予想時刻推定に利用する集計期間。デフォルト値は600                                        | なし                                        | [ProgressSummaryResponse](#progresssummaryresponse)     | 実行中の `Study` の進捗状況を表示する |
+| /study/register  | POST   | なし                                                                                | [StudyRegisterParam](#studyregisterparam) | [StudyRegisteredResponse](#studyregisteredresponse)     | `Study` を登録する           |
+| /trial/reserve   | POST   | なし                                                                                | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | `Trial` を予約する           |
+| /trial/register  | POST   | なし                                                                                | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | 完了した `Trial` を登録する      |
+| /study           | GET    | `study_id`: 取得したい `Study` のID<br>`name`: 取得したい `Study` の名前<br>※どちらか一方のみ指定可能       | なし                                        | [StudyResponse](#studyresponse)                         | `Study` の情報を取得する        |
+| /study           | DELETE | `study_id`: キャンセルしたい `Study` のID<br>`name`: キャンセルしたい `Study` の名前<br>※どちらか一方のみ指定可能 | なし                                        | [OkResponse](#okresponse)                               | `Study` をキャンセルする        |
 
 ## 8. API のスキーマ
 ### StudyRegisterParam
@@ -493,6 +494,31 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | 名前        | 型                                   | 必須 | 説明                                                     |
 |-----------|-------------------------------------|----|--------------------------------------------------------|
 | summaries | list[[StudySummary](#studysummary)] | ✓  | `Curriculum` が現在保持している `Study` 及び `StudyStorage` のリスト。 |
+
+### ProgressSummaryResponse
+| 名前                 | 型                                                   | 必須 | 説明               |
+|--------------------|-----------------------------------------------------|----|------------------|
+| now                | str                                                 | ✓  | 終了時刻推定に利用した現在時刻。 |
+| cutoff_sec         | int                                                 | ✓  | 終了時刻推定に利用した集計期間。 |
+| progress_summaries | list[[StudyProgressSummary](#studyprogresssummary)] | ✓  | 進捗状況一覧。          |
+
+### StudyProgressSummary
+| 名前                  | 型                                           | 必須 | 説明                                                               |
+|---------------------|---------------------------------------------|----|------------------------------------------------------------------|
+| study_id            | str                                         | ✓  | 対象の `Study` の ID。                                                |
+| study_name          | str \| None                                 | ✓  | 対象の `Study` の名前                                                  |
+| total_grid          | int \| Literal["infinite"]                  | ✓  | この `Study` で計算する可能性のあるパラメータの組の数。                                 |
+| done_grid           | int                                         | ✓  | 既に計算が終了したパラメータの組の数。                                              |
+| grid_velocity       | float                                       | ✓  | 1秒間で計算できるパラメータの組の数。                                              |
+| eta                 | str \| Literal["unpredictable"]             | ✓  | 終了予定時刻。パラメータ空間が無限だったり、grid_velocity が 0 の時は "unpredictable" になる。 |
+| worker_efficiencies | list[[WorkerEfficiency](#workerefficiency)] | ✓  | ワーカーノードごとの能率。                                                    |
+
+### WorkerEfficiency
+| 名前            | 型           | 必須 | 説明                            |
+|---------------|-------------|----|-------------------------------|
+| worker_id     | str         | ✓  | ワーカーノードのID。                   |
+| worker_name   | str \| None | ✓  | ワーカーノードの名前。                   |
+| grid_velocity | float       | ✓  | ワーカーノードごとの1秒間で計算できるパラメータの組の数。 |
 
 ### OkResponse
 | 名前 | 型    | 必須 | 説明 |

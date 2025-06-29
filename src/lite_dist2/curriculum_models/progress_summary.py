@@ -19,7 +19,7 @@ class StudyProgressSummary(BaseModel):
     total_grid: int | Literal["infinite"]
     done_grid: int
     grid_velocity: float
-    eta: datetime | Literal["done", "unpredictable"]
+    eta: datetime | Literal["unpredictable"]
     worker_efficiencies: list[WorkerEfficiency]
 
 
