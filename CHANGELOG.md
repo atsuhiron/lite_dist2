@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0] - 2025-06-29
+
+### Added
+- Added /status/progress API. ([#19](https://github.com/atsuhiron/lite_dist2/pull/19))
+  - This API can show ETA of studies.
+
 ## [0.3.1] - 2025-06-25
 
 ### Changed
