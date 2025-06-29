@@ -44,7 +44,7 @@ _DUMMY_TRIAL_TABLE = TrialTable(
         Trial(
             study_id="01",
             trial_id="01",
-            timestamp=DT,
+            reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
             parameter_space=_DUMMY_PARAMETER_SPACE,
@@ -80,7 +80,7 @@ _DUMMY_TRIAL_TABLE = TrialTable(
         Trial(
             study_id="01",
             trial_id="01",
-            timestamp=DT,
+            reserved_timestamp=DT,
             trial_status=TrialStatus.running,
             const_param=None,
             parameter_space=_DUMMY_PARAMETER_SPACE,
@@ -215,7 +215,7 @@ def sample_curriculum_fixture() -> Curriculum:
                         TrialModel(
                             study_id="01",
                             trial_id="01",
-                            timestamp=DT,
+                            reserved_timestamp=DT,
                             trial_status=TrialStatus.done,
                             const_param=None,
                             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
@@ -251,7 +251,7 @@ def sample_curriculum_fixture() -> Curriculum:
                         TrialModel(
                             study_id="01",
                             trial_id="01",
-                            timestamp=DT,
+                            reserved_timestamp=DT,
                             trial_status=TrialStatus.running,
                             const_param=None,
                             parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),

@@ -463,7 +463,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -579,7 +579,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -659,7 +659,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterJaggedSpace(
@@ -754,7 +754,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterJaggedSpace(
@@ -796,7 +796,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="02",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterJaggedSpace(
@@ -912,7 +912,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -967,7 +967,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="02",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1109,7 +1109,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterJaggedSpace(
@@ -1204,7 +1204,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1333,7 +1333,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="00",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1366,7 +1366,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="01",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1399,7 +1399,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="02",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1432,7 +1432,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="03",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1465,7 +1465,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="04",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.running,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1498,7 +1498,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="05",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
@@ -1531,7 +1531,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     Trial(
                         study_id="01",
                         trial_id="06",
-                        timestamp=DT,
+                        reserved_timestamp=DT,
                         trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(

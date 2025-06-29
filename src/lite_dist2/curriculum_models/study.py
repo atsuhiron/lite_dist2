@@ -77,7 +77,7 @@ class Study:
             trial = Trial(
                 study_id=self.study_id,
                 trial_id=self._publish_trial_id(),
-                timestamp=publish_timestamp(),
+                reserved_timestamp=publish_timestamp(),
                 trial_status=TrialStatus.running,
                 const_param=self.const_param,
                 parameter_space=parameter_sub_space,

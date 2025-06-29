@@ -20,7 +20,7 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
 _DUMMY_APS = {-1: [], 0: [], 1: []}
 _TRIAL_ARGS = {
     "study_id": "s01",
-    "timestamp": DT,
+    "reserved_timestamp": DT,
     "const_param": None,
     "parameter_space": _DUMMY_PARAMETER_SPACE,
     "result_type": "scalar",
@@ -34,6 +34,7 @@ _TRIAL_ARGS = {
 def done_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
+    # noinspection PyUnusedLocal
     def fake_count_grid(self) -> int:  # noqa: ANN001
         return return_value
 
@@ -44,6 +45,7 @@ def done_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRe
 def all_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
+    # noinspection PyUnusedLocal
     def fake_get_total(self) -> int:  # noqa: ANN001
         return return_value
 

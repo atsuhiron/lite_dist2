@@ -446,16 +446,17 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | table_node_request_timeout_seconds | int         | 30            | Timeout for requests to table nodes.                                                                                                                              |
 
 ## 7. API Reference
-| path            | method | parameter                                                                                                               | body                                      | response                                                | description                       |
-|-----------------|--------|-------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|-----------------------------------|
-| /ping           | GET    |                                                                                                                         |                                           | [OkResponse](#okresponse)                               | ping API                          |
-| /save           | GET    |                                                                                                                         |                                           | [OkResponse](#okresponse)                               | Save `Curriculum`.                |
-| /status         | GET    |                                                                                                                         |                                           | [CurriculumSummaryResponse](#curriculumsummaryresponse) | Retrieve summary of `Curriculum`. |
-| /study/register | POST   |                                                                                                                         | [StudyRegisterParam](#studyregisterparam) | [StudyRegisteredResponse](#studyregisteredresponse)     | Register `Study`.                 |
-| /trial/reserve  | POST   |                                                                                                                         | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | Reserve `Trial`.                  |
-| /trial/register | POST   |                                                                                                                         | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | Register completed `Trial`.       |
-| /study          | GET    | `study_id`: ID of `Study` to retrieve.<br>`name`: Name of `Study` to retrieve.<br>Only one of the two can be specified. |                                           | [StudyResponse](#studyresponse)                         | Retrieve `Study`.                 |
-| /study          | DELETE | `study_id`: ID of `Study` to cancel.<br>`name`: Name of `Study` to cancel.<br>Only one of the two can be specified.     |                                           | [OkResponse](#okresponse)                               | Cancel `Study`.                   |
+| path             | method | parameter                                                                                                               | body                                      | response                                                | description                           |
+|------------------|--------|-------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------|---------------------------------------|
+| /ping            | GET    |                                                                                                                         |                                           | [OkResponse](#okresponse)                               | ping API                              |
+| /save            | GET    |                                                                                                                         |                                           | [OkResponse](#okresponse)                               | Save `Curriculum`.                    |
+| /status          | GET    |                                                                                                                         |                                           | [CurriculumSummaryResponse](#curriculumsummaryresponse) | Retrieve summary of `Curriculum`.     |
+| /status/progress | GET    | `cutoff_sec`: Aggregation period used to estimate ETA. Default value is 600.                                            |                                           | [ProgressSummaryResponse](#progresssummaryresponse)     | Retrieve progress for running `Study` |
+| /study/register  | POST   |                                                                                                                         | [StudyRegisterParam](#studyregisterparam) | [StudyRegisteredResponse](#studyregisteredresponse)     | Register `Study`.                     |
+| /trial/reserve   | POST   |                                                                                                                         | [TrialReserveParam](#trialreserveparam)   | [TrialReserveResponse](#trialreserveresponse)           | Reserve `Trial`.                      |
+| /trial/register  | POST   |                                                                                                                         | [TrialRegisterParam](#trialregisterparam) | [OkResponse](#okresponse)                               | Register completed `Trial`.           |
+| /study           | GET    | `study_id`: ID of `Study` to retrieve.<br>`name`: Name of `Study` to retrieve.<br>Only one of the two can be specified. |                                           | [StudyResponse](#studyresponse)                         | Retrieve `Study`.                     |
+| /study           | DELETE | `study_id`: ID of `Study` to cancel.<br>`name`: Name of `Study` to cancel.<br>Only one of the two can be specified.     |                                           | [OkResponse](#okresponse)                               | Cancel `Study`.                       |
 
 ## 8. API Schema
 ### StudyRegisterParam
@@ -496,6 +497,31 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | name      | type                                | required | description                                                        |
 |-----------|-------------------------------------|----------|--------------------------------------------------------------------|
 | summaries | list[[StudySummary](#studysummary)] | ✓        | List of `Study` and `StudyStorage` currently held by `Curriculum`. |
+
+### ProgressSummaryResponse
+| name               | type                                                | required | description                                 |
+|--------------------|-----------------------------------------------------|----------|---------------------------------------------|
+| now                | str                                                 | ✓        | Current time used for ETA estimation.       |
+| cutoff_sec         | int                                                 | ✓        | Aggregation period used for ETA estimation. |
+| progress_summaries | list[[StudyProgressSummary](#studyprogresssummary)] | ✓        | List of progress.                           |
+
+### StudyProgressSummary
+| name                | type                                        | required | description                                                                    |
+|---------------------|---------------------------------------------|----------|--------------------------------------------------------------------------------|
+| study_id            | str                                         | ✓        | ID of target `Study`.                                                          |
+| study_name          | str \| None                                 | ✓        | Name of target `Study`.                                                        |
+| total_grid          | int \| Literal["infinite"]                  | ✓        | The number of possible parameter tuples to compute in this `Study`.            |
+| done_grid           | int                                         | ✓        | The number of parameter tuples actually completed in this `Study`.             |
+| grid_velocity       | float                                       | ✓        | The number of parameter tuples calculated per second.                          |
+| eta                 | str \| Literal["unpredictable"]             | ✓        | ETA. "unpredictable" if the parameter space is infinite or grid_velocity is 0. |
+| worker_efficiencies | list[[WorkerEfficiency](#workerefficiency)] | ✓        | Efficiencies of worker nodes.                                                  |
+
+### WorkerEfficiency
+| name          | type        | required | description                                           |
+|---------------|-------------|----------|-------------------------------------------------------|
+| worker_id     | str         | ✓        | ID of worker node.                                    |
+| worker_name   | str \| None | ✓        | Name of worker node.                                  |
+| grid_velocity | float       | ✓        | The number of parameter tuples calculated per second. |
 
 ### OkResponse
 | name | type | required | description |

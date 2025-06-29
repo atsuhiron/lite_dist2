@@ -4,16 +4,19 @@ import json
 import logging
 import threading
 import time
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
 from lite_dist2.common import publish_timestamp
 from lite_dist2.config import TableConfigProvider
+from lite_dist2.curriculum_models.progress_summary import ReportMaterial, report_study_progress
 from lite_dist2.curriculum_models.study import Study
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage, StudySummary
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.expections import LD2ParameterError
+from lite_dist2.table_node_api.table_response import ProgressSummaryResponse
 
 if TYPE_CHECKING:
     import pathlib
@@ -106,6 +109,27 @@ class Curriculum:
         p = "study_id, name"
         e = "Both are None"
         raise LD2ParameterError(p, e)
+
+    def report_progress(self, cutoff_sec: int) -> ProgressSummaryResponse:
+        now = publish_timestamp()
+        cutoff_datetime = now - timedelta(seconds=cutoff_sec)
+
+        with self._lock:
+            report_materials = [
+                ReportMaterial(
+                    study_id=study.study_id,
+                    study_name=study.name,
+                    records=study.trial_table.gen_done_record_list(max(cutoff_datetime, study.registered_timestamp)),
+                    total_grid=study.parameter_space.get_total(),
+                    done_grid=study.trial_table.count_grid(),
+                )
+                for study in self.studies
+            ]
+        return ProgressSummaryResponse(
+            now=now,
+            cutoff_sec=cutoff_sec,
+            progress_summaries=[report_study_progress(now, cutoff_sec, material) for material in report_materials],
+        )
 
     def _get_study_status_by_id(self, study_id: str) -> StudyStatus:
         for study in self.studies:

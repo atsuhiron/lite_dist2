@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
+from lite_dist2.curriculum_models.progress_summary import StudyProgressSummary
 from lite_dist2.curriculum_models.study_portables import StudyStorage, StudySummary
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import TrialModel
@@ -48,3 +51,9 @@ class CurriculumSummaryResponse(BaseTableResponse):
         ...,
         description="The list of study (containing storage) summary.",
     )
+
+
+class ProgressSummaryResponse(BaseModel):
+    now: datetime
+    cutoff_sec: int
+    progress_summaries: list[StudyProgressSummary]
