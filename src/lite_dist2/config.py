@@ -31,6 +31,10 @@ class TableConfig(BaseModel):
         default=Path.cwd() / "curriculum.json",
         description="Path to the curriculum json file",
     )
+    trial_file_dir: Path = Field(
+        default=Path.cwd() / "trials",
+        description="Path to the trial files",
+    )
     curriculum_save_interval_seconds: int = Field(
         default=600,
         description="Interval of time to save curriculum json file",

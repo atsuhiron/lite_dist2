@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-import pathlib
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -25,6 +25,8 @@ from tests.const import DT
 
 if TYPE_CHECKING:
     from lite_dist2.value_models.base_space import ParameterSpace
+
+_DUMMY_TRIAL_PATH_DIR = Path(__file__).parent
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
     axes=[
@@ -182,7 +184,11 @@ def not_done_study_fixture() -> MockStudy:
 
 
 def test_curriculum_to_storage_if_done(done_study_fixture: MockStudy, not_done_study_fixture: MockStudy) -> None:
-    curriculum = Curriculum(studies=[done_study_fixture, not_done_study_fixture], storages=[])
+    curriculum = Curriculum(
+        studies=[done_study_fixture, not_done_study_fixture],
+        storages=[],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
+    )
     curriculum.to_storage_if_done()
 
     assert len(curriculum.studies) == 1
@@ -286,11 +292,11 @@ def sample_curriculum_fixture() -> Curriculum:
             done_grids=4,
         ),
     ]
-    return Curriculum(studies, storages)
+    return Curriculum(studies, storages, _DUMMY_TRIAL_PATH_DIR)
 
 
 def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> None:
-    json_path = pathlib.Path(f"{tmp_path}/curriculum.json")
+    json_path = Path(f"{tmp_path}/curriculum.json")
     assert not json_path.exists()
 
     sample_curriculum_fixture.save(json_path)
@@ -309,7 +315,7 @@ def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curr
 
 
 def test_curriculum_load_or_create_empty(tmp_path: str) -> None:
-    json_path = pathlib.Path(f"{tmp_path}/non_existent.json")
+    json_path = Path(f"{tmp_path}/non_existent.json")
     curriculum = Curriculum.load_or_create(json_path)
 
     assert isinstance(curriculum, Curriculum)
@@ -374,6 +380,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
             ),
         ],
         storages=[],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     study = curriculum.get_available_study(retaining_capacity)
@@ -532,6 +539,7 @@ def test_curriculum_pop_storage(
                 done_grids=4,
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     popped = curr.pop_storage(study_id, name)
@@ -543,7 +551,7 @@ def test_curriculum_pop_storage(
 
 
 def test_curriculum_pop_storage_raises() -> None:
-    curr = Curriculum(studies=[], storages=[])
+    curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
     with pytest.raises(LD2ParameterError):
         _ = curr.pop_storage(None, None)
 
@@ -689,6 +697,7 @@ def test_curriculum_cancel_study(
                 trial_table=_DUMMY_TRIAL_TABLE,
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     actual_cancel_result = curr.cancel_study(study_id, name)
@@ -700,7 +709,7 @@ def test_curriculum_cancel_study(
 
 
 def test_curriculum_cancel_study_raises() -> None:
-    curr = Curriculum(studies=[], storages=[])
+    curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
     with pytest.raises(LD2ParameterError):
         _ = curr.cancel_study(None, None)
 
@@ -770,6 +779,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
                 done_grids=4,
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     actual = curr.get_study_status(study_id, name)
@@ -777,7 +787,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
 
 
 def test_curriculum_get_study_status_raises() -> None:
-    curr = Curriculum(studies=[], storages=[])
+    curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
     with pytest.raises(LD2ParameterError):
         _ = curr.get_study_status(None, None)
 
@@ -867,6 +877,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
                 done_grids=4,
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
     new_study = Study(
         name=name,

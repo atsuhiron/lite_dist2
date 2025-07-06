@@ -431,6 +431,7 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | trial_timeout_seconds            | int  | 600                              | Timeout seconds before a trial is reserved and registered. |
 | timeout_check_interval_seconds   | int  | 60                               | Interval of time to check timeout trials.                  |
 | curriculum_path                  | Path | {project root}/"curriculum.json" | Path to the `Curriculum` json file.                        |
+| trial_file_dir                   | Path | {project root}/"trials"          | Path to the directory to save `Trial` files.               |
 | curriculum_save_interval_seconds | int  | 600                              | Interval of time to save `Curriculum` json file.           |
 
 ### WorkerConfig

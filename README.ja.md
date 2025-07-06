@@ -428,6 +428,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | trial_timeout_seconds            | int  | 600                              | `Trial` が予約されてから登録されるまでのタイムアウト時間 |
 | timeout_check_interval_seconds   | int  | 60                               | `Trial` のタイムアウトを確認する間隔           |
 | curriculum_path                  | Path | {project root}/"curriculum.json" | `Curriculum` を保存する際のファイルパス       |
+| trial_file_dir                   | Path | {project root}/"trials"          | `Trial` を保存する際のファイルパス            |
 | curriculum_save_interval_seconds | int  | 600                              | `Curriculum` を保存する時間間隔           |
 
 ### WorkerConfig
