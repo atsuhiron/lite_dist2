@@ -184,7 +184,7 @@ class Curriculum:
         with curr_json_path.open("w", encoding="utf-8") as f:
             json.dump(model.model_dump(mode="json"), f, ensure_ascii=False)
         save_end_time = time.perf_counter()
-        logger.info("Saved curriculum in %.3f msec", (save_end_time - save_start_time) / 1000)
+        logger.info("Saved curriculum in %.3f msec", (save_end_time - save_start_time) * 1000)
 
     def cancel_study(self, study_id: str | None, name: str | None) -> bool:
         studies = []
@@ -224,7 +224,7 @@ class Curriculum:
             model = CurriculumModel.model_validate(json_dict)
             return Curriculum.from_model(model)
         load_end_time = time.perf_counter()
-        logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) / 1000)
+        logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) * 1000)
         return Curriculum([], [])
 
 
