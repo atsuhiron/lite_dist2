@@ -31,5 +31,9 @@ class BaseTrialRepository(abc.ABC):
     def load_all(self) -> list[Trial]:
         pass
 
+    @abc.abstractmethod
+    def delete_save_dir(self) -> None:
+        pass
+
     def to_model(self) -> TrialRepositoryModel:
         return TrialRepositoryModel(type=self.get_repository_type(), save_dir=self.save_dir)

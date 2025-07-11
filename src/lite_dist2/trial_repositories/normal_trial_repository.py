@@ -49,6 +49,10 @@ class NormalTrialRepository(BaseTrialRepository):
                 trials.append(TrialModel.model_validate(d))
         return trials
 
+    def delete_save_dir(self) -> None:
+        if self.save_dir.exists():
+            shutil.rmtree(self.save_dir)
+
     @staticmethod
     def from_model(model: TrialRepositoryModel) -> NormalTrialRepository:
         return NormalTrialRepository(model.save_dir)

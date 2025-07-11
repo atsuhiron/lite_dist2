@@ -7,11 +7,9 @@ from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
 from lite_dist2.value_models.line_segment import LineSegmentModel
 from tests.const import DT
 
-_DUMMY_PATH = Path("test/s01")
-
 
 def test_normal_trial_repository_get_repository_type() -> None:
-    repo = NormalTrialRepository(_DUMMY_PATH)
+    repo = NormalTrialRepository(Path("test/s01"))
     actual = repo.get_repository_type()
     expected = "normal"
     assert actual == expected
@@ -193,3 +191,33 @@ def test_normal_trial_repository_load_all(tmp_path: str) -> None:
 
     loaded_trials = repo.load_all()
     assert loaded_trials == trial_models
+
+
+def test_normal_trial_repository_delete_save_dir_not_exist(tmp_path: str) -> None:
+    save_dir = Path(tmp_path) / "some_study"
+
+    # 空であることを確認
+    assert not save_dir.exists()
+
+    repo = NormalTrialRepository(save_dir)
+    repo.delete_save_dir()
+
+    assert not save_dir.exists()
+
+
+def test_normal_trial_repository_delete_save_dir_exist(tmp_path: str) -> None:
+    save_dir = Path(tmp_path) / "some_study"
+
+    # 空であることを確認
+    assert not save_dir.exists()
+
+    # ディレクトリとファイルを作成する
+    save_dir.mkdir(parents=False, exist_ok=False)
+    dummy_file = save_dir / "dummy.txt"
+    dummy_file.touch(exist_ok=False)
+    assert bool(list(save_dir.iterdir()))
+
+    repo = NormalTrialRepository(save_dir)
+    repo.delete_save_dir()
+
+    assert not save_dir.exists()
