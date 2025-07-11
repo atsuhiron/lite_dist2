@@ -1,4 +1,5 @@
 import threading
+from pathlib import Path
 
 import pytest
 
@@ -12,6 +13,8 @@ from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyModel, SuggestStrategyParam
+from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
+from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.line_segment import (
     LineSegmentModel,
@@ -190,6 +193,10 @@ from tests.const import DT
                         ],
                     },
                 ),
+                trial_repository=TrialRepositoryModel(
+                    type="normal",
+                    save_dir=Path("test/01"),
+                ),
             ),
             id="full_definition",
         ),
@@ -241,6 +248,9 @@ def test_study_suggest_receipt_single_thread() -> None:
         result_type="scalar",
         result_value_type="float",
         trial_table=TrialTable(trials=[], aggregated_parameter_space=None),
+        trial_repository=NormalTrialRepository(
+            save_dir=Path("test/s01"),
+        ),
     )
 
     def contract_and_submit() -> None:
@@ -306,6 +316,9 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
         result_type="scalar",
         result_value_type="float",
         trial_table=TrialTable(trials=[], aggregated_parameter_space=None),
+        trial_repository=NormalTrialRepository(
+            save_dir=Path("test/s01"),
+        ),
     )
 
     def contract_and_submit() -> None:

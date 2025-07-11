@@ -8,10 +8,11 @@ from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorag
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable
-from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.expections import LD2ModelTypeError, LD2UndefinedError
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy, SuggestStrategyModel
+from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 if TYPE_CHECKING:
@@ -19,6 +20,8 @@ if TYPE_CHECKING:
 
     from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
     from lite_dist2.suggest_strategies import BaseSuggestStrategy
+    from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
+    from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
     from lite_dist2.value_models.const_param import ConstParam
 
 
@@ -37,6 +40,7 @@ class Study:
         result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         trial_table: TrialTable,
+        trial_repository: BaseTrialRepository,
     ) -> None:
         self.study_id = study_id
         self.name = name or self.study_id
@@ -52,6 +56,7 @@ class Study:
         self.trial_table = trial_table
 
         self._table_lock = threading.Lock()
+        self.trial_repo = trial_repository
 
     def update_status(self) -> None:
         if self.is_done():
@@ -114,6 +119,7 @@ class Study:
             result_value_type=self.result_value_type,
             results=self.study_strategy.extract_mappings(self.trial_table),
             done_grids=self.trial_table.count_grid(),
+            trial_repository=self.trial_repo.to_model(),
         )
 
     def to_summary(self) -> StudySummary:
@@ -148,6 +154,7 @@ class Study:
             result_type=self.result_type,
             result_value_type=self.result_value_type,
             trial_table=self.trial_table.to_model(),
+            trial_repository=self.trial_repo.to_model(),
         )
 
     def _publish_trial_id(self) -> str:
@@ -178,6 +185,14 @@ class Study:
                 raise LD2ModelTypeError(model.type)
 
     @staticmethod
+    def _create_trial_repository(model: TrialRepositoryModel) -> BaseTrialRepository:
+        match model.type:
+            case "normal":
+                return NormalTrialRepository.from_model(model)
+            case _:
+                raise LD2UndefinedError(model.type)
+
+    @staticmethod
     def from_model(study_model: StudyModel) -> Study:
         parameter_space = ParameterAlignedSpace.from_model(study_model.parameter_space)
         return Study(
@@ -193,4 +208,5 @@ class Study:
             result_type=study_model.result_type,
             result_value_type=study_model.result_value_type,
             trial_table=TrialTable.from_model(study_model.trial_table),
+            trial_repository=Study._create_trial_repository(study_model.trial_repository),
         )

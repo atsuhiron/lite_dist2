@@ -68,7 +68,7 @@ def handle_study_register(
         raise HTTPException(status_code=400, detail="Cannot use together infinite space and all_calculation strategy.")
 
     curr = CurriculumProvider.get()
-    new_study = Study.from_model(study_registry.study.to_study_model())
+    new_study = Study.from_model(study_registry.study.to_study_model(curr.trial_file_dir))
 
     if curr.try_insert_study(new_study):
         return _response(StudyRegisteredResponse(study_id=new_study.study_id), 200)

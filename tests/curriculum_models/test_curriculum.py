@@ -18,6 +18,7 @@ from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import BaseSuggestStrategy, SequentialSuggestStrategy, SuggestStrategyModel
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
+from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.point import ScalarValue
@@ -98,6 +99,8 @@ _DUMMY_TRIAL_TABLE = TrialTable(
     },
 )
 
+_DUMMY_TRIAL_REPOSITORY = NormalTrialRepository(save_dir=Path("test/01"))
+
 _DUMMY_MAPPINGS_STORAGE = MappingsStorage(
     params_info=(),
     result_info=ScalarValue(type="scalar", value_type="int", value="0x0"),
@@ -145,6 +148,7 @@ class MockStudy(Study):
             "scalar",
             "int",
             TrialTable([], None),
+            _DUMMY_TRIAL_REPOSITORY,
         )
         self.study_id = study_id
         self._done = done
@@ -170,6 +174,7 @@ class MockStudy(Study):
             result_value_type="int",
             results=_DUMMY_MAPPINGS_STORAGE,
             done_grids=4,
+            trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
         )
 
 
@@ -272,6 +277,7 @@ def sample_curriculum_fixture() -> Curriculum:
                         0: [_DUMMY_PARAMETER_SPACE.to_model()],
                     },
                 ),
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ),
     ]
@@ -290,6 +296,7 @@ def sample_curriculum_fixture() -> Curriculum:
             result_value_type="int",
             results=_DUMMY_MAPPINGS_STORAGE,
             done_grids=4,
+            trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
         ),
     ]
     return Curriculum(studies, storages, _DUMMY_TRIAL_PATH_DIR)
@@ -357,6 +364,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
         "result_type": "scalar",
         "result_value_type": "int",
         "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
     }
     curriculum = Curriculum(
         studies=[
@@ -409,6 +417,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
                 StudyStorage(
                     study_id="s02",
@@ -424,6 +433,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="None",
@@ -447,6 +457,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="id pickup",
@@ -470,6 +481,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="name pickup",
@@ -493,6 +505,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="prior id",
@@ -522,6 +535,7 @@ def test_curriculum_pop_storage(
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
             StudyStorage(
                 study_id="s02",
@@ -537,6 +551,7 @@ def test_curriculum_pop_storage(
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ],
         trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
@@ -580,6 +595,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
             ],
             id="cancel by id",
@@ -605,6 +621,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
             ],
             id="cancel by name",
@@ -630,6 +647,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
                 Study(
                     study_id="s02",
@@ -647,6 +665,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
             ],
             id="Not found",
@@ -678,6 +697,7 @@ def test_curriculum_cancel_study(
                 result_type="scalar",
                 result_value_type="int",
                 trial_table=_DUMMY_TRIAL_TABLE,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY,
             ),
             Study(
                 study_id="s02",
@@ -695,6 +715,7 @@ def test_curriculum_cancel_study(
                 result_type="scalar",
                 result_value_type="int",
                 trial_table=_DUMMY_TRIAL_TABLE,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY,
             ),
         ],
         trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
@@ -740,6 +761,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
         "result_type": "scalar",
         "result_value_type": "int",
         "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
     }
     curr = Curriculum(
         studies=[
@@ -777,6 +799,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ],
         trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
@@ -817,6 +840,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
         "result_type": "scalar",
         "result_value_type": "int",
         "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
     }
     curr = Curriculum(
         studies=[
@@ -860,6 +884,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
             StudyStorage(
                 study_id="s06",
@@ -875,6 +900,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ],
         trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
