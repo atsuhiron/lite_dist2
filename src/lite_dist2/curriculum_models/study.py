@@ -8,20 +8,18 @@ from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorag
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable
-from lite_dist2.expections import LD2ModelTypeError, LD2UndefinedError
-from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
-from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
-from lite_dist2.suggest_strategies import SequentialSuggestStrategy, SuggestStrategyModel
-from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
+from lite_dist2.expections import LD2ModelTypeError
+from lite_dist2.study_strategies.study_strategy_factory import create_study_strategy
+from lite_dist2.suggest_strategies import SequentialSuggestStrategy
+from lite_dist2.trial_repositories.trial_repository_factory import create_trial_repository
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
-    from lite_dist2.suggest_strategies import BaseSuggestStrategy
+    from lite_dist2.study_strategies import BaseStudyStrategy
+    from lite_dist2.suggest_strategies import BaseSuggestStrategy, SuggestStrategyModel
     from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
-    from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
     from lite_dist2.value_models.const_param import ConstParam
 
 
@@ -100,6 +98,7 @@ class Study:
         with self._table_lock:
             self.trial_table.receipt_trial_result(trial.trial_id, trial.result, trial.worker_node_id)
             self.trial_table.simplify_aps()
+        self.trial_repo.save(trial.to_model())
 
     def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:
         return self.trial_table.check_timeout_trial(now, timeout_seconds)
@@ -161,18 +160,6 @@ class Study:
         return f"{self.study_id}-{int2hex(self.trial_table.count_trial())}"
 
     @staticmethod
-    def _create_study_strategy(model: StudyStrategyModel) -> BaseStudyStrategy:
-        match model.type:
-            case "all_calculation":
-                return AllCalculationStudyStrategy(model.study_strategy_param)
-            case "find_exact":
-                return FindExactStudyStrategy(model.study_strategy_param)
-            case "minimize":
-                raise NotImplementedError
-            case _:
-                raise LD2ModelTypeError(model.type)
-
-    @staticmethod
     def _create_suggest_strategy(model: SuggestStrategyModel, space: ParameterAlignedSpace) -> BaseSuggestStrategy:
         match model.type:
             case "sequential":
@@ -185,14 +172,6 @@ class Study:
                 raise LD2ModelTypeError(model.type)
 
     @staticmethod
-    def _create_trial_repository(model: TrialRepositoryModel) -> BaseTrialRepository:
-        match model.type:
-            case "normal":
-                return NormalTrialRepository.from_model(model)
-            case _:
-                raise LD2UndefinedError(model.type)
-
-    @staticmethod
     def from_model(study_model: StudyModel) -> Study:
         parameter_space = ParameterAlignedSpace.from_model(study_model.parameter_space)
         return Study(
@@ -201,12 +180,12 @@ class Study:
             required_capacity=study_model.required_capacity,
             status=study_model.status,
             registered_timestamp=study_model.registered_timestamp,
-            study_strategy=Study._create_study_strategy(study_model.study_strategy),
+            study_strategy=create_study_strategy(study_model.study_strategy),
             suggest_strategy=Study._create_suggest_strategy(study_model.suggest_strategy, parameter_space),
             const_param=study_model.const_param,
             parameter_space=parameter_space,
             result_type=study_model.result_type,
             result_value_type=study_model.result_value_type,
             trial_table=TrialTable.from_model(study_model.trial_table),
-            trial_repository=Study._create_trial_repository(study_model.trial_repository),
+            trial_repository=create_trial_repository(study_model.trial_repository),
         )

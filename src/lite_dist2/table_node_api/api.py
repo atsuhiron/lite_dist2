@@ -121,8 +121,10 @@ def handle_study(
     curr = CurriculumProvider.get()
     storage = curr.pop_storage(study_id, name)
     if storage is not None:
+        storage.load_trial()
         return _response(StudyResponse(status=StudyStatus.done, result=storage), 200)
 
+    # 見つからなかったか、終わってない
     study_status = curr.get_study_status(study_id, name)
     resp = StudyResponse(status=study_status, result=None)
     if study_status == StudyStatus.not_found:

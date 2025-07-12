@@ -1,7 +1,7 @@
 import abc
 from pathlib import Path
 
-from lite_dist2.curriculum_models.trial import Trial
+from lite_dist2.curriculum_models.trial import TrialModel
 from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
 from lite_dist2.type_definitions import TrialRepositoryType
 
@@ -20,15 +20,15 @@ class BaseTrialRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def save(self, trial: Trial) -> None:
+    def save(self, trial: TrialModel) -> None:
         pass
 
     @abc.abstractmethod
-    def load(self, trial_id: str) -> Trial:
+    def load(self, trial_id: str) -> TrialModel:
         pass
 
     @abc.abstractmethod
-    def load_all(self) -> list[Trial]:
+    def load_all(self) -> list[TrialModel]:
         pass
 
     @abc.abstractmethod

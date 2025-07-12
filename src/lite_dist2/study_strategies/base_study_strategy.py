@@ -10,6 +10,7 @@ from lite_dist2.value_models.point import ResultType
 if TYPE_CHECKING:
     from lite_dist2.curriculum_models.mapping import MappingsStorage
     from lite_dist2.curriculum_models.trial_table import TrialTable
+    from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
@@ -32,6 +33,10 @@ class BaseStudyStrategy(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def extract_mappings(self, trial_table: TrialTable) -> MappingsStorage:
+        pass
+
+    @abc.abstractmethod
+    def extract_mappings2(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         pass
 
     @abc.abstractmethod

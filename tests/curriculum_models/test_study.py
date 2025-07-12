@@ -13,8 +13,9 @@ from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyModel, SuggestStrategyParam
-from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
+from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
 from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
+from lite_dist2.type_definitions import TrialRepositoryType
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
 from lite_dist2.value_models.line_segment import (
     LineSegmentModel,
@@ -208,6 +209,30 @@ def test_study_to_model_from_model(model: StudyModel) -> None:
     assert model == reconstructed
 
 
+class MockTrialRepository(BaseTrialRepository):
+    def __init__(self) -> None:
+        super().__init__(Path("test/s01"))
+
+    @staticmethod
+    def get_repository_type() -> TrialRepositoryType:
+        return "normal"
+
+    def clean_save_dir(self) -> None:
+        pass
+
+    def save(self, trial: TrialModel) -> None:
+        pass
+
+    def load(self, trial_id: str) -> TrialModel:
+        raise NotImplementedError
+
+    def load_all(self) -> list[TrialModel]:
+        return []
+
+    def delete_save_dir(self) -> None:
+        pass
+
+
 def test_study_suggest_receipt_single_thread() -> None:
     _parameter_space = ParameterAlignedSpace(
         axes=[
@@ -248,9 +273,7 @@ def test_study_suggest_receipt_single_thread() -> None:
         result_type="scalar",
         result_value_type="float",
         trial_table=TrialTable(trials=[], aggregated_parameter_space=None),
-        trial_repository=NormalTrialRepository(
-            save_dir=Path("test/s01"),
-        ),
+        trial_repository=MockTrialRepository(),
     )
 
     def contract_and_submit() -> None:
@@ -316,9 +339,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
         result_type="scalar",
         result_value_type="float",
         trial_table=TrialTable(trials=[], aggregated_parameter_space=None),
-        trial_repository=NormalTrialRepository(
-            save_dir=Path("test/s01"),
-        ),
+        trial_repository=MockTrialRepository(),
     )
 
     def contract_and_submit() -> None:

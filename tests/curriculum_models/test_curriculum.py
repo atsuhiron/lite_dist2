@@ -25,6 +25,7 @@ from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 if TYPE_CHECKING:
+    from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
     from lite_dist2.value_models.base_space import ParameterSpace
 
 _DUMMY_TRIAL_PATH_DIR = Path(__file__).parent
@@ -113,6 +114,9 @@ class MockStudyStrategy(BaseStudyStrategy):
         super().__init__(None)
 
     def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
+        pass
+
+    def extract_mappings2(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         pass
 
     def is_done(self, trial_table: TrialTable, parameter_space: ParameterAlignedSpace) -> bool:
