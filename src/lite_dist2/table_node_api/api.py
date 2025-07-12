@@ -71,6 +71,7 @@ def handle_study_register(
     new_study = Study.from_model(study_registry.study.to_study_model(curr.trial_file_dir))
 
     if curr.try_insert_study(new_study):
+        new_study.trial_repo.clean_save_dir()
         return _response(StudyRegisteredResponse(study_id=new_study.study_id), 200)
     raise HTTPException(status_code=400, detail=f'The name("{new_study.name}") of study is already registered.')
 
@@ -121,7 +122,7 @@ def handle_study(
     curr = CurriculumProvider.get()
     storage = curr.pop_storage(study_id, name)
     if storage is not None:
-        storage.load_trial()
+        storage.consume_trial()
         return _response(StudyResponse(status=StudyStatus.done, result=storage), 200)
 
     # 見つからなかったか、終わってない
