@@ -48,6 +48,7 @@ class TrialTable:
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
 
+    # TODO: 引数減らす
     def receipt_trial_result(self, receipted_trial_id: str, result: list[Mapping] | None, worker_node_id: str) -> None:
         if result is None:
             # Do nothing

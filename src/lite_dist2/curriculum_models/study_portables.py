@@ -116,7 +116,7 @@ class StudyStorage(_StudyCommonModel):
     def consume_trial(self) -> None:
         repo = create_trial_repository(self.trial_repository)
         study_strategy = create_study_strategy(self.study_strategy)
-        self.results = study_strategy.extract_mappings2(repo)
+        self.results = study_strategy.extract_mappings(repo)
         repo.delete_save_dir()
 
     def to_summary(self) -> StudySummary:

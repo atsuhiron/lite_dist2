@@ -119,7 +119,12 @@ class MockStudyStrategy(BaseStudyStrategy):
     def extract_mappings2(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         pass
 
-    def is_done(self, trial_table: TrialTable, parameter_space: ParameterAlignedSpace) -> bool:
+    def is_done(
+        self,
+        trial_table: TrialTable,
+        parameter_space: ParameterAlignedSpace,
+        trial_repository: BaseTrialRepository,
+    ) -> bool:
         pass
 
     def to_model(self) -> StudyStrategyModel:

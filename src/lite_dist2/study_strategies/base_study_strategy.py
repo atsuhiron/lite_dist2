@@ -28,15 +28,16 @@ class BaseStudyStrategy(metaclass=abc.ABCMeta):
         self.study_strategy_param = study_strategy_param
 
     @abc.abstractmethod
-    def is_done(self, trial_table: TrialTable, parameter_space: ParameterAlignedSpace) -> bool:
+    def is_done(
+        self,
+        trial_table: TrialTable,
+        parameter_space: ParameterAlignedSpace,
+        trial_repository: BaseTrialRepository,
+    ) -> bool:
         pass
 
     @abc.abstractmethod
-    def extract_mappings(self, trial_table: TrialTable) -> MappingsStorage:
-        pass
-
-    @abc.abstractmethod
-    def extract_mappings2(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
+    def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         pass
 
     @abc.abstractmethod

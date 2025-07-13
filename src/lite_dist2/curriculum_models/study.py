@@ -62,7 +62,7 @@ class Study:
             return
 
     def is_done(self) -> bool:
-        return self.study_strategy.is_done(self.trial_table, self.parameter_space)
+        return self.study_strategy.is_done(self.trial_table, self.parameter_space, self.trial_repo)
 
     def suggest_next_trial(
         self,
@@ -98,7 +98,9 @@ class Study:
         with self._table_lock:
             self.trial_table.receipt_trial_result(trial.trial_id, trial.result, trial.worker_node_id)
             self.trial_table.simplify_aps()
-        self.trial_repo.save(trial.to_model())
+        done_trial = trial.to_model()
+        done_trial.trial_status = TrialStatus.done
+        self.trial_repo.save(done_trial)
 
     def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:
         return self.trial_table.check_timeout_trial(now, timeout_seconds)
@@ -116,7 +118,7 @@ class Study:
             done_timestamp=publish_timestamp(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
-            results=self.study_strategy.extract_mappings(self.trial_table),
+            results=self.study_strategy.extract_mappings(self.trial_repo),
             done_grids=self.trial_table.count_grid(),
             trial_repository=self.trial_repo.to_model(),
         )
