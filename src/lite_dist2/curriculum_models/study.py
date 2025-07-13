@@ -96,11 +96,12 @@ class Study:
 
     def receipt_trial(self, trial: Trial) -> None:
         with self._table_lock:
-            self.trial_table.receipt_trial_result(trial.trial_id, trial.result, trial.worker_node_id)
+            self.trial_table.receipt_trial_result(trial.trial_id, trial.worker_node_id)
             self.trial_table.simplify_aps()
-        done_trial = trial.to_model()
-        done_trial.trial_status = TrialStatus.done
-        self.trial_repo.save(done_trial)
+
+        trial.trial_status = TrialStatus.done
+        trial.set_registered_timestamp()
+        self.trial_repo.save(trial.to_model())
 
     def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:
         return self.trial_table.check_timeout_trial(now, timeout_seconds)

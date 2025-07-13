@@ -1113,7 +1113,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
 
 
 @pytest.mark.parametrize(
-    ("trial_table", "trial_id", "worker_node_id", "result", "expected"),
+    ("trial_table", "trial_id", "worker_node_id", "expected"),
     [
         pytest.param(
             TrialTable(
@@ -1149,30 +1149,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x0",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                     Trial(
@@ -1240,30 +1217,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x2",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x2",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                 ],
@@ -1318,7 +1272,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
             ),
             "t02",
             "w01",
-            None,
             TrialTable(
                 trials=[
                     Trial(
@@ -1352,37 +1305,14 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x0",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                     Trial(
                         study_id="s01",
                         trial_id="t02",
                         reserved_timestamp=DT,
-                        trial_status=TrialStatus.running,
+                        trial_status=TrialStatus.done,
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
@@ -1410,458 +1340,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         worker_node_name="w01",
                         worker_node_id="w01",
                         results=None,
-                        registered_timestamp=None,
-                    ),
-                    Trial(
-                        study_id="s01",
-                        trial_id="t03",
-                        reserved_timestamp=DT,
-                        trial_status=TrialStatus.done,
-                        const_param=None,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=2,
-                                    ambient_size=100,
-                                    start=2,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=2,
-                                    ambient_size=100,
-                                    start=2,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scalar",
-                        result_value_type="int",
-                        worker_node_name="w01",
-                        worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x2",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x2",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
-                        registered_timestamp=None,
-                    ),
-                ],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [],
-                    1: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=2,
-                                    ambient_size=100,
-                                    start=2,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                },
-            ),
-            id="Do nothing: None result",
-        ),
-        pytest.param(
-            TrialTable(
-                trials=[
-                    Trial(
-                        study_id="s01",
-                        trial_id="t01",
-                        reserved_timestamp=DT,
-                        trial_status=TrialStatus.done,
-                        const_param=None,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scalar",
-                        result_value_type="int",
-                        worker_node_name="w01",
-                        worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x0",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
-                        registered_timestamp=None,
-                    ),
-                    Trial(
-                        study_id="s01",
-                        trial_id="t02",
-                        reserved_timestamp=DT,
-                        trial_status=TrialStatus.running,
-                        const_param=None,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=1,
-                                    ambient_size=100,
-                                    start=1,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scalar",
-                        result_value_type="int",
-                        worker_node_name="w01",
-                        worker_node_id="w01",
-                        results=None,
-                        registered_timestamp=None,
-                    ),
-                    Trial(
-                        study_id="s01",
-                        trial_id="t03",
-                        reserved_timestamp=DT,
-                        trial_status=TrialStatus.done,
-                        const_param=None,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=2,
-                                    ambient_size=100,
-                                    start=2,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=2,
-                                    ambient_size=100,
-                                    start=2,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scalar",
-                        result_value_type="int",
-                        worker_node_name="w01",
-                        worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x2",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x2",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
-                        registered_timestamp=None,
-                    ),
-                ],
-                aggregated_parameter_space={
-                    -1: [],
-                    0: [],
-                    1: [
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=2,
-                                    ambient_size=100,
-                                    start=2,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                    ],
-                },
-            ),
-            "t02",
-            "w01",
-            [
-                Mapping(
-                    params=(
-                        ScalarValue(
-                            type="scalar",
-                            value_type="int",
-                            value="0x0",
-                            name="x",
-                        ),
-                        ScalarValue(
-                            type="scalar",
-                            value_type="int",
-                            value="0x1",
-                            name="y",
-                        ),
-                    ),
-                    result=ScalarValue(
-                        type="scalar",
-                        value_type="int",
-                        value="0x1",
-                        name="p2",
-                    ),
-                ),
-            ],
-            TrialTable(
-                trials=[
-                    Trial(
-                        study_id="s01",
-                        trial_id="t01",
-                        reserved_timestamp=DT,
-                        trial_status=TrialStatus.done,
-                        const_param=None,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scalar",
-                        result_value_type="int",
-                        worker_node_name="w01",
-                        worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x0",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
-                        registered_timestamp=None,
-                    ),
-                    Trial(
-                        study_id="s01",
-                        trial_id="t02",
-                        reserved_timestamp=DT,
-                        trial_status=TrialStatus.done,
-                        const_param=None,
-                        parameter_space=ParameterAlignedSpace(
-                            axes=[
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=0,
-                                    ambient_size=100,
-                                    start=0,
-                                    name="x",
-                                ),
-                                ParameterRangeInt(
-                                    type="int",
-                                    size=1,
-                                    ambient_index=1,
-                                    ambient_size=100,
-                                    start=1,
-                                    name="y",
-                                ),
-                            ],
-                            check_lower_filling=True,
-                        ),
-                        result_type="scalar",
-                        result_value_type="int",
-                        worker_node_name="w01",
-                        worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x1",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x1",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
                         registered_timestamp=DT,
                     ),
                     Trial(
@@ -1895,30 +1373,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x2",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x2",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                 ],
@@ -2015,30 +1470,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x0",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                     Trial(
@@ -2080,30 +1512,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x2",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x2",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                 ],
@@ -2158,30 +1567,6 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
             ),
             "t02",
             "w01",
-            [
-                Mapping(
-                    params=(
-                        ScalarValue(
-                            type="scalar",
-                            value_type="int",
-                            value="0x0",
-                            name="x",
-                        ),
-                        ScalarValue(
-                            type="scalar",
-                            value_type="int",
-                            value="0x1",
-                            name="y",
-                        ),
-                    ),
-                    result=ScalarValue(
-                        type="scalar",
-                        value_type="int",
-                        value="0x1",
-                        name="p2",
-                    ),
-                ),
-            ],
             TrialTable(
                 trials=[
                     Trial(
@@ -2202,30 +1587,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x0",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                     Trial(
@@ -2246,30 +1608,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x1",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x1",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=DT,
                     ),
                     Trial(
@@ -2290,30 +1629,7 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         result_value_type="int",
                         worker_node_name="w01",
                         worker_node_id="w01",
-                        results=[
-                            Mapping(
-                                params=(
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x0",
-                                        name="x",
-                                    ),
-                                    ScalarValue(
-                                        type="scalar",
-                                        value_type="int",
-                                        value="0x2",
-                                        name="y",
-                                    ),
-                                ),
-                                result=ScalarValue(
-                                    type="scalar",
-                                    value_type="int",
-                                    value="0x2",
-                                    name="p2",
-                                ),
-                            ),
-                        ],
+                        results=None,
                         registered_timestamp=None,
                     ),
                 ],
@@ -2395,13 +1711,12 @@ def test_trial_table_receipt_trial_result(
     trial_table: TrialTable,
     trial_id: str,
     worker_node_id: str,
-    result: list[Mapping] | None,
     expected: TrialTable,
     mocker: MockFixture,
 ) -> None:
     _ = mocker.patch("lite_dist2.curriculum_models.trial.publish_timestamp", return_value=DT)
 
-    trial_table.receipt_trial_result(trial_id, result, worker_node_id)
+    trial_table.receipt_trial_result(trial_id, worker_node_id)
     actual_model = trial_table.to_model()
     expected_model = expected.to_model()
     assert actual_model.trials == expected_model.trials
@@ -2455,18 +1770,8 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
         },
     )
 
-    result = [
-        Mapping(
-            params=(
-                ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-            ),
-            result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p2"),
-        ),
-    ]
-
     with pytest.raises(LD2ParameterError, match=r"Cannot\soverride\sresult\sof\sdone\strial"):
-        trial_table.receipt_trial_result("t01", result, "w01")
+        trial_table.receipt_trial_result("t01", "w01")
 
 
 # noinspection SpellCheckingInspection
@@ -2480,18 +1785,8 @@ def test_trial_table_receipt_trial_result_raise_not_found_trial() -> None:
         },
     )
 
-    result = [
-        Mapping(
-            params=(
-                ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-            ),
-            result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p2"),
-        ),
-    ]
-
     with pytest.raises(LD2ParameterError, match=r"Not\sfound\strial\sthat\sid"):
-        trial_table.receipt_trial_result("t01", result, "w01")
+        trial_table.receipt_trial_result("t01", "w01")
 
 
 # noinspection SpellCheckingInspection
@@ -2525,18 +1820,8 @@ def test_trial_table_receipt_trial_result_raise_unmatch_worker_id() -> None:
         },
     )
 
-    result = [
-        Mapping(
-            params=(
-                ScalarValue(type="scalar", value_type="int", value="0x0", name="x"),
-                ScalarValue(type="scalar", value_type="int", value="0x0", name="y"),
-            ),
-            result=ScalarValue(type="scalar", value_type="int", value="0x0", name="p2"),
-        ),
-    ]
-
     with pytest.raises(LD2ParameterError, match=r"This\strial\sis\sreserved\sby\sother\sworker"):
-        trial_table.receipt_trial_result("t01", result, "w02")
+        trial_table.receipt_trial_result("t01", "w02")
 
 
 def test_trial_table_check_timeout_trial() -> None:
