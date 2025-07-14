@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
 
@@ -11,10 +11,17 @@ from lite_dist2.curriculum_models.mapping import MappingsStorage
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial_table import TrialTableModel
 from lite_dist2.study_strategies import StudyStrategyModel
+from lite_dist2.study_strategies.study_strategy_factory import create_study_strategy
 from lite_dist2.suggest_strategies import SuggestStrategyModel
+from lite_dist2.trial_repositories.trial_repository_factory import create_trial_repository
+from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
+from lite_dist2.type_definitions import TrialRepositoryType
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
 from lite_dist2.value_models.aligned_space_registry import ParameterAlignedSpaceRegistry
 from lite_dist2.value_models.const_param import ConstParam
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class _StudyCommonModel(BaseModel):
@@ -37,6 +44,7 @@ class StudyModel(_StudyCommonModel):
     registered_timestamp: datetime
     parameter_space: ParameterAlignedSpaceModel
     trial_table: TrialTableModel = Field(default_factory=TrialTableModel.create_empty)
+    trial_repository: TrialRepositoryModel
 
 
 class StudyRegistry(_StudyCommonModel):
@@ -45,14 +53,16 @@ class StudyRegistry(_StudyCommonModel):
     """
 
     parameter_space: ParameterAlignedSpaceRegistry
+    trial_repository_type: TrialRepositoryType = "normal"
 
     def is_valid(self) -> bool:
         is_infinite = any(axis.size is None for axis in self.parameter_space.axes)
         return not (is_infinite and self.study_strategy.type == "all_calculation")
 
-    def to_study_model(self) -> StudyModel:
+    def to_study_model(self, trial_file_dir: Path) -> StudyModel:
+        study_id = self._publish_study_id()
         return StudyModel(
-            study_id=self._publish_study_id(),
+            study_id=study_id,
             name=self.name,
             required_capacity=self.required_capacity,
             status=StudyStatus.wait,
@@ -63,6 +73,10 @@ class StudyRegistry(_StudyCommonModel):
             parameter_space=self.parameter_space.to_parameter_aligned_space_model(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
+            trial_repository=TrialRepositoryModel(
+                type=self.trial_repository_type,
+                save_dir=trial_file_dir / study_id,
+            ),
         )
 
     def _publish_study_id(self) -> str:
@@ -97,6 +111,13 @@ class StudyStorage(_StudyCommonModel):
     done_timestamp: datetime
     results: MappingsStorage
     done_grids: int
+    trial_repository: TrialRepositoryModel
+
+    def consume_trial(self) -> None:
+        repo = create_trial_repository(self.trial_repository)
+        study_strategy = create_study_strategy(self.study_strategy)
+        self.results = study_strategy.extract_mappings(repo)
+        repo.delete_save_dir()
 
     def to_summary(self) -> StudySummary:
         return StudySummary(

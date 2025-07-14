@@ -10,6 +10,7 @@ from lite_dist2.value_models.point import ResultType
 if TYPE_CHECKING:
     from lite_dist2.curriculum_models.mapping import MappingsStorage
     from lite_dist2.curriculum_models.trial_table import TrialTable
+    from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
@@ -27,11 +28,16 @@ class BaseStudyStrategy(metaclass=abc.ABCMeta):
         self.study_strategy_param = study_strategy_param
 
     @abc.abstractmethod
-    def is_done(self, trial_table: TrialTable, parameter_space: ParameterAlignedSpace) -> bool:
+    def is_done(
+        self,
+        trial_table: TrialTable,
+        parameter_space: ParameterAlignedSpace,
+        trial_repository: BaseTrialRepository,
+    ) -> bool:
         pass
 
     @abc.abstractmethod
-    def extract_mappings(self, trial_table: TrialTable) -> MappingsStorage:
+    def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         pass
 
     @abc.abstractmethod

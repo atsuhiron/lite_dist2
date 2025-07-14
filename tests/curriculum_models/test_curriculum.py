@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-import pathlib
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -18,13 +18,17 @@ from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.suggest_strategies import BaseSuggestStrategy, SequentialSuggestStrategy, SuggestStrategyModel
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
+from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.line_segment import ParameterRangeInt
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 if TYPE_CHECKING:
+    from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
     from lite_dist2.value_models.base_space import ParameterSpace
+
+_DUMMY_TRIAL_PATH_DIR = Path(__file__).parent
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
     axes=[
@@ -96,6 +100,8 @@ _DUMMY_TRIAL_TABLE = TrialTable(
     },
 )
 
+_DUMMY_TRIAL_REPOSITORY = NormalTrialRepository(save_dir=Path("test/01"))
+
 _DUMMY_MAPPINGS_STORAGE = MappingsStorage(
     params_info=(),
     result_info=ScalarValue(type="scalar", value_type="int", value="0x0"),
@@ -110,7 +116,15 @@ class MockStudyStrategy(BaseStudyStrategy):
     def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
         pass
 
-    def is_done(self, trial_table: TrialTable, parameter_space: ParameterAlignedSpace) -> bool:
+    def extract_mappings2(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
+        pass
+
+    def is_done(
+        self,
+        trial_table: TrialTable,
+        parameter_space: ParameterAlignedSpace,
+        trial_repository: BaseTrialRepository,
+    ) -> bool:
         pass
 
     def to_model(self) -> StudyStrategyModel:
@@ -143,6 +157,7 @@ class MockStudy(Study):
             "scalar",
             "int",
             TrialTable([], None),
+            _DUMMY_TRIAL_REPOSITORY,
         )
         self.study_id = study_id
         self._done = done
@@ -168,6 +183,7 @@ class MockStudy(Study):
             result_value_type="int",
             results=_DUMMY_MAPPINGS_STORAGE,
             done_grids=4,
+            trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
         )
 
 
@@ -182,7 +198,11 @@ def not_done_study_fixture() -> MockStudy:
 
 
 def test_curriculum_to_storage_if_done(done_study_fixture: MockStudy, not_done_study_fixture: MockStudy) -> None:
-    curriculum = Curriculum(studies=[done_study_fixture, not_done_study_fixture], storages=[])
+    curriculum = Curriculum(
+        studies=[done_study_fixture, not_done_study_fixture],
+        storages=[],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
+    )
     curriculum.to_storage_if_done()
 
     assert len(curriculum.studies) == 1
@@ -266,6 +286,7 @@ def sample_curriculum_fixture() -> Curriculum:
                         0: [_DUMMY_PARAMETER_SPACE.to_model()],
                     },
                 ),
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ),
     ]
@@ -284,13 +305,14 @@ def sample_curriculum_fixture() -> Curriculum:
             result_value_type="int",
             results=_DUMMY_MAPPINGS_STORAGE,
             done_grids=4,
+            trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
         ),
     ]
-    return Curriculum(studies, storages)
+    return Curriculum(studies, storages, _DUMMY_TRIAL_PATH_DIR)
 
 
 def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> None:
-    json_path = pathlib.Path(f"{tmp_path}/curriculum.json")
+    json_path = Path(f"{tmp_path}/curriculum.json")
     assert not json_path.exists()
 
     sample_curriculum_fixture.save(json_path)
@@ -309,7 +331,7 @@ def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curr
 
 
 def test_curriculum_load_or_create_empty(tmp_path: str) -> None:
-    json_path = pathlib.Path(f"{tmp_path}/non_existent.json")
+    json_path = Path(f"{tmp_path}/non_existent.json")
     curriculum = Curriculum.load_or_create(json_path)
 
     assert isinstance(curriculum, Curriculum)
@@ -351,6 +373,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
         "result_type": "scalar",
         "result_value_type": "int",
         "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
     }
     curriculum = Curriculum(
         studies=[
@@ -374,6 +397,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
             ),
         ],
         storages=[],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     study = curriculum.get_available_study(retaining_capacity)
@@ -402,6 +426,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
                 StudyStorage(
                     study_id="s02",
@@ -417,6 +442,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="None",
@@ -440,6 +466,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="id pickup",
@@ -463,6 +490,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="name pickup",
@@ -486,6 +514,7 @@ def test_curriculum_get_available_study(retaining_capacity: set[str], expected_s
                     result_value_type="int",
                     results=_DUMMY_MAPPINGS_STORAGE,
                     done_grids=4,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
                 ),
             ],
             id="prior id",
@@ -515,6 +544,7 @@ def test_curriculum_pop_storage(
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
             StudyStorage(
                 study_id="s02",
@@ -530,8 +560,10 @@ def test_curriculum_pop_storage(
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     popped = curr.pop_storage(study_id, name)
@@ -543,7 +575,7 @@ def test_curriculum_pop_storage(
 
 
 def test_curriculum_pop_storage_raises() -> None:
-    curr = Curriculum(studies=[], storages=[])
+    curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
     with pytest.raises(LD2ParameterError):
         _ = curr.pop_storage(None, None)
 
@@ -572,6 +604,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
             ],
             id="cancel by id",
@@ -597,6 +630,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
             ],
             id="cancel by name",
@@ -622,6 +656,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
                 Study(
                     study_id="s02",
@@ -639,6 +674,7 @@ def test_curriculum_pop_storage_raises() -> None:
                     result_type="scalar",
                     result_value_type="int",
                     trial_table=_DUMMY_TRIAL_TABLE,
+                    trial_repository=_DUMMY_TRIAL_REPOSITORY,
                 ),
             ],
             id="Not found",
@@ -670,6 +706,7 @@ def test_curriculum_cancel_study(
                 result_type="scalar",
                 result_value_type="int",
                 trial_table=_DUMMY_TRIAL_TABLE,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY,
             ),
             Study(
                 study_id="s02",
@@ -687,8 +724,10 @@ def test_curriculum_cancel_study(
                 result_type="scalar",
                 result_value_type="int",
                 trial_table=_DUMMY_TRIAL_TABLE,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY,
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     actual_cancel_result = curr.cancel_study(study_id, name)
@@ -700,7 +739,7 @@ def test_curriculum_cancel_study(
 
 
 def test_curriculum_cancel_study_raises() -> None:
-    curr = Curriculum(studies=[], storages=[])
+    curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
     with pytest.raises(LD2ParameterError):
         _ = curr.cancel_study(None, None)
 
@@ -731,6 +770,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
         "result_type": "scalar",
         "result_value_type": "int",
         "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
     }
     curr = Curriculum(
         studies=[
@@ -768,8 +808,10 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
     actual = curr.get_study_status(study_id, name)
@@ -777,7 +819,7 @@ def test_curriculum_get_study_status(study_id: str | None, name: str | None, exp
 
 
 def test_curriculum_get_study_status_raises() -> None:
-    curr = Curriculum(studies=[], storages=[])
+    curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
     with pytest.raises(LD2ParameterError):
         _ = curr.get_study_status(None, None)
 
@@ -807,6 +849,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
         "result_type": "scalar",
         "result_value_type": "int",
         "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
+        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
     }
     curr = Curriculum(
         studies=[
@@ -850,6 +893,7 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
             StudyStorage(
                 study_id="s06",
@@ -865,8 +909,10 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
                 result_value_type="int",
                 results=_DUMMY_MAPPINGS_STORAGE,
                 done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
             ),
         ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
     new_study = Study(
         name=name,

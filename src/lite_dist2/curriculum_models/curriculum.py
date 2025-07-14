@@ -5,6 +5,7 @@ import logging
 import threading
 import time
 from datetime import timedelta
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
@@ -29,12 +30,14 @@ logger = logging.getLogger(__name__)
 class CurriculumModel(BaseModel):
     studies: list[StudyModel]
     storages: list[StudyStorage]
+    trial_file_dir: Path
 
 
 class Curriculum:
-    def __init__(self, studies: list[Study], storages: list[StudyStorage]) -> None:
+    def __init__(self, studies: list[Study], storages: list[StudyStorage], trial_file_dir: Path) -> None:
         self.studies = studies
         self.storages = storages
+        self.trial_file_dir = trial_file_dir
         self._lock = threading.Lock()
 
     def get_available_study(self, retaining_capacity: set[str]) -> Study | None:
@@ -163,6 +166,7 @@ class Curriculum:
         return CurriculumModel(
             studies=[study.to_model() for study in self.studies],
             storages=self.storages,
+            trial_file_dir=self.trial_file_dir,
         )
 
     def to_summaries(self) -> list[StudySummary]:
@@ -173,6 +177,7 @@ class Curriculum:
         return Curriculum(
             studies=[Study.from_model(study) for study in model.studies],
             storages=model.storages,
+            trial_file_dir=model.trial_file_dir,
         )
 
     def save(self, curr_json_path: pathlib.Path | None = None) -> None:
@@ -225,7 +230,7 @@ class Curriculum:
             return Curriculum.from_model(model)
         load_end_time = time.perf_counter()
         logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) * 1000)
-        return Curriculum([], [])
+        return Curriculum([], [], TableConfigProvider.get().trial_file_dir)
 
 
 class CurriculumProvider:

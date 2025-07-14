@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -12,6 +13,7 @@ from lite_dist2.study_strategies import StudyStrategyModel
 from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.suggest_strategies import SuggestStrategyModel
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
+from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
 from lite_dist2.value_models.aligned_space_registry import LineSegmentRegistry, ParameterAlignedSpaceRegistry
 from lite_dist2.value_models.line_segment import LineSegmentModel
@@ -103,6 +105,10 @@ if TYPE_CHECKING:
                 ),
                 result_type="vector",
                 result_value_type="int",
+                trial_repository=TrialRepositoryModel(
+                    type="normal",
+                    save_dir=Path("test/test_study_id"),
+                ),
             ),
         ),
     ],
@@ -113,7 +119,7 @@ def test_study_registry_to_study_model(registry: StudyRegistry, expected: StudyM
         return_value="test_study_id",
     )
     mocker.patch("lite_dist2.curriculum_models.study_portables.publish_timestamp", return_value=DT)
-    actual = registry.to_study_model()
+    actual = registry.to_study_model(trial_file_dir=Path("test"))
     assert actual == expected
 
 
@@ -307,6 +313,10 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 done_grids=10000,
+                trial_repository=TrialRepositoryModel(
+                    type="normal",
+                    save_dir=Path("test/test_1"),
+                ),
             ),
             StudySummary(
                 study_id="test_1",
