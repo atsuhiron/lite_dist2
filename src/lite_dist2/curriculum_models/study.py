@@ -9,16 +9,17 @@ from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.expections import LD2ModelTypeError
-from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
-from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
-from lite_dist2.suggest_strategies import SequentialSuggestStrategy, SuggestStrategyModel
+from lite_dist2.study_strategies.study_strategy_factory import create_study_strategy
+from lite_dist2.suggest_strategies import SequentialSuggestStrategy
+from lite_dist2.trial_repositories.trial_repository_factory import create_trial_repository
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
-    from lite_dist2.suggest_strategies import BaseSuggestStrategy
+    from lite_dist2.study_strategies import BaseStudyStrategy
+    from lite_dist2.suggest_strategies import BaseSuggestStrategy, SuggestStrategyModel
+    from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
     from lite_dist2.value_models.const_param import ConstParam
 
 
@@ -37,6 +38,7 @@ class Study:
         result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         trial_table: TrialTable,
+        trial_repository: BaseTrialRepository,
     ) -> None:
         self.study_id = study_id
         self.name = name or self.study_id
@@ -52,6 +54,7 @@ class Study:
         self.trial_table = trial_table
 
         self._table_lock = threading.Lock()
+        self.trial_repo = trial_repository
 
     def update_status(self) -> None:
         if self.is_done():
@@ -59,7 +62,7 @@ class Study:
             return
 
     def is_done(self) -> bool:
-        return self.study_strategy.is_done(self.trial_table, self.parameter_space)
+        return self.study_strategy.is_done(self.trial_table, self.parameter_space, self.trial_repo)
 
     def suggest_next_trial(
         self,
@@ -93,8 +96,12 @@ class Study:
 
     def receipt_trial(self, trial: Trial) -> None:
         with self._table_lock:
-            self.trial_table.receipt_trial_result(trial.trial_id, trial.result, trial.worker_node_id)
+            self.trial_table.receipt_trial_result(trial.trial_id, trial.worker_node_id)
             self.trial_table.simplify_aps()
+
+        trial.trial_status = TrialStatus.done
+        trial.set_registered_timestamp()
+        self.trial_repo.save(trial.to_model())
 
     def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:
         return self.trial_table.check_timeout_trial(now, timeout_seconds)
@@ -112,8 +119,9 @@ class Study:
             done_timestamp=publish_timestamp(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
-            results=self.study_strategy.extract_mappings(self.trial_table),
+            results=self.study_strategy.extract_mappings(self.trial_repo),
             done_grids=self.trial_table.count_grid(),
+            trial_repository=self.trial_repo.to_model(),
         )
 
     def to_summary(self) -> StudySummary:
@@ -148,22 +156,11 @@ class Study:
             result_type=self.result_type,
             result_value_type=self.result_value_type,
             trial_table=self.trial_table.to_model(),
+            trial_repository=self.trial_repo.to_model(),
         )
 
     def _publish_trial_id(self) -> str:
         return f"{self.study_id}-{int2hex(self.trial_table.count_trial())}"
-
-    @staticmethod
-    def _create_study_strategy(model: StudyStrategyModel) -> BaseStudyStrategy:
-        match model.type:
-            case "all_calculation":
-                return AllCalculationStudyStrategy(model.study_strategy_param)
-            case "find_exact":
-                return FindExactStudyStrategy(model.study_strategy_param)
-            case "minimize":
-                raise NotImplementedError
-            case _:
-                raise LD2ModelTypeError(model.type)
 
     @staticmethod
     def _create_suggest_strategy(model: SuggestStrategyModel, space: ParameterAlignedSpace) -> BaseSuggestStrategy:
@@ -186,11 +183,12 @@ class Study:
             required_capacity=study_model.required_capacity,
             status=study_model.status,
             registered_timestamp=study_model.registered_timestamp,
-            study_strategy=Study._create_study_strategy(study_model.study_strategy),
+            study_strategy=create_study_strategy(study_model.study_strategy),
             suggest_strategy=Study._create_suggest_strategy(study_model.suggest_strategy, parameter_space),
             const_param=study_model.const_param,
             parameter_space=parameter_space,
             result_type=study_model.result_type,
             result_value_type=study_model.result_value_type,
             trial_table=TrialTable.from_model(study_model.trial_table),
+            trial_repository=create_trial_repository(study_model.trial_repository),
         )

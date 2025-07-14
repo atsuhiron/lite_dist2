@@ -48,11 +48,7 @@ class TrialTable:
     def register(self, trial: Trial) -> None:
         self.trials.append(trial)
 
-    def receipt_trial_result(self, receipted_trial_id: str, result: list[Mapping] | None, worker_node_id: str) -> None:
-        if result is None:
-            # Do nothing
-            return
-
+    def receipt_trial_result(self, receipted_trial_id: str, worker_node_id: str) -> None:
         for trial in reversed(self.trials):
             if trial.trial_id != receipted_trial_id:
                 continue
@@ -66,7 +62,6 @@ class TrialTable:
                 raise LD2ParameterError(p, t)
 
             # Normal
-            trial.result = result
             trial.trial_status = TrialStatus.done
             trial.set_registered_timestamp()
             self.aggregated_parameter_space[self.trials[0].parameter_space.get_dim() - 1].extend(

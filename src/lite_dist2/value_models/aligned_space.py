@@ -198,6 +198,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         if self.filling_dim[target_dim]:
             # 対象の次元を占有していたら False
             return False
+        # noinspection PyPep8
         if not all(self.filling_dim[target_dim + 1 :]):
             # 対象の次元より深い次元を占有していなければ False
             # 最深次元(空リスト)であれば True

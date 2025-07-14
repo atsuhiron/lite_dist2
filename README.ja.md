@@ -428,6 +428,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | trial_timeout_seconds            | int  | 600                              | `Trial` が予約されてから登録されるまでのタイムアウト時間 |
 | timeout_check_interval_seconds   | int  | 60                               | `Trial` のタイムアウトを確認する間隔           |
 | curriculum_path                  | Path | {project root}/"curriculum.json" | `Curriculum` を保存する際のファイルパス       |
+| trial_file_dir                   | Path | {project root}/"trials"          | `Trial` を保存する際のファイルパス            |
 | curriculum_save_interval_seconds | int  | 600                              | `Curriculum` を保存する時間間隔           |
 
 ### WorkerConfig
@@ -526,16 +527,17 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | ok | bool | ✓  |    |
 
 ### StudyRegistry
-| 名前                | 型                                                               | 必須 | 説明                                                                                                                                   |
-|-------------------|-----------------------------------------------------------------|----|--------------------------------------------------------------------------------------------------------------------------------------|
-| name              | str \| None                                                     |    | この `Study` の名前                                                                                                                       |
-| required_capacity | list[str]                                                       | ✓  | この `Study` を実行するのに必要な能力を表すタグ。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
-| study_strategy    | [StudyStrategyModel](#studystrategymodel)                       | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                             |
-| suggest_strategy  | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                         |
-| result_type       | Literal["scalar", "vector"]                                     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                       |
-| result_value_type | Literal["bool", "int", "float"]                                 | ✓  | この `Study` の戻り値の型。                                                                                                                   |
-| const_param       | [ConstParam](#constparam)  \| None                              | ✓  | ワーカーノードで利用する定数の一覧。                                                                                                                   |
-| parameter_space   | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
+| 名前                    | 型                                                               | 必須 | 説明                                                                                                                                   |
+|-----------------------|-----------------------------------------------------------------|----|--------------------------------------------------------------------------------------------------------------------------------------|
+| name                  | str \| None                                                     |    | この `Study` の名前                                                                                                                       |
+| required_capacity     | list[str]                                                       | ✓  | この `Study` を実行するのに必要な能力を表すタグ。この `required_capacity` がワーカーノードの `retaining_capacity` の部分集合だった場合にこの `Study` は実行できる。 (内部的な型は `set[str]`) |
+| study_strategy        | [StudyStrategyModel](#studystrategymodel)                       | ✓  | この `Study` を実行する際に使う [`StudyStrategy`](#studystrategy) 。                                                                             |
+| suggest_strategy      | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓  | この `Study` を実行する際に使う [`SuggestStrategy`](#suggeststrategy) 。                                                                         |
+| result_type           | Literal["scalar", "vector"]                                     | ✓  | この `Study` の戻り値が１変数か、多変数かを表す値。                                                                                                       |
+| result_value_type     | Literal["bool", "int", "float"]                                 | ✓  | この `Study` の戻り値の型。                                                                                                                   |
+| const_param           | [ConstParam](#constparam)  \| None                              | ✓  | ワーカーノードで利用する定数の一覧。                                                                                                                   |
+| parameter_space       | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓  | この `Study` で計算する[パラメータ空間](#parameterspace)。                                                                                          |
+| trial_repository_type | Literal["normal"]                                               |    | 使用する `TrialRepository` の種類。デフォルト値は "normal"。                                                                                         |
 
 ### StudySummary
 | 名前                   | 型                                                         | 必須 | 説明                                                                                                                                   |
@@ -570,6 +572,7 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | done_timestamp       | str                                                       | ✓  | この `Study` が完了した時刻を表すタイムスタンプ（内部的な型は `datetime`）。                                                                                     |
 | results              | [MappingsStorage](#mappingsstorage)                       | ✓  | 計算結果一覧。                                                                                                                              |
 | done_grids           | int                                                       | ✓  | この `Study` で実際に計算が完了したパラメータの組の数。                                                                                                     |
+| trial_repository     | [TrialRepositoryModel](#trialrepositorymodel)             | ✓  | この `Study` の実行時に使用する [`TrialRepository`](#trialrepository-について) 。                                                                    |
 
 ### StudyStrategyModel
 | 名前    | 型                                                    | 必須 | 説明                          |
@@ -690,6 +693,12 @@ curl 'xxx.xxx.xxx.xxx:8000/study?name=mandelbrot'
 | type  | Literal["int", "float", "bool", "str"] | ✓  | 定数の型を区別するための識別子。  |
 | key   | str                                    | ✓  | 定数を取り出す際に利用するキー。  |
 | value | str \| bool                            | ✓  | portablize された定数。 |
+
+### TrialRepositoryModel
+| 名前       | 型              | 必須 | 説明                                           |
+|----------|----------------|----|----------------------------------------------|
+| type     | Literal["int"] | ✓  | 使用する `TrialRepository` の種類。デフォルト値は "normal"。 |
+| save_dir | str            | ✓  | `Trial` を保存するディレクトリを表す文字列(内部的な型は `Path`)。    |
 
 ### StudyStatus (Enum)
 | 名前        | 説明                                      |
@@ -992,6 +1001,13 @@ from lite_dist2.table_node_api.start_table_api import start_in_thread
 
 start_in_thread()
 ```
+
+### TrialRepository について
+`TrialRepository` とは計算済みの `Trial` をテーブルノードが保存するための仕組みです。
+現在利用可能な `TrialRepository` は `NormalTrialRepository` だけです（[`TrialRepositoryModel`](#trialrepositorymodel) の `type` や [`StudyRegistry`](#studyregistry) の `trial_repository_type` を参照してください）。
+`NormalTrialRepository` は `TableConfig.trial_file_dir` （デフォルト設定では実行ディレクトリの配下の `trials` というディレクトリ）の下に `Study` ごとに `study_id` を名前にしたディレクトリを作成し、更にその配下に `Trial` を表す json ファイルを保存します。
+
+最終的に /study API で結果を取得した後は `Study` ごとのディレクトリは削除されます。この保存場所を変更したい場合は `TableConfig.trial_file_dir` を変更してください。
 
 ## 10. 開発
 ### 必要要件

@@ -431,6 +431,7 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | trial_timeout_seconds            | int  | 600                              | Timeout seconds before a trial is reserved and registered. |
 | timeout_check_interval_seconds   | int  | 60                               | Interval of time to check timeout trials.                  |
 | curriculum_path                  | Path | {project root}/"curriculum.json" | Path to the `Curriculum` json file.                        |
+| trial_file_dir                   | Path | {project root}/"trials"          | Path to the directory to save `Trial` files.               |
 | curriculum_save_interval_seconds | int  | 600                              | Interval of time to save `Curriculum` json file.           |
 
 ### WorkerConfig
@@ -443,7 +444,7 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | disable_function_progress_bar      | bool        | False         | Whether to disable progress bar.                                                                                                                                  |
 | retaining_capacity                 | list[str]   | []            | Tags (internally of type `set[str]`) with the capabilities that the worker node has, to be used when processing multiple types of `Study` in a single table node. |
 | wait_seconds_on_no_trial           | int         | 5             | Waiting time when there was no trial allocated by the table node.                                                                                                 |
-| table_node_request_timeout_seconds | int         | 30            | Timeout for requests to table nodes.                                                                                                                              |
+| table_node_request_timeout_seconds | int         | 30            | Timeout for requests to table node.                                                                                                                               |
 
 ## 7. API Reference
 | path             | method | parameter                                                                                                               | body                                      | response                                                | description                           |
@@ -529,16 +530,17 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | ok   | bool | ✓        |             |
 
 ### StudyRegistry
-| name              | type                                                            | required | description                                                                                                                                                                                |
-|-------------------|-----------------------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name              | str \| None                                                     |          | Name of this `Study`.                                                                                                                                                                      |
-| required_capacity | list[str]                                                       | ✓        | Required capacity to perform this `Study`. This `Study` can be executed if this `required_capacity` is a subset of the worker node's `retaining_capacity`. (internally of type `set[str]`) |
-| study_strategy    | [StudyStrategyModel](#studystrategymodel)                       | ✓        | The [`StudyStrategy`](#studystrategy) to use when perform this `Study`.                                                                                                                    |
-| suggest_strategy  | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓        | The [`SuggestStrategy`](#suggeststrategy)  to use when perform this `Study`.                                                                                                               |
-| result_type       | Literal["scalar", "vector"]                                     | ✓        | A value indicating whether the return value of this `Study` is scalar or vector.                                                                                                           |
-| result_value_type | Literal["bool", "int", "float"]                                 | ✓        | The return type of `Study`.                                                                                                                                                                |
-| const_param       | [ConstParam](#constparam)  \| None                              | ✓        | List of constant using on worker node.                                                                                                                                                     |
-| parameter_space   | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓        | [ParameterSpace](#parameterspace) to calculate on this `Study`.                                                                                                                            |
+| name                  | type                                                            | required | description                                                                                                                                                                                |
+|-----------------------|-----------------------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name                  | str \| None                                                     |          | Name of this `Study`.                                                                                                                                                                      |
+| required_capacity     | list[str]                                                       | ✓        | Required capacity to perform this `Study`. This `Study` can be executed if this `required_capacity` is a subset of the worker node's `retaining_capacity`. (internally of type `set[str]`) |
+| study_strategy        | [StudyStrategyModel](#studystrategymodel)                       | ✓        | The [`StudyStrategy`](#studystrategy) to use when perform this `Study`.                                                                                                                    |
+| suggest_strategy      | [SuggestStrategyModel](#suggeststrategymodel)                   | ✓        | The [`SuggestStrategy`](#suggeststrategy)  to use when perform this `Study`.                                                                                                               |
+| result_type           | Literal["scalar", "vector"]                                     | ✓        | A value indicating whether the return value of this `Study` is scalar or vector.                                                                                                           |
+| result_value_type     | Literal["bool", "int", "float"]                                 | ✓        | The return type of `Study`.                                                                                                                                                                |
+| const_param           | [ConstParam](#constparam)  \| None                              | ✓        | List of constant using on worker node.                                                                                                                                                     |
+| parameter_space       | [ParameterAlignedSpaceRegistry](#parameteralignedspaceregistry) | ✓        | [ParameterSpace](#parameterspace) to calculate on this `Study`.                                                                                                                            |
+| trial_repository_type | Literal["normal"]                                               |          | Type of `TrialRepository` to use. Default value is "normal".                                                                                                                               |
 
 ### StudySummary
 | name                 | type                                                      | required | description                                                                                                                                                                                |
@@ -563,7 +565,7 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | name                 | str \| None                                               |          | Name of this `Study`.                                                                                                                                                                      |
 | required_capacity    | list[str]                                                 | ✓        | Required capacity to perform this `Study`. This `Study` can be executed if this `required_capacity` is a subset of the worker node's `retaining_capacity`. (internally of type `set[str]`) |
 | study_strategy       | [StudyStrategyModel](#studystrategymodel)                 | ✓        | The [`StudyStrategy`](#studystrategy) to use when perform this `Study`.                                                                                                                    |
-| suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓        | he [`SuggestStrategy`](#suggeststrategy)  to use when perform this `Study`.                                                                                                                |
+| suggest_strategy     | [SuggestStrategyModel](#suggeststrategymodel)             | ✓        | The [`SuggestStrategy`](#suggeststrategy)  to use when perform this `Study`.                                                                                                               |
 | result_type          | Literal["scalar", "vector"]                               | ✓        | A value indicating whether the return value of this `Study` is scalar or vector.                                                                                                           |
 | result_value_type    | Literal["bool", "int", "float"]                           | ✓        | The return type of `Study`.                                                                                                                                                                |
 | study_id             | str                                                       | ✓        | ID of this `Study`.                                                                                                                                                                        |
@@ -573,6 +575,7 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | done_timestamp       | str                                                       | ✓        | A timestamp indicating when this `Study` was completed. (internally of type `datetime`)                                                                                                    |
 | results              | [MappingsStorage](#mappingsstorage)                       | ✓        | List of calculation result. If `StudyStrategy` is `all_calculation`, then `done_grids` and the length of this list match.                                                                  |
 | done_grids           | int                                                       | ✓        | The number of parameter tuples actually completed in this `Study`.                                                                                                                         |
+| trial_repository     | [TrialRepositoryModel](#trialrepositorymodel)             | ✓        | The [`TrialRepository`](#about-trialrepository) to use when perform this `Study`.                                                                                                          |
 
 ### StudyStrategyModel
 | name  | type                                                 | required | description                                                  |
@@ -694,6 +697,12 @@ The actual values are stored in `results.values`, and are ordered by param and r
 | key   | str                                    | ✓        | Key used to retrieve constants.             |
 | value | str \| bool                            | ✓        | Portablized constant.                       |
 
+### TrialRepositoryModel
+| name     | type           | required | description                                                                         |
+|----------|----------------|----------|-------------------------------------------------------------------------------------|
+| type     | Literal["int"] | ✓        | Type of `TrialRepository` to use. Default value is "normal".                        |
+| save_dir | str            | ✓        | String representing the directory to store the `Trial` (internally of type `Path`). |
+
 ### StudyStatus (Enum)
 | name      | description                                                          |
 |-----------|----------------------------------------------------------------------|
@@ -719,8 +728,8 @@ The actual values are stored in `results.values`, and are ordered by param and r
 ### About implementation of ParameterSpace
 #### ParameterAlignedSpace
 The [ParameterSpace](#parameterspace) example is the simplest example of how to represent a parameter space, a type (`ParameterAlignedSpaceRegistry`) that can be used when first registering a `Study`.
-A little more additional information is needed when communicating between table nodes and worker nodes.
-In the above example, it is sufficient to represent the entire space, but in the communication between table nodes and worker nodes, it is necessary to represent "which part of the whole (mother space)".  
+A little more additional information is needed when communicating between table node and worker nodes.
+In the above example, it is sufficient to represent the entire space, but in the communication between table node and worker nodes, it is necessary to represent "which part of the whole (mother space)".  
 The following example shows a subspace that is a portion of the mother space.
 ```json
 {
@@ -988,14 +997,21 @@ from lite_dist2.table_node_api.start_table_api import start
 
 start()
 ```
-In this example, the table nodes are running in a blocking process, so they will not exit the `start` function unless the server is terminated.
-If you want to start the table nodes non-blocking, you need to start the server in a separate thread.  
+In this example, the table node are running in a blocking process, so they will not exit the `start` function unless the server is terminated.
+If you want to start the table node non-blocking, you need to start the server in a separate thread.  
 The following example starts the server in a separate thread.
 ```python
 from lite_dist2.table_node_api.start_table_api import start_in_thread
 
 start_in_thread()
 ```
+
+### About TrialRepository
+`TrialRepository` is a mechanism for the table node to store calculated `Trial`.
+Currently, the only `TrialRepository` available is the `NormalTrialRepository` (see `type` in [`TrialRepositoryModel`](#trialrepositorymodel) or `trial_repository_type` in [`StudyRegistry`](#studyregistry)).
+The `NormalTrialRepository` creates a directory named `study_id` for each `Study` under `TableConfig.trial_file_dir` (the `trials` directory under the execution directory in the default configuration). and a json file for each `Trial` under that directory.
+
+After the results are finally retrieved by the /study API, the `Study` directories will be deleted. If you want to change this location, change `TableConfig.trial_file_dir`.
 
 ## 10. Development
 ### Requirements
