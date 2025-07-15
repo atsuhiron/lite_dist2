@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0] - 2025-07-15
+
+### Changed
+- Changed the location of Trials from a single curriculum file to a file for each Trial([#21](https://github.com/atsuhiron/lite_dist2/pull/21)).
+  - The smaller size of the curriculum file no longer causes problems with failed saves or timeout errors caused by too much time spent on saving.
+
+### Fixed
+- Fixed notation of time taken to save curriculum.json at a table node([#22](https://github.com/atsuhiron/lite_dist2/pull/22)).
+
 ## [0.4.0] - 2025-06-29
 
 ### Added
