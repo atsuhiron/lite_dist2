@@ -68,8 +68,17 @@ class Curriculum:
         return True
 
     def to_storage_if_done(self) -> None:
+        updated = False
         with self._lock:
-            self.studies = [study for study in self.studies if not self._move_to_storage_if_done(study)]
+            studies = []
+            for study in self.studies:
+                if not self._move_to_storage_if_done(study):
+                    studies.append(study)
+                    updated = True
+
+            self.studies = studies
+            if updated:
+                self.save()
 
     def _move_to_storage_if_done(self, study: Study) -> bool:
         study.update_status()
