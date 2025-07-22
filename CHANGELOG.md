@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.1] - 2025-07-22
+
+### Changed
+- Changed to save when the study is done([#24](https://github.com/atsuhiron/lite_dist2/pull/24)).
+
 ## [0.5.0] - 2025-07-15
 
 ### Changed

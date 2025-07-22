@@ -1,6 +1,6 @@
 [project]
 name = "lite-dist2"
-version = "0.5.0"
+version = "0.5.1"
 description = "Distributed processing system"
 readme = "README.md"
 authors = [
