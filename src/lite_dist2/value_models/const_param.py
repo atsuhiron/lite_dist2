@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import starmap
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
@@ -48,4 +49,4 @@ class ConstParam(BaseModel):
 
     @staticmethod
     def from_dict(d: dict[str, ConstParamType]) -> ConstParam:
-        return ConstParam(consts=[ConstParamElement.from_kv(k, v) for k, v in d.items()])
+        return ConstParam(consts=list(starmap(ConstParamElement.from_kv, d.items())))

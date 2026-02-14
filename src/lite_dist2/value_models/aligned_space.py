@@ -1,24 +1,19 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel
-
-from lite_dist2.common import hex2int
-from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError, LD2TypeError, LD2UndefinedError
-from lite_dist2.interfaces import Mergeable
-from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
+from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
+from lite_dist2.value_models.base_space import FlattenSegment, get_lower_element_num_by_dim
 from lite_dist2.value_models.line_segment import (
-    DummyLineSegment,
+    DummyLineSegmentModel,
     LineSegment,
     LineSegmentModel,
-    ParameterRangeBool,
-    ParameterRangeFloat,
-    ParameterRangeInt,
+    LineSegmentPortableModel,
 )
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product
 from lite_dist2.value_models.point import ParamType, ScalarValue
+from lite_dist2.value_models.space_model import ParameterAlignedSpacePortableModel
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -26,21 +21,7 @@ if TYPE_CHECKING:
     from lite_dist2.type_definitions import PrimitiveValueType
 
 
-class ParameterAlignedSpaceModel(BaseModel):
-    type: Literal["aligned"]
-    axes: list[LineSegmentModel]
-    check_lower_filling: bool
-
-    def get_total(self) -> int | None:
-        t = 1
-        for axis in self.axes:
-            if axis.size is None:
-                return None
-            t *= hex2int(axis.size)
-        return t
-
-
-class ParameterAlignedSpace(ParameterSpace, Mergeable):
+class ParameterAlignedSpace:
     def __init__(self, axes: list[LineSegment], check_lower_filling: bool) -> None:
         self.axes = axes  # larger index, deeper dimension
         self.filling_dim = [axis.is_universal() for axis in self.axes]
@@ -99,10 +80,10 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         return len(self.dimensional_sizes)
 
     @functools.cached_property
-    def dimensional_sizes(self) -> tuple[int, ...]:
+    def dimensional_sizes(self) -> tuple[int | None, ...]:
         return self.get_dimensional_sizes()
 
-    def get_dimensional_sizes(self) -> tuple[int, ...]:
+    def get_dimensional_sizes(self) -> tuple[int | None, ...]:
         return tuple(axis.size for axis in self.axes)
 
     @functools.cached_property
@@ -118,16 +99,16 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         return t
 
     def lower_element_num_by_dim(self) -> tuple[int, ...]:
-        return self.get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes])
+        return get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes])
 
     def is_infinite(self) -> bool:
         return self.total is None
 
     @functools.cached_property
-    def dummy_info(self) -> list[DummyLineSegment]:
+    def dummy_info(self) -> list[DummyLineSegmentModel]:
         return self.get_dummy_info()
 
-    def get_dummy_info(self) -> list[DummyLineSegment]:
+    def get_dummy_info(self) -> list[DummyLineSegmentModel]:
         return [axis.to_dummy() for axis in self.axes]
 
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
@@ -173,20 +154,17 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
             ],
         )
 
-    def derived_by_same_ambient_space_with(self, other: ParameterSpace) -> bool:
+    def derived_by_same_ambient_space_with(self, other: object) -> bool:
         if not isinstance(other, ParameterAlignedSpace):
             return False
         if len(self.axes) != len(other.axes):
             return False
         return all(s.derived_by_same_ambient_space_with(o) for s, o in zip(self.axes, other.axes, strict=True))
 
-    def get_start_index(self, *args: object) -> int:
-        target_dim = self._check_arg(*args)
+    def get_start_index(self, target_dim: int) -> int:
         return self.axes[target_dim].get_start_index()
 
-    def can_merge(self, other: ParameterAlignedSpace, *args: object) -> bool:
-        target_dim = self._check_arg(*args)
-
+    def can_merge(self, other: ParameterAlignedSpace, target_dim: int) -> bool:
         if not self.derived_by_same_ambient_space_with(other):
             # 同じ母空間から誘導されたものでなければ False
             return False
@@ -198,13 +176,13 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         if self.filling_dim[target_dim]:
             # 対象の次元を占有していたら False
             return False
-        # noinspection PyPep8
+
         if not all(self.filling_dim[target_dim + 1 :]):
             # 対象の次元より深い次元を占有していなければ False
             # 最深次元(空リスト)であれば True
             return False
 
-        if not all(self.axes[d] == other.axes[d] for d in range(target_dim)):
+        if not all(self.axes[d].to_model() == other.axes[d].to_model() for d in range(target_dim)):
             # target_dim より浅層の各次元が一致していなければ False
             return False
 
@@ -212,9 +190,7 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         other_axis = other.axes[target_dim]
         return self_axis.can_merge(other_axis)
 
-    def merge(self, other: ParameterAlignedSpace, *args: object) -> ParameterAlignedSpace:
-        target_dim = self._check_arg(*args)
-
+    def merge(self, other: ParameterAlignedSpace, target_dim: int) -> ParameterAlignedSpace:
         axes = []
         for d in range(self.dim):
             if d != target_dim:
@@ -231,10 +207,10 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
     def to_aligned_list(self) -> list[ParameterAlignedSpace]:
         return [self]
 
-    def to_model(self) -> ParameterAlignedSpaceModel:
-        return ParameterAlignedSpaceModel(
+    def to_model(self) -> ParameterAlignedSpacePortableModel:
+        return ParameterAlignedSpacePortableModel(
             type="aligned",
-            axes=[axis.to_model() for axis in self.axes],
+            axes=[LineSegmentPortableModel.from_line_segment_model(axis.to_model()) for axis in self.axes],
             check_lower_filling=self.check_lower_filling,
         )
 
@@ -249,19 +225,12 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
         return tuple(loomed_indices)
 
     @staticmethod
-    def _check_arg(*args: object) -> int:
-        if len(args) < 1:
-            name = "target_dim"
-            raise LD2ParameterError(name, "missing")
+    def from_model(space_model: ParameterAlignedSpacePortableModel) -> ParameterAlignedSpace:
+        if not isinstance(space_model, ParameterAlignedSpacePortableModel):
+            param = f"{ParameterAlignedSpace.__name__}.from_model"
+            msg = f"Model type must be {ParameterAlignedSpacePortableModel.__name__}."
+            raise LD2ParameterError(param, msg)
 
-        target_dim = args[0]
-        if not isinstance(target_dim, int):
-            name = "target_dim"
-            raise LD2TypeError(name, int, type(args[0]))
-        return target_dim
-
-    @staticmethod
-    def from_model(space_model: ParameterAlignedSpaceModel) -> ParameterAlignedSpace:
         axes = []
         for axis_model in space_model.axes:
             if axis_model.is_dummy:
@@ -269,15 +238,6 @@ class ParameterAlignedSpace(ParameterSpace, Mergeable):
                 msg = f"An axis of {ParameterAlignedSpace.__name__} is not allowed dummy axis."
                 raise LD2ParameterError(param, msg)
 
-            match axis_model.type:
-                case "bool":
-                    axis = ParameterRangeBool.from_model(axis_model)
-                case "int":
-                    axis = ParameterRangeInt.from_model(axis_model)
-                case "float":
-                    axis = ParameterRangeFloat.from_model(axis_model)
-                case _:
-                    raise LD2UndefinedError(axis_model.type)
-            axes.append(axis)
+            axes.append(axis_model.to_line_segment_model().to_line_segment())
 
         return ParameterAlignedSpace(axes=axes, check_lower_filling=space_model.check_lower_filling)

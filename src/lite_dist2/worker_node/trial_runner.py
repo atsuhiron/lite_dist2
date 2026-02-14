@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 import functools
 from multiprocessing.pool import Pool
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 import tqdm
 
@@ -16,10 +16,10 @@ if TYPE_CHECKING:
     from lite_dist2.config import WorkerConfig
     from lite_dist2.curriculum_models.trial import Trial
     from lite_dist2.type_definitions import RawParamType, RawResultType
-    from lite_dist2.value_models.base_space import ParameterSpace
+    from lite_dist2.value_models.space_type import ParameterSpaceType
 
 
-class BaseTrialRunner(metaclass=abc.ABCMeta):
+class BaseTrialRunner(abc.ABC):
     @abc.abstractmethod
     def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
         pass
@@ -27,7 +27,7 @@ class BaseTrialRunner(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def wrap_func(
         self,
-        parameter_space: ParameterSpace,
+        parameter_space: ParameterSpaceType,
         config: WorkerConfig,
         pool: Pool | None = None,
         *args: object,
@@ -64,12 +64,13 @@ class BaseTrialRunner(metaclass=abc.ABCMeta):
         raise LD2TypeError(key, ConstParamType.__value__, type(v))
 
 
-class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
+class AutoMPTrialRunner(BaseTrialRunner, abc.ABC):
+    @override
     def wrap_func(
         self,
-        parameter_space: ParameterSpace,
+        parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        _: Pool | None = None,
+        pool: Pool | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
@@ -78,8 +79,8 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
         if config.process_num is None or config.process_num > 1:
             parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
-            with Pool(processes=config.process_num) as pool, tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in pool.imap_unordered(
+            with Pool(processes=config.process_num) as _pool, tqdm.tqdm(**tqdm_kwargs) as p_bar:
+                for arg_tuple, result_iter in _pool.imap_unordered(
                     func=parameter_pass_func,
                     iterable=parameter_space.grid(),
                     chunksize=config.chunk_size,
@@ -93,10 +94,11 @@ class AutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         ]
 
 
-class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
+class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
+    @override
     def wrap_func(
         self,
-        parameter_space: ParameterSpace,
+        parameter_space: ParameterSpaceType,
         config: WorkerConfig,
         pool: Pool | None = None,
         *args: object,
@@ -122,9 +124,10 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
         ]
 
 
-class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
-    def func(self, *parameters: RawParamType) -> tuple[RawParamType, RawResultType]:
-        pass
+class ManualMPTrialRunner(BaseTrialRunner, abc.ABC):
+    @override
+    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+        return 0
 
     @abc.abstractmethod
     def batch_func(
@@ -136,11 +139,12 @@ class ManualMPTrialRunner(BaseTrialRunner, metaclass=abc.ABCMeta):
     ) -> list[tuple[RawParamType, RawResultType]]:
         pass
 
+    @override
     def wrap_func(
         self,
-        parameter_space: ParameterSpace,
+        parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        _: Pool | None = None,
+        pool: Pool | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:

@@ -14,9 +14,9 @@ from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.suggest_strategies import SuggestStrategyModel
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.aligned_space_registry import LineSegmentRegistry, ParameterAlignedSpaceRegistry
-from lite_dist2.value_models.line_segment import LineSegmentModel
+from lite_dist2.value_models.line_segment import LineSegmentPortableModel
 from lite_dist2.value_models.point import ScalarValue, VectorValue
 from tests.const import DT
 
@@ -79,10 +79,10 @@ if TYPE_CHECKING:
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 const_param=None,
-                parameter_space=ParameterAlignedSpaceModel(
+                parameter_space=ParameterAlignedSpacePortableModel(
                     type="aligned",
                     axes=[
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="x",
                             type="int",
                             size="0x64",
@@ -91,7 +91,7 @@ if TYPE_CHECKING:
                             ambient_size="0x64",
                             ambient_index="0x0",
                         ),
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="y",
                             type="float",
                             size="0x64",
@@ -261,10 +261,10 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                 required_capacity={"matrix"},
                 registered_timestamp=DT,
                 const_param=None,
-                parameter_space=ParameterAlignedSpaceModel(
+                parameter_space=ParameterAlignedSpacePortableModel(
                     type="aligned",
                     axes=[
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="x",
                             type="int",
                             size="0x64",
@@ -273,7 +273,7 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                             ambient_size="0x64",
                             ambient_index="0x0",
                         ),
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="y",
                             type="float",
                             size="0x64",
@@ -325,10 +325,10 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                 required_capacity={"matrix"},
                 registered_timestamp=DT,
                 const_param=None,
-                parameter_space=ParameterAlignedSpaceModel(
+                parameter_space=ParameterAlignedSpacePortableModel(
                     type="aligned",
                     axes=[
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="x",
                             type="int",
                             size="0x64",
@@ -337,7 +337,7 @@ def test_study_registry_is_valid(study_registry: StudyRegistry, expected: bool) 
                             ambient_size="0x64",
                             ambient_index="0x0",
                         ),
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="y",
                             type="float",
                             size="0x64",

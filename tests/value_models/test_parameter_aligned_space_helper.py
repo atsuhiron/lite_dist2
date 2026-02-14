@@ -1,11 +1,12 @@
 import itertools
+from collections.abc import Iterator
 from typing import Any
 
 import pytest
 
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.base_space import FlattenSegment
-from lite_dist2.value_models.line_segment import ParameterRangeFloat, ParameterRangeInt
+from lite_dist2.value_models.line_segment import LineSegment
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product, remap_space, simplify
 
 
@@ -22,7 +23,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -31,7 +34,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -42,13 +47,17 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
+                        LineSegment(
+                            name="y", type_="int", size=100, step=1, start=200, ambient_index=200, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -57,13 +66,17 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
+                        LineSegment(
+                            name="y", type_="int", size=100, step=1, start=200, ambient_index=200, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -74,13 +87,17 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=200, ambient_index=200, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -89,13 +106,17 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=200, ambient_index=200, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -106,13 +127,17 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=100, ambient_index=100, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -121,7 +146,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=200, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -132,13 +159,17 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=100, ambient_index=100, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -147,7 +178,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=200, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -158,19 +191,25 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=100, ambient_index=100, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=100, ambient_index=200, start=200, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=100, step=1, start=200, ambient_index=200, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -179,7 +218,9 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=300, ambient_index=0, start=0, ambient_size=None),
+                        LineSegment(
+                            name="x", type_="int", size=300, step=1, start=0, ambient_index=0, ambient_size=None
+                        ),
                     ],
                     check_lower_filling=False,
                 ),
@@ -190,15 +231,47 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=0, ambient_size=20, start=0),
+                        LineSegment(
+                            name="x",
+                            type_="int",
+                            size=1,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=100,
+                        ),
+                        LineSegment(
+                            name="y",
+                            type_="int",
+                            size=10,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=20,
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=1, ambient_size=100, start=0),
-                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=10, ambient_size=20, start=10),
+                        LineSegment(
+                            name="x",
+                            type_="int",
+                            size=1,
+                            step=1,
+                            start=0,
+                            ambient_index=1,
+                            ambient_size=100,
+                        ),
+                        LineSegment(
+                            name="y",
+                            type_="int",
+                            size=10,
+                            step=1,
+                            start=10,
+                            ambient_index=10,
+                            ambient_size=20,
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -207,15 +280,47 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=0, ambient_size=20, start=0),
+                        LineSegment(
+                            name="x",
+                            type_="int",
+                            size=1,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=100,
+                        ),
+                        LineSegment(
+                            name="y",
+                            type_="int",
+                            size=10,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=20,
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=1, ambient_size=100, start=0),
-                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=10, ambient_size=20, start=10),
+                        LineSegment(
+                            name="x",
+                            type_="int",
+                            size=1,
+                            step=1,
+                            start=0,
+                            ambient_index=1,
+                            ambient_size=100,
+                        ),
+                        LineSegment(
+                            name="y",
+                            type_="int",
+                            size=10,
+                            step=1,
+                            start=10,
+                            ambient_index=10,
+                            ambient_size=20,
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -226,15 +331,47 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=0, ambient_size=20, start=0),
+                        LineSegment(
+                            name="x",
+                            type_="int",
+                            size=1,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=100,
+                        ),
+                        LineSegment(
+                            name="y",
+                            type_="int",
+                            size=10,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=20,
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                        ParameterRangeInt(name="y", type="int", size=10, ambient_index=10, ambient_size=20, start=10),
+                        LineSegment(
+                            name="x",
+                            type_="int",
+                            size=1,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=100,
+                        ),
+                        LineSegment(
+                            name="y",
+                            type_="int",
+                            size=10,
+                            step=1,
+                            start=10,
+                            ambient_index=10,
+                            ambient_size=20,
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -243,8 +380,24 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                        ParameterRangeInt(name="y", type="int", size=20, ambient_index=0, ambient_size=20, start=0),
+                        LineSegment(
+                            name="x",
+                            type_="int",
+                            size=1,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=100,
+                        ),
+                        LineSegment(
+                            name="y",
+                            type_="int",
+                            size=20,
+                            step=1,
+                            start=0,
+                            ambient_index=0,
+                            ambient_size=20,
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -255,18 +408,18 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeFloat(
+                        LineSegment(
                             name="x",
-                            type="float",
+                            type_="float",
                             size=1,
                             step=0.4,
                             start=-1.6,
                             ambient_index=1,
                             ambient_size=10,
                         ),
-                        ParameterRangeFloat(
+                        LineSegment(
                             name="y",
-                            type="float",
+                            type_="float",
                             size=10,
                             step=0.4,
                             start=-2.0,
@@ -278,18 +431,18 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
                 ),
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeFloat(
+                        LineSegment(
                             name="x",
-                            type="float",
+                            type_="float",
                             size=1,
                             step=0.4,
                             start=-2.0,
                             ambient_index=0,
                             ambient_size=10,
                         ),
-                        ParameterRangeFloat(
+                        LineSegment(
                             name="y",
-                            type="float",
+                            type_="float",
                             size=10,
                             step=0.4,
                             start=-2.0,
@@ -304,18 +457,18 @@ from lite_dist2.value_models.parameter_aligned_space_helper import infinite_prod
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeFloat(
+                        LineSegment(
                             name="x",
-                            type="float",
+                            type_="float",
                             size=2,
                             step=0.4,
                             start=-2.0,
                             ambient_index=0,
                             ambient_size=10,
                         ),
-                        ParameterRangeFloat(
+                        LineSegment(
                             name="y",
-                            type="float",
+                            type_="float",
                             size=10,
                             step=0.4,
                             start=-2.0,
@@ -336,7 +489,10 @@ def test_simplify(
     expected: list[ParameterAlignedSpace],
 ) -> None:
     actual = simplify(sub_spaces, target_dim)
-    assert actual == expected
+
+    assert len(actual) == len(expected)
+    for a, e in zip(actual, expected, strict=True):
+        assert a.to_model() == e.to_model()
 
 
 @pytest.mark.parametrize(
@@ -396,8 +552,10 @@ def test_simplify_simple_flatten(segments: list[FlattenSegment], expected: list[
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
-                        ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=100, start=0),
+                        LineSegment(type_="int", name="x", size=1, step=1, ambient_index=0, ambient_size=10, start=0),
+                        LineSegment(
+                            type_="int", name="y", size=10, step=1, ambient_index=0, ambient_size=100, start=0
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -409,8 +567,12 @@ def test_simplify_simple_flatten(segments: list[FlattenSegment], expected: list[
                 1: [
                     ParameterAlignedSpace(
                         axes=[
-                            ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
-                            ParameterRangeInt(type="int", size=10, ambient_index=0, ambient_size=100, start=0),
+                            LineSegment(
+                                type_="int", name="x", size=1, step=1, ambient_index=0, ambient_size=10, start=0
+                            ),
+                            LineSegment(
+                                type_="int", name="y", size=10, step=1, ambient_index=0, ambient_size=100, start=0
+                            ),
                         ],
                         check_lower_filling=True,
                     ),
@@ -421,8 +583,10 @@ def test_simplify_simple_flatten(segments: list[FlattenSegment], expected: list[
             [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
-                        ParameterRangeInt(type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                        LineSegment(type_="int", name="x", size=1, step=1, ambient_index=0, ambient_size=10, start=0),
+                        LineSegment(
+                            type_="int", name="y", size=100, step=1, ambient_index=0, ambient_size=100, start=0
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -433,8 +597,12 @@ def test_simplify_simple_flatten(segments: list[FlattenSegment], expected: list[
                 0: [
                     ParameterAlignedSpace(
                         axes=[
-                            ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=10, start=0),
-                            ParameterRangeInt(type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                            LineSegment(
+                                type_="int", name="x", size=1, step=1, ambient_index=0, ambient_size=10, start=0
+                            ),
+                            LineSegment(
+                                type_="int", name="y", size=100, step=1, ambient_index=0, ambient_size=100, start=0
+                            ),
                         ],
                         check_lower_filling=True,
                     ),
@@ -450,7 +618,9 @@ def test_remap_space(
     expected: dict[int, list[ParameterAlignedSpace]],
 ) -> None:
     actual = remap_space(aps, dim)
-    assert actual == expected
+    expected_dict = {k: [s.to_model() for s in v] for k, v in expected.items()}
+    actual_dict = {k: [s.to_model() for s in v] for k, v in actual.items()}
+    assert actual_dict == expected_dict
 
 
 @pytest.mark.parametrize(
@@ -478,7 +648,7 @@ def test_remap_space(
         ),
     ],
 )
-def test_infinite_product(iterators: tuple[iter, ...], max_num: int, expected: list[tuple[Any, ...]]) -> None:
+def test_infinite_product(iterators: tuple[Iterator[int], ...], max_num: int, expected: list[tuple[Any, ...]]) -> None:
     actual = []
     for item in infinite_product(*iterators):
         actual.append(item)
@@ -488,7 +658,6 @@ def test_infinite_product(iterators: tuple[iter, ...], max_num: int, expected: l
 
 
 def test_infinite_product_islice() -> None:
-    # noinspection PyTypeChecker
     gen = infinite_product(*(itertools.count(0), (x for x in range(8))))
     gen = itertools.islice(gen, 6, None)
     item = next(gen)
@@ -502,7 +671,6 @@ def test_infinite_product_islice() -> None:
 
 
 def test_infinite_product_enumerate_islice() -> None:
-    # noinspection PyTypeChecker
     gen = infinite_product(*(itertools.count(0), (x for x in range(8))))
     gen = enumerate(itertools.islice(gen, 6, None))
     item = next(gen)

@@ -1,27 +1,28 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
 from lite_dist2.common import publish_timestamp
 from lite_dist2.curriculum_models.mapping import Mapping
-from lite_dist2.expections import LD2ModelTypeError, LD2NotDoneError, LD2UndefinedError
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.expections import LD2InvalidSpaceError, LD2ModelTypeError, LD2NotDoneError, LD2UndefinedError
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.const_param import ConstParam
-from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
+from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpacePortableModel
 from lite_dist2.value_models.point import ResultType, ScalarValue, VectorValue
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import RawParamType, RawResultType
-    from lite_dist2.value_models.base_space import FlattenSegment, ParameterSpace
+    from lite_dist2.value_models.base_space import FlattenSegment
+    from lite_dist2.value_models.space_type import ParameterSpaceType
 
 
-class TrialStatus(str, Enum):
-    running = "running"
-    done = "done"
+class TrialStatus(StrEnum):
+    running = auto()
+    done = auto()
 
 
 class TrialDoneRecord(BaseModel):
@@ -46,7 +47,7 @@ class TrialModel(BaseModel):
     reserved_timestamp: datetime
     trial_status: TrialStatus
     const_param: ConstParam | None
-    parameter_space: ParameterAlignedSpaceModel | ParameterJaggedSpaceModel
+    parameter_space: ParameterAlignedSpacePortableModel | ParameterJaggedSpacePortableModel
     result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     worker_node_name: str | None
@@ -63,7 +64,7 @@ class Trial:
         reserved_timestamp: datetime,
         trial_status: TrialStatus,
         const_param: ConstParam | None,
-        parameter_space: ParameterSpace,
+        parameter_space: ParameterSpaceType,
         result_type: Literal["scalar", "vector"],
         result_value_type: Literal["bool", "int", "float"],
         worker_node_name: str | None,
@@ -104,13 +105,11 @@ class Trial:
         return []
 
     def _create_result_value(self, raw_result: RawResultType) -> ResultType:
-        match self.result_type:
-            case "scalar":
-                return ScalarValue.create_from_numeric(raw_result, self.result_value_type)
-            case "vector":
-                return VectorValue.create_from_numeric(raw_result, self.result_value_type)
-            case _:
-                raise LD2ModelTypeError(self.result_type)
+        if self.result_type == "scalar" and isinstance(raw_result, (bool, int, float)):
+            return ScalarValue.create_from_numeric(raw_result, self.result_value_type)
+        if self.result_type == "vector" and isinstance(raw_result, list):
+            return VectorValue.create_from_numeric(raw_result, self.result_value_type)
+        raise LD2ModelTypeError(self.result_type)
 
     def measure_seconds_from_registered(self, now: datetime) -> int:
         delta = now - self.reserved_timestamp
@@ -132,13 +131,17 @@ class Trial:
         if self.trial_status != TrialStatus.done or self.registered_timestamp is None:
             raise LD2NotDoneError
 
+        grid_size = self.parameter_space.get_total()
+        if not isinstance(grid_size, int):
+            msg = "Parameter space in trial must be finite space."
+            raise LD2InvalidSpaceError(msg)
         return TrialDoneRecord(
             trial_id=self.trial_id,
             reserved_timestamp=self.reserved_timestamp,
             worker_node_name=self.worker_node_name,
             worker_node_id=self.worker_node_id,
             registered_timestamp=self.registered_timestamp,
-            grid_size=self.parameter_space.get_total(),
+            grid_size=grid_size,
         )
 
     def done_in_after(self, cutoff_datetime: datetime) -> bool:
@@ -164,10 +167,10 @@ class Trial:
 
     @staticmethod
     def from_model(model: TrialModel) -> Trial:
-        match model.parameter_space.type:
-            case "aligned":
+        match model.parameter_space:
+            case ParameterAlignedSpacePortableModel():
                 parameter_space = ParameterAlignedSpace.from_model(model.parameter_space)
-            case "jagged":
+            case ParameterJaggedSpacePortableModel():
                 parameter_space = ParameterJaggedSpace.from_model(model.parameter_space)
             case _:
                 raise LD2UndefinedError(model.parameter_space.type)

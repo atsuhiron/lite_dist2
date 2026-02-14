@@ -43,8 +43,7 @@ def test_scalar_value_numerize(scalar_value: ScalarValue, expected: bool | float
 
 def test_scalar_value_numerize_value_type_error() -> None:
     scalar = ScalarValue(type="scalar", value_type="bool", value=True)
-    # noinspection PyTypeChecker
-    scalar.value_type = "invalid"
+    scalar.value_type = "invalid"  # ty: ignore[invalid-assignment]
     with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
         _ = scalar.numerize()
 
@@ -69,8 +68,7 @@ def test_scalar_value_create_from_numeric(
 
 def test_scalar_value_create_from_numeric_value_type_error() -> None:
     with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
-        # noinspection PyTypeChecker
-        _ = ScalarValue.create_from_numeric(raw_result_value=True, value_type="invalid")
+        _ = ScalarValue.create_from_numeric(raw_result_value=True, value_type="invalid")  # ty: ignore[invalid-argument-type]
 
 
 @pytest.mark.parametrize(
@@ -110,8 +108,7 @@ def test_vector_value_numerize(vector_value: VectorValue, expected: list[bool | 
 
 def test_vector_value_numerize_value_type_error() -> None:
     vector = VectorValue(type="vector", value_type="bool", values=[True])
-    # noinspection PyTypeChecker
-    vector.value_type = "invalid"
+    vector.value_type = "invalid"  # ty: ignore[invalid-assignment]
     with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
         _ = vector.numerize()
 
@@ -136,5 +133,4 @@ def test_vector_value_create_from_numeric(
 
 def test_vector_value_create_from_numeric_value_type_error() -> None:
     with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
-        # noinspection PyTypeChecker
-        _ = VectorValue.create_from_numeric(raw_result_value=[True], value_type="invalid")
+        _ = VectorValue.create_from_numeric(raw_result_value=[True], value_type="invalid")  # ty: ignore[invalid-argument-type]

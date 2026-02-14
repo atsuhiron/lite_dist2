@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from lite_dist2.curriculum_models.trial_table import TrialTable
     from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
-    from lite_dist2.value_models.base_space import ParameterSpace
+    from lite_dist2.value_models.space_type import ParameterSpaceType
 
 
 class SequentialSuggestStrategy(BaseSuggestStrategy):
@@ -23,10 +23,11 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         suggest_parameter: SuggestStrategyParam,
         parameter_space: ParameterAlignedSpace,
     ) -> None:
-        super().__init__(suggest_parameter, parameter_space)
+        self.suggest_parameter = suggest_parameter
+        self.parameter_space = parameter_space
         self.strict_aligned = self.suggest_parameter.strict_aligned
 
-    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace | None:
+    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpaceType | None:
         least_seg = trial_table.find_least_division(self.parameter_space.total)
         if least_seg.size == 0:
             return None
@@ -113,7 +114,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         reversed_loomed_indices = list(reversed(self.parameter_space.loom_by_flatten_index(flatten_index, lower_dims)))
 
         total = self.parameter_space.total
-        if self.parameter_space.is_infinite():
+        if self.parameter_space.is_infinite() or total is None:
             msg = "Cannot use this method on infinite space"
             raise LD2InvalidSpaceError(msg)
         reversed_lower_dims = [*list(reversed(lower_dims)), total]

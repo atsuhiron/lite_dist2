@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from typing import Literal
 
 from pydantic import BaseModel
 
 from lite_dist2.type_definitions import PortableValueType
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
-from lite_dist2.value_models.line_segment import LineSegmentModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpacePortableModel
+from lite_dist2.value_models.line_segment import LineSegmentPortableModel
 
 
 class LineSegmentRegistry(BaseModel):
@@ -14,8 +16,8 @@ class LineSegmentRegistry(BaseModel):
     step: PortableValueType
     start: PortableValueType
 
-    def to_line_segment_model(self) -> LineSegmentModel:
-        return LineSegmentModel(
+    def to_line_segment_model(self) -> LineSegmentPortableModel:
+        return LineSegmentPortableModel(
             name=self.name,
             type=self.type,
             size=self.size,
@@ -31,8 +33,8 @@ class ParameterAlignedSpaceRegistry(BaseModel):
     type: Literal["aligned"]
     axes: list[LineSegmentRegistry]
 
-    def to_parameter_aligned_space_model(self) -> ParameterAlignedSpaceModel:
-        return ParameterAlignedSpaceModel(
+    def to_parameter_aligned_space_model(self) -> ParameterAlignedSpacePortableModel:
+        return ParameterAlignedSpacePortableModel(
             type=self.type,
             axes=[axis.to_line_segment_model() for axis in self.axes],
             check_lower_filling=True,

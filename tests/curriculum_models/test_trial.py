@@ -5,20 +5,20 @@ import pytest
 from lite_dist2.curriculum_models.mapping import Mapping
 from lite_dist2.curriculum_models.trial import Trial, TrialDoneRecord, TrialModel, TrialStatus
 from lite_dist2.expections import LD2NotDoneError
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
-from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
-from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel, ParameterRangeInt
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
+from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpacePortableModel
+from lite_dist2.value_models.line_segment import DummyLineSegmentModel, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ResultType, ScalarValue, VectorValue
 from tests.const import DT, JST
 
 _dummy_space = ParameterJaggedSpace(
     parameters=[(0, 1)],
     ambient_indices=[(0, 1)],
-    axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
+    axes_info=[DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1)],
 )
 
 _dummy_aligned_space = ParameterAlignedSpace(
-    axes=[ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_index=1, ambient_size=10)],
+    axes=[LineSegment(name="x", type_="int", size=2, step=1, start=0, ambient_index=1, ambient_size=10)],
     check_lower_filling=True,
 )
 
@@ -379,14 +379,14 @@ def test_done_in_after(trial: Trial, cutoff_datetime: datetime, expected: bool) 
             reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
-            parameter_space=ParameterAlignedSpaceModel(
+            parameter_space=ParameterAlignedSpacePortableModel(
                 type="aligned",
                 axes=[
-                    LineSegmentModel(
+                    LineSegmentPortableModel(
                         name="x",
                         type="bool",
                         size="0x2",
-                        step="0x1",
+                        step=True,
                         start=False,
                         ambient_index="0x0",
                         ambient_size="0x2",
@@ -405,10 +405,10 @@ def test_done_in_after(trial: Trial, cutoff_datetime: datetime, expected: bool) 
             reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
-            parameter_space=ParameterAlignedSpaceModel(
+            parameter_space=ParameterAlignedSpacePortableModel(
                 type="aligned",
                 axes=[
-                    LineSegmentModel(
+                    LineSegmentPortableModel(
                         name="x",
                         type="int",
                         size="0x2",
@@ -449,10 +449,10 @@ def test_done_in_after(trial: Trial, cutoff_datetime: datetime, expected: bool) 
             reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
-            parameter_space=ParameterJaggedSpaceModel(
+            parameter_space=ParameterJaggedSpacePortableModel(
                 type="jagged",
                 axes_info=[
-                    LineSegmentModel(
+                    LineSegmentPortableModel(
                         name="x",
                         type="int",
                         size="0x1",
@@ -477,10 +477,10 @@ def test_done_in_after(trial: Trial, cutoff_datetime: datetime, expected: bool) 
             reserved_timestamp=DT,
             trial_status=TrialStatus.done,
             const_param=None,
-            parameter_space=ParameterJaggedSpaceModel(
+            parameter_space=ParameterJaggedSpacePortableModel(
                 type="jagged",
                 axes_info=[
-                    LineSegmentModel(
+                    LineSegmentPortableModel(
                         name="x",
                         type="int",
                         size="0x1",

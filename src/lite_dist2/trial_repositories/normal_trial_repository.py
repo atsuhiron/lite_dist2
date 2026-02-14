@@ -27,10 +27,10 @@ class NormalTrialRepository(BaseTrialRepository):
         else:
             self.save_dir.mkdir(parents=True, exist_ok=True)
 
-    def save(self, trial_model: TrialModel) -> None:
-        path = self.save_dir / f"{trial_model.trial_id}.json"
+    def save(self, trial: TrialModel) -> None:
+        path = self.save_dir / f"{trial.trial_id}.json"
         with path.open("w", encoding="utf-8") as f:
-            json.dump(trial_model.model_dump(mode="json"), f, ensure_ascii=False)
+            json.dump(trial.model_dump(mode="json"), f, ensure_ascii=False)
 
     def load(self, trial_id: str) -> TrialModel:
         path = self.save_dir / f"{trial_id}.json"

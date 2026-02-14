@@ -3,8 +3,8 @@ import pytest
 from lite_dist2.expections import LD2UndefinedError
 from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 from lite_dist2.value_models.base_space import FlattenSegment
-from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpaceModel
-from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel
+from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpacePortableModel
+from lite_dist2.value_models.line_segment import DummyLineSegmentModel, LineSegmentPortableModel
 
 
 def test_parameter_jagged_space_hash() -> None:
@@ -12,7 +12,7 @@ def test_parameter_jagged_space_hash() -> None:
         parameters=[(1,)],
         ambient_indices=[(1,)],
         axes_info=[
-            DummyLineSegment(name="x", type="int", step=1, ambient_size=100),
+            DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
         ],
     )
     _ = hash(space)
@@ -26,7 +26,7 @@ def test_parameter_jagged_space_hash() -> None:
                 parameters=[(1,)],
                 ambient_indices=[(1,)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
                 ],
             ),
             (1,),
@@ -37,7 +37,7 @@ def test_parameter_jagged_space_hash() -> None:
                 parameters=[(1,), (2,)],
                 ambient_indices=[(1,), (2,)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
                 ],
             ),
             (1,),
@@ -48,9 +48,9 @@ def test_parameter_jagged_space_hash() -> None:
                 parameters=[(False, 0, 0)],
                 ambient_indices=[(0, 0, 0)],
                 axes_info=[
-                    DummyLineSegment(name="tf", type="bool", step=1, ambient_size=2),
-                    DummyLineSegment(name="x", type="int", step=1, ambient_size=100),
-                    DummyLineSegment(name="y", type="int", step=1, ambient_size=70),
+                    DummyLineSegmentModel(name="tf", type="bool", step=1, ambient_size=2),
+                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegmentModel(name="y", type="int", step=1, ambient_size=70),
                 ],
             ),
             (7000, 70, 1),
@@ -74,7 +74,7 @@ def test_parameter_jagged_space_lower_element_num_by_dim(
                 parameters=[(0,), (1,)],
                 ambient_indices=[(0,), (1,)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
                 ],
             ),
             [
@@ -88,8 +88,8 @@ def test_parameter_jagged_space_lower_element_num_by_dim(
                 parameters=[(78, 1), (1, 78)],
                 ambient_indices=[(78, 1), (1, 78)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", step=1, ambient_size=100),
-                    DummyLineSegment(name="y", type="int", step=1, ambient_size=100),
+                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegmentModel(name="y", type="int", step=1, ambient_size=100),
                 ],
             ),
             [
@@ -112,12 +112,12 @@ def test_parameter_jagged_space_get_flatten_ambient_start_and_size_list(
     "model",
     [
         pytest.param(
-            ParameterJaggedSpaceModel(
+            ParameterJaggedSpacePortableModel(
                 type="jagged",
                 parameters=[("0x4e", "0x1"), ("0x1", "0x4e")],
                 ambient_indices=[("0x4e", "0x1"), ("0x1", "0x4e")],
                 axes_info=[
-                    LineSegmentModel(
+                    LineSegmentPortableModel(
                         name="x",
                         type="int",
                         size="0x1",
@@ -132,7 +132,7 @@ def test_parameter_jagged_space_get_flatten_ambient_start_and_size_list(
         ),
     ],
 )
-def test_parameter_jagged_space_to_model_from_model(model: ParameterJaggedSpaceModel) -> None:
+def test_parameter_jagged_space_to_model_from_model(model: ParameterJaggedSpacePortableModel) -> None:
     space = ParameterJaggedSpace.from_model(model)
     reconstructed = space.to_model()
     assert model == reconstructed
@@ -156,8 +156,7 @@ def test_parameter_jagged_space_primitive_to_portable(
 
 def test_parameter_jagged_space_primitive_to_portable_raise_undefined_type() -> None:
     with pytest.raises(LD2UndefinedError):
-        # noinspection PyTypeChecker
-        ParameterJaggedSpace._primitive_to_portable([])
+        ParameterJaggedSpace._primitive_to_portable([])  # ty: ignore[invalid-argument-type]
 
 
 @pytest.mark.parametrize(
@@ -178,5 +177,4 @@ def test_parameter_jagged_space_portable_to_primitive(
 
 def test_parameter_jagged_space_portable_to_primitive_raise_undefined_type() -> None:
     with pytest.raises(LD2UndefinedError):
-        # noinspection PyTypeChecker
-        ParameterJaggedSpace._portable_to_primitive([])
+        ParameterJaggedSpace._portable_to_primitive([])  # ty: ignore[invalid-argument-type]

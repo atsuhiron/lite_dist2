@@ -7,22 +7,23 @@ import pytest
 
 from lite_dist2.curriculum_models.mapping import Mapping, MappingsStorage
 from lite_dist2.curriculum_models.trial import TrialModel, TrialStatus
+from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.expections import LD2NotDoneError
 from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
 from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
-from lite_dist2.value_models.line_segment import LineSegmentModel, ParameterRangeInt
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
+from lite_dist2.value_models.line_segment import LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ResultType, ScalarValue
 from tests.const import DT
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import TrialRepositoryType
 
-_DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpaceModel(
+_DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpacePortableModel(
     type="aligned",
     axes=[
-        LineSegmentModel(
+        LineSegmentPortableModel(
             name="x",
             type="int",
             size="0x2",
@@ -31,7 +32,7 @@ _DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpaceModel(
             ambient_index="0x0",
             step="0x1",
         ),
-        LineSegmentModel(
+        LineSegmentPortableModel(
             name="y",
             type="int",
             size="0x2",
@@ -73,7 +74,6 @@ class MockTrialRepository(BaseTrialRepository):
 def trial_repository_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
-    # noinspection PyUnusedLocal
     def fake_load_all(self) -> int:  # noqa: ANN001
         return return_value
 
@@ -202,16 +202,17 @@ def test_find_exact_study_strategy_is_done(
     target_value: ResultType,
     expected: bool,
 ) -> None:
+    table = TrialTable(trials=[], aggregated_parameter_space=None)
     strategy = FindExactStudyStrategy(StudyStrategyParam(target_value=target_value))
     parameter_space = ParameterAlignedSpace(
         axes=[
-            ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
-            ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+            LineSegment(name="x", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
+            LineSegment(name="y", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
         ],
         check_lower_filling=True,
     )
-    # noinspection PyTypeChecker
-    actual = strategy.is_done(None, parameter_space, MockTrialRepository())
+
+    actual = strategy.is_done(table, parameter_space, MockTrialRepository())
     assert actual == expected
 
 

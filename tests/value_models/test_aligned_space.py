@@ -5,9 +5,12 @@ from typing import TYPE_CHECKING
 import pytest
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.base_space import FlattenSegment
-from lite_dist2.value_models.line_segment import LineSegment, LineSegmentModel, ParameterRangeBool, ParameterRangeInt
+from lite_dist2.value_models.line_segment import (
+    LineSegment,
+    LineSegmentPortableModel,
+)
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import PrimitiveValueType
@@ -18,39 +21,39 @@ if TYPE_CHECKING:
     [
         (
             [
-                ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
-                ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="x", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
+                LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
             ],
             "Invalid space: Filling from lower dimension",
         ),
         (
             [
-                ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
-                ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="x", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
             ],
             "Invalid space: Upper dimension must be size=1",
         ),
         (
             [
-                ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
-                ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
-                ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                LineSegment(name="z", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="x", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
             ],
             "Invalid space: Upper dimension must be size=1",
         ),
         (
             [
-                ParameterRangeInt(name="z", type="int", size=1, ambient_index=0, ambient_size=200, start=0),
-                ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
-                ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="z", type_="int", size=1, step=1, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="x", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
             ],
             "Invalid space: Upper dimension must be size=1",
         ),
         (
             [
-                ParameterRangeInt(name="z", type="int", size=1, ambient_index=0, ambient_size=200, start=0),
-                ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=None, start=0),
-                ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="z", type_="int", size=1, step=1, ambient_index=0, ambient_size=200, start=0),
+                LineSegment(name="x", type_="int", size=100, step=1, ambient_index=0, ambient_size=None, start=0),
+                LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=200, start=0),
             ],
             "Invalid space: Infinite dimension is only allowed at the first dimension",
         ),
@@ -68,61 +71,61 @@ def test_parameter_space_fill_from_lower_raise(
     "axes",
     [
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=2, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=2, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=2, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="z", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="z", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="z", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="z", type_="int", size=2, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="z", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="y", type_="int", size=2, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="z", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=None, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=None, start=0),
         ],
         [
-            ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=None, start=0),
-            ParameterRangeInt(name="y", type="int", size=2, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="int", size=1, step=1, ambient_index=0, ambient_size=None, start=0),
+            LineSegment(name="y", type_="int", size=2, step=1, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="z", type_="int", size=100, step=1, ambient_index=0, ambient_size=100, start=0),
         ],
     ],
 )
@@ -133,10 +136,10 @@ def test_parameter_space_fill_from_lower_not_raise(axes: list[LineSegment]) -> N
 
 def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
     space = ParameterAlignedSpace(
-        axes=[ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0)],
+        axes=[LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100)],
         check_lower_filling=False,
     )
-    with pytest.raises(LD2InvalidSpaceError, match="Invalid space: Cannot get flatten info."):
+    with pytest.raises(LD2InvalidSpaceError, match=r"Invalid space: Cannot get flatten info."):
         _ = space.get_flatten_ambient_start_and_size()
 
 
@@ -146,7 +149,7 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
+                    LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=True,
             ),
@@ -155,7 +158,7 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=2, ambient_index=10, ambient_size=100, start=0),
+                    LineSegment(name="x", type_="int", size=2, step=1, start=0, ambient_index=10, ambient_size=100),
                 ],
                 check_lower_filling=True,
             ),
@@ -164,8 +167,8 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                    ParameterRangeInt(name="y", type="int", size=13, ambient_index=0, ambient_size=100, start=0),
+                    LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
+                    LineSegment(name="y", type_="int", size=13, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=True,
             ),
@@ -174,9 +177,9 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                    ParameterRangeInt(name="y", type="int", size=13, ambient_index=0, ambient_size=100, start=0),
-                    ParameterRangeInt(name="z", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                    LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
+                    LineSegment(name="y", type_="int", size=13, step=1, start=0, ambient_index=0, ambient_size=100),
+                    LineSegment(name="z", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=True,
             ),
@@ -185,9 +188,9 @@ def test_parameter_space_get_flatten_ambient_start_and_size_raise() -> None:
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=1, ambient_index=0, ambient_size=100, start=0),
-                    ParameterRangeInt(name="y", type="int", size=1, ambient_index=17, ambient_size=100, start=0),
-                    ParameterRangeInt(name="z", type="int", size=19, ambient_index=81, ambient_size=100, start=0),
+                    LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
+                    LineSegment(name="y", type_="int", size=1, step=1, start=0, ambient_index=17, ambient_size=100),
+                    LineSegment(name="z", type_="int", size=19, step=1, start=0, ambient_index=81, ambient_size=100),
                 ],
                 check_lower_filling=True,
             ),
@@ -209,7 +212,7 @@ def test_parameter_space_get_flatten_ambient_start_and_size(
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=True,
             ),
@@ -218,9 +221,9 @@ def test_parameter_space_get_flatten_ambient_start_and_size(
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
-                    ParameterRangeInt(name="y", type="int", size=70, ambient_index=0, ambient_size=70, start=0),
+                    LineSegment(name="x", type_="bool", size=2, step=1, start=False, ambient_index=0, ambient_size=2),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
+                    LineSegment(name="z", type_="int", size=70, step=1, start=0, ambient_index=0, ambient_size=70),
                 ],
                 check_lower_filling=True,
             ),
@@ -242,18 +245,18 @@ def test_parameter_aligned_space_model_lower_element_num_by_dim(
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                    LineSegment(name="x", type_="bool", size=2, step=1, start=False, ambient_index=0, ambient_size=2),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
+                    LineSegment(name="z", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=False,
             ),
             [(0, 1), (10, 10), (0, 100)],
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeBool(type="bool", size=1, ambient_index=0, ambient_size=2, start=False),
-                    ParameterRangeInt(name="x", type="int", size=10, ambient_index=10, ambient_size=100, start=10),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+                    LineSegment(name="x", type_="bool", size=1, step=1, start=False, ambient_index=0, ambient_size=2),
+                    LineSegment(name="y", type_="int", size=10, step=1, start=10, ambient_index=10, ambient_size=100),
+                    LineSegment(name="z", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=False,
             ),
@@ -266,15 +269,15 @@ def test_parameter_aligned_space_slice(
     expected: ParameterAlignedSpace,
 ) -> None:
     actual = space.slice(start_and_sizes)
-    assert actual == expected
+    assert actual.to_model() == expected.to_model()
 
 
 def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> None:
     space = ParameterAlignedSpace(
         axes=[
-            ParameterRangeBool(type="bool", size=2, ambient_index=0, ambient_size=2, start=False),
-            ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
-            ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, ambient_size=100, start=0),
+            LineSegment(name="x", type_="bool", size=2, step=1, start=False, ambient_index=0, ambient_size=2),
+            LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
+            LineSegment(name="z", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
         ],
         check_lower_filling=False,
     )
@@ -290,14 +293,16 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=102, start=101, ambient_size=None),
+                    LineSegment(
+                        name="x", type_="int", size=100, step=1, start=101, ambient_index=102, ambient_size=None
+                    ),
                 ],
                 check_lower_filling=False,
             ),
@@ -307,15 +312,23 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=100),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
+                    LineSegment(
+                        name="y",
+                        type_="int",
+                        size=100,
+                        step=1,
+                        start=100,
+                        ambient_index=100,
+                        ambient_size=None,
+                    ),
                 ],
                 check_lower_filling=False,
             ),
@@ -325,15 +338,15 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=100),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=100),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=100),
                 ],
                 check_lower_filling=False,
             ),
@@ -343,15 +356,17 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
+                    LineSegment(name="y", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=100, ambient_index=0, start=0, ambient_size=None),
-                    ParameterRangeInt(name="y", type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
+                    LineSegment(
+                        name="y", type_="int", size=100, step=1, start=100, ambient_index=100, ambient_size=None
+                    ),
                 ],
                 check_lower_filling=False,
             ),
@@ -361,13 +376,15 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                    LineSegment(
+                        name="x", type_="int", size=100, step=1, start=100, ambient_index=100, ambient_size=None
+                    ),
                 ],
                 check_lower_filling=False,
             ),
@@ -377,13 +394,15 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                    LineSegment(
+                        name="x", type_="int", size=100, step=1, start=100, ambient_index=100, ambient_size=None
+                    ),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -393,13 +412,15 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, ambient_size=None),
+                    LineSegment(
+                        name="x", type_="int", size=100, step=1, start=101, ambient_index=101, ambient_size=None
+                    ),
                 ],
                 check_lower_filling=False,
             ),
@@ -409,13 +430,15 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, ambient_size=None),
+                    LineSegment(
+                        name="x", type_="int", size=100, step=1, start=101, ambient_index=101, ambient_size=None
+                    ),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(name="x", type_="int", size=100, step=1, start=0, ambient_index=0, ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -425,15 +448,17 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(type_="int", size=100, step=1, start=0, ambient_index=0, name="x", ambient_size=None),
+                    LineSegment(type_="int", size=1000, step=1, start=0, ambient_index=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(
+                        type_="int", size=100, step=1, start=100, ambient_index=100, name="x", ambient_size=None
+                    ),
+                    LineSegment(type_="int", size=1000, step=1, start=0, ambient_index=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
@@ -443,15 +468,17 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(
+                        type_="int", size=100, step=1, start=100, ambient_index=100, name="x", ambient_size=None
+                    ),
+                    LineSegment(type_="int", size=1000, step=1, start=0, ambient_index=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(type_="int", size=100, step=1, start=0, ambient_index=0, name="x", ambient_size=None),
+                    LineSegment(type_="int", size=1000, step=1, start=0, ambient_index=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
@@ -461,15 +488,17 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(type_="int", size=100, step=1, start=0, ambient_index=0, name="x", ambient_size=None),
+                    LineSegment(type_="int", size=1000, step=1, start=0, ambient_index=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(
+                        type_="int", size=100, step=1, ambient_index=101, start=101, name="x", ambient_size=None
+                    ),
+                    LineSegment(type_="int", size=1000, step=1, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
@@ -479,15 +508,17 @@ def test_parameter_aligned_space_slice_raise_inconsistent_start_and_sizes() -> N
         (
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=101, start=101, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(
+                        type_="int", size=100, step=1, ambient_index=101, start=101, name="x", ambient_size=None
+                    ),
+                    LineSegment(type_="int", size=1000, step=1, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(type_="int", size=100, step=1, ambient_index=0, start=0, name="x", ambient_size=None),
+                    LineSegment(type_="int", size=1000, step=1, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
@@ -514,20 +545,22 @@ def test_parameter_aligned_space_can_merge(
         (  # adjacency
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(type_="int", size=100, step=1, ambient_index=0, start=0, name="x", ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, ambient_size=None),
+                    LineSegment(
+                        type_="int", size=100, step=1, ambient_index=100, start=100, name="x", ambient_size=None
+                    ),
                 ],
                 check_lower_filling=False,
             ),
             0,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, ambient_size=None),
+                    LineSegment(type_="int", size=200, step=1, ambient_index=0, start=0, name="x", ambient_size=None),
                 ],
                 check_lower_filling=False,
             ),
@@ -535,23 +568,25 @@ def test_parameter_aligned_space_can_merge(
         (  # filled y
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=0, start=0, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(type_="int", size=100, step=1, ambient_index=0, start=0, name="x", ambient_size=None),
+                    LineSegment(type_="int", size=1000, step=1, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=100, ambient_index=100, start=100, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(
+                        type_="int", size=100, step=1, ambient_index=100, start=100, name="x", ambient_size=None
+                    ),
+                    LineSegment(type_="int", size=1000, step=1, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
             0,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=200, ambient_index=0, start=0, name="x", ambient_size=None),
-                    ParameterRangeInt(type="int", size=1000, ambient_index=0, start=0, name="y", ambient_size=1000),
+                    LineSegment(type_="int", size=200, step=1, ambient_index=0, start=0, name="x", ambient_size=None),
+                    LineSegment(type_="int", size=1000, step=1, ambient_index=0, start=0, name="y", ambient_size=1000),
                 ],
                 check_lower_filling=False,
             ),
@@ -566,8 +601,8 @@ def test_parameter_aligned_space_merge(
 ) -> None:
     actual = one.merge(other, target_dim)
     actual_reversed = other.merge(one, target_dim)
-    assert actual == expected
-    assert actual_reversed == expected
+    assert actual.to_model() == expected.to_model()
+    assert actual_reversed.to_model() == expected.to_model()
 
 
 @pytest.mark.parametrize(
@@ -594,7 +629,7 @@ def test_parameter_aligned_space_model_loom_by_flatten_index(
         pytest.param(
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=5, ambient_index=0, ambient_size=5, start=0),
+                    LineSegment(type_="int", size=5, step=1, ambient_index=0, start=0, name="x", ambient_size=None),
                 ],
                 check_lower_filling=True,
             ),
@@ -604,8 +639,8 @@ def test_parameter_aligned_space_model_loom_by_flatten_index(
         pytest.param(
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(type="int", size=5, ambient_index=0, ambient_size=5, start=0),
-                    ParameterRangeInt(type="int", size=4, ambient_index=0, ambient_size=4, start=0),
+                    LineSegment(type_="int", size=5, step=1, ambient_index=0, start=0, name="x", ambient_size=5),
+                    LineSegment(type_="int", size=4, step=1, ambient_index=0, start=0, name="y", ambient_size=4),
                 ],
                 check_lower_filling=True,
             ),
@@ -646,10 +681,10 @@ def test_parameter_aligned_space_model_grid(
 @pytest.mark.parametrize(
     "model",
     [
-        ParameterAlignedSpaceModel(
+        ParameterAlignedSpacePortableModel(
             type="aligned",
             axes=[
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="x",
                     type="float",
                     size="0xa",
@@ -658,7 +693,7 @@ def test_parameter_aligned_space_model_grid(
                     ambient_size="0x14",
                     ambient_index="0x5",
                 ),
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="y",
                     type="int",
                     size="0xa",
@@ -667,11 +702,11 @@ def test_parameter_aligned_space_model_grid(
                     ambient_size="0x14",
                     ambient_index="0x5",
                 ),
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="z",
                     type="bool",
                     size="0x2",
-                    step="0x1",
+                    step=True,
                     start=False,
                     ambient_index="0x0",
                     ambient_size="0x2",
@@ -679,10 +714,10 @@ def test_parameter_aligned_space_model_grid(
             ],
             check_lower_filling=False,
         ),
-        ParameterAlignedSpaceModel(
+        ParameterAlignedSpacePortableModel(
             type="aligned",
             axes=[
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="x",
                     type="float",
                     size="0x1",
@@ -691,7 +726,7 @@ def test_parameter_aligned_space_model_grid(
                     ambient_size="0x14",
                     ambient_index="0x5",
                 ),
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="y",
                     type="int",
                     size="0x1",
@@ -700,11 +735,11 @@ def test_parameter_aligned_space_model_grid(
                     ambient_size="0x14",
                     ambient_index="0x5",
                 ),
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="z",
                     type="bool",
                     size="0x2",
-                    step="0x1",
+                    step=True,
                     start=False,
                     ambient_index="0x0",
                     ambient_size="0x2",
@@ -714,7 +749,7 @@ def test_parameter_aligned_space_model_grid(
         ),
     ],
 )
-def test_parameter_aligned_space_model_to_model_from_model(model: ParameterAlignedSpaceModel) -> None:
+def test_parameter_aligned_space_model_to_model_from_model(model: ParameterAlignedSpacePortableModel) -> None:
     space = ParameterAlignedSpace.from_model(model)
     reconstructed_model = space.to_model()
     assert model == reconstructed_model

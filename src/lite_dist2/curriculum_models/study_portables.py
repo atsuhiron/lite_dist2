@@ -16,7 +16,7 @@ from lite_dist2.suggest_strategies import SuggestStrategyModel
 from lite_dist2.trial_repositories.trial_repository_factory import create_trial_repository
 from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
 from lite_dist2.type_definitions import TrialRepositoryType
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.aligned_space_registry import ParameterAlignedSpaceRegistry
 from lite_dist2.value_models.const_param import ConstParam
 
@@ -42,7 +42,7 @@ class StudyModel(_StudyCommonModel):
     study_id: str
     status: StudyStatus
     registered_timestamp: datetime
-    parameter_space: ParameterAlignedSpaceModel
+    parameter_space: ParameterAlignedSpacePortableModel
     trial_table: TrialTableModel = Field(default_factory=TrialTableModel.create_empty)
     trial_repository: TrialRepositoryModel
 
@@ -95,7 +95,7 @@ class StudySummary(_StudyCommonModel):
     study_id: str
     status: StudyStatus
     registered_timestamp: datetime
-    parameter_space: ParameterAlignedSpaceModel
+    parameter_space: ParameterAlignedSpacePortableModel
     total_grids: int | None
     done_grids: int
 
@@ -107,7 +107,7 @@ class StudyStorage(_StudyCommonModel):
 
     study_id: str
     registered_timestamp: datetime
-    parameter_space: ParameterAlignedSpaceModel
+    parameter_space: ParameterAlignedSpacePortableModel
     done_timestamp: datetime
     results: MappingsStorage
     done_grids: int

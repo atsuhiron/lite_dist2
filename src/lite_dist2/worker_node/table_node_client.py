@@ -61,7 +61,7 @@ class TableNodeClient:
         status_code, d = self._post("/trial/reserve", timeout_seconds, param.model_dump(mode="json"))
 
         resp = TrialReserveResponse.model_validate(d)
-        if status_code == requests.codes.accepted or resp.trial is None:
+        if status_code == 202 or resp.trial is None:
             logger.info("Cannot reserve trial")
             return None
 
@@ -72,9 +72,9 @@ class TableNodeClient:
     def register_trial(self, trial: Trial, timeout_seconds: int) -> None:
         param = TrialRegisterParam(trial=trial.to_model())
         status_code, _ = self._post("/trial/register", timeout_seconds, param.model_dump(mode="json"))
-        if status_code == requests.codes.conflict:
+        if status_code == 409:
             logger.warning("Failed to register trial. This trial might be timed out or study might be cancelled.")
-        elif status_code != requests.codes.ok:
+        elif status_code != 200:
             logger.warning("Failed to register trial.")
 
     def study(self, study_id: str | None = None, name: str | None = None) -> StudyResponse | None:
@@ -89,7 +89,7 @@ class TableNodeClient:
         _, resp = self._get("/save", self.INSTANT_API_TIMEOUT_SECONDS)
         return OkResponse.model_validate(resp)
 
-    def _get(self, path: str, timeout: int, query: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
+    def _get(self, path: str, timeout: int, query: dict[str, str | None] | None = None) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
         response = requests.get(
             url,

@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel
 
 from lite_dist2.curriculum_models.trial import Trial, TrialDoneRecord, TrialModel, TrialStatus
-from lite_dist2.expections import LD2ParameterError
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.parameter_aligned_space_helper import remap_space, simplify
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 class TrialTableModel(BaseModel):
     trials: list[TrialModel]
-    aggregated_parameter_space: dict[int, list[ParameterAlignedSpaceModel]] | None
+    aggregated_parameter_space: dict[int, list[ParameterAlignedSpacePortableModel]] | None
 
     @staticmethod
     def create_empty() -> TrialTableModel:
@@ -60,7 +60,9 @@ class TrialTable:
                 p = "receipted_trial_id"
                 t = f"Cannot override result of done trial(id={receipted_trial_id})"
                 raise LD2ParameterError(p, t)
-
+            if self.aggregated_parameter_space is None:
+                msg = "aggregated_parameter_space is not defined"
+                raise LD2InvalidSpaceError(msg)
             # Normal
             trial.trial_status = TrialStatus.done
             trial.set_registered_timestamp()
@@ -75,7 +77,7 @@ class TrialTable:
 
     def count_grid(self) -> int:
         return sum(
-            trial.parameter_space.get_total() for trial in self.trials if trial.trial_status == TrialStatus.done
+            trial.parameter_space.get_total() or 0 for trial in self.trials if trial.trial_status == TrialStatus.done
         )
 
     def count_trial(self) -> int:

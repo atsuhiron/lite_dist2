@@ -21,5 +21,4 @@ def test_const_param_to_dict_from_dict() -> None:
 
 def test_const_param_element_from_kv_raise_undefined_type() -> None:
     with pytest.raises(LD2UndefinedError):
-        # noinspection PyTypeChecker
-        _ = ConstParamElement.from_kv(key="error_value", value=[])
+        _ = ConstParamElement.from_kv(key="error_value", value=[])  # ty: ignore[invalid-argument-type]

@@ -23,10 +23,7 @@ class StudyStrategyModel(BaseModel):
     study_strategy_param: StudyStrategyParam | None
 
 
-class BaseStudyStrategy(metaclass=abc.ABCMeta):
-    def __init__(self, study_strategy_param: StudyStrategyParam | None) -> None:
-        self.study_strategy_param = study_strategy_param
-
+class BaseStudyStrategy(abc.ABC):
     @abc.abstractmethod
     def is_done(
         self,

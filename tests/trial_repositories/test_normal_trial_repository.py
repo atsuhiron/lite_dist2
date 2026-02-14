@@ -3,8 +3,8 @@ from pathlib import Path
 
 from lite_dist2.curriculum_models.trial import TrialModel, TrialStatus
 from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpaceModel
-from lite_dist2.value_models.line_segment import LineSegmentModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpacePortableModel
+from lite_dist2.value_models.line_segment import LineSegmentPortableModel
 from tests.const import DT
 
 
@@ -57,10 +57,10 @@ def test_normal_trial_repository_save(tmp_path: str) -> None:
         reserved_timestamp=DT,
         trial_status=TrialStatus.running,
         const_param=None,
-        parameter_space=ParameterAlignedSpaceModel(
+        parameter_space=ParameterAlignedSpacePortableModel(
             type="aligned",
             axes=[
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="x",
                     type="int",
                     size="0x64",
@@ -106,10 +106,10 @@ def test_normal_trial_repository_load(tmp_path: str) -> None:
         reserved_timestamp=DT,
         trial_status=TrialStatus.running,
         const_param=None,
-        parameter_space=ParameterAlignedSpaceModel(
+        parameter_space=ParameterAlignedSpacePortableModel(
             type="aligned",
             axes=[
-                LineSegmentModel(
+                LineSegmentPortableModel(
                     name="x",
                     type="int",
                     size="0x64",
@@ -157,10 +157,10 @@ def test_normal_trial_repository_load_all(tmp_path: str) -> None:
             reserved_timestamp=DT,
             trial_status=TrialStatus.running,
             const_param=None,
-            parameter_space=ParameterAlignedSpaceModel(
+            parameter_space=ParameterAlignedSpacePortableModel(
                 type="aligned",
                 axes=[
-                    LineSegmentModel(
+                    LineSegmentPortableModel(
                         name="x",
                         type="int",
                         size="0x64",

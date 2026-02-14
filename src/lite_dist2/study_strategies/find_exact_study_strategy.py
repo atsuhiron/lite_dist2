@@ -16,9 +16,9 @@ if TYPE_CHECKING:
 
 
 class FindExactStudyStrategy(BaseStudyStrategy):
-    def __init__(self, study_strategy_param: StudyStrategyParam | None) -> None:
-        super().__init__(study_strategy_param)
+    def __init__(self, study_strategy_param: StudyStrategyParam) -> None:
         self.found_mapping: Mapping | None = None
+        self.study_strategy_param = study_strategy_param
 
     def is_done(
         self,
