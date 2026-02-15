@@ -210,8 +210,10 @@ def test_line_segment_can_merge(one: LineSegment, other: LineSegment, expected: 
 def test_line_segment_merge(one: LineSegment, other: LineSegment, expected: LineSegment) -> None:
     actual = one.merge(other)
     actual_reverse = other.merge(one)
-    assert actual.to_model() == expected.to_model()
-    assert actual_reverse.to_model() == expected.to_model()
+    assert LineSegmentPortableModel.from_line_segment(actual) == LineSegmentPortableModel.from_line_segment(expected)
+    assert LineSegmentPortableModel.from_line_segment(actual_reverse) == LineSegmentPortableModel.from_line_segment(
+        expected
+    )
 
 
 @pytest.mark.parametrize(
@@ -280,7 +282,7 @@ def test_line_segment_is_universal(line_segment: LineSegment, expected: bool) ->
 )
 def test_line_segment_slice(line_segment: LineSegment, start_index: int, size: int, expected: LineSegment) -> None:
     actual = line_segment.slice(start_index, size)
-    assert actual.to_model() == expected.to_model()
+    assert LineSegmentPortableModel.from_line_segment(actual) == LineSegmentPortableModel.from_line_segment(expected)
 
 
 @pytest.mark.parametrize(
@@ -471,8 +473,8 @@ def test_line_segment_grid_without_rounding_error() -> None:
     ],
 )
 def test_line_segment_model_bool_to_model_from_model(model: LineSegmentPortableModel) -> None:
-    segment = model.to_line_segment_model()
-    reconstructed_model = LineSegmentPortableModel.from_line_segment_model(segment)
+    segment = model.to_line_segment()
+    reconstructed_model = LineSegmentPortableModel.from_line_segment(segment)
     assert model == reconstructed_model
 
 
@@ -499,10 +501,8 @@ def test_line_segment_model_bool_to_model_from_model(model: LineSegmentPortableM
     ],
 )
 def test_line_segment_model_int_to_model_from_model(model: LineSegmentPortableModel) -> None:
-    segment_model = model.to_line_segment_model()
-    segment = segment_model.to_line_segment()
-    reconstructed_segment_model = segment.to_model()
-    reconstructed_model = LineSegmentPortableModel.from_line_segment_model(reconstructed_segment_model)
+    segment_model = model.to_line_segment()
+    reconstructed_model = LineSegmentPortableModel.from_line_segment(segment_model)
     assert model == reconstructed_model
 
 
@@ -529,8 +529,8 @@ def test_line_segment_model_int_to_model_from_model(model: LineSegmentPortableMo
     ],
 )
 def test_line_segment_model_float_to_model_from_model(model: LineSegmentPortableModel) -> None:
-    segment = model.to_line_segment_model()
-    reconstructed_model = LineSegmentPortableModel.from_line_segment_model(segment)
+    segment = model.to_line_segment()
+    reconstructed_model = LineSegmentPortableModel.from_line_segment(segment)
     assert model.name == reconstructed_model.name
     assert model.type == reconstructed_model.type
     assert model.size == reconstructed_model.size

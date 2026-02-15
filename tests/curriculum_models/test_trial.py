@@ -7,14 +7,14 @@ from lite_dist2.curriculum_models.trial import Trial, TrialDoneRecord, TrialMode
 from lite_dist2.expections import LD2NotDoneError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpacePortableModel
-from lite_dist2.value_models.line_segment import DummyLineSegmentModel, LineSegment, LineSegmentPortableModel
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ResultType, ScalarValue, VectorValue
 from tests.const import DT, JST
 
 _dummy_space = ParameterJaggedSpace(
     parameters=[(0, 1)],
     ambient_indices=[(0, 1)],
-    axes_info=[DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1)],
+    axes_info=[DummyLineSegment(name="x", type_="int", ambient_size=6, step=1)],
 )
 
 _dummy_aligned_space = ParameterAlignedSpace(

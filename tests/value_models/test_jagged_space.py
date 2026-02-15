@@ -4,7 +4,7 @@ from lite_dist2.expections import LD2UndefinedError
 from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpacePortableModel
-from lite_dist2.value_models.line_segment import DummyLineSegmentModel, LineSegmentPortableModel
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentPortableModel
 
 
 def test_parameter_jagged_space_hash() -> None:
@@ -12,7 +12,7 @@ def test_parameter_jagged_space_hash() -> None:
         parameters=[(1,)],
         ambient_indices=[(1,)],
         axes_info=[
-            DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
+            DummyLineSegment(name="x", type_="int", step=1, ambient_size=100),
         ],
     )
     _ = hash(space)
@@ -26,7 +26,7 @@ def test_parameter_jagged_space_hash() -> None:
                 parameters=[(1,)],
                 ambient_indices=[(1,)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=100),
                 ],
             ),
             (1,),
@@ -37,7 +37,7 @@ def test_parameter_jagged_space_hash() -> None:
                 parameters=[(1,), (2,)],
                 ambient_indices=[(1,), (2,)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=100),
                 ],
             ),
             (1,),
@@ -48,9 +48,9 @@ def test_parameter_jagged_space_hash() -> None:
                 parameters=[(False, 0, 0)],
                 ambient_indices=[(0, 0, 0)],
                 axes_info=[
-                    DummyLineSegmentModel(name="tf", type="bool", step=1, ambient_size=2),
-                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
-                    DummyLineSegmentModel(name="y", type="int", step=1, ambient_size=70),
+                    DummyLineSegment(name="tf", type_="bool", step=1, ambient_size=2),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=100),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=70),
                 ],
             ),
             (7000, 70, 1),
@@ -74,7 +74,7 @@ def test_parameter_jagged_space_lower_element_num_by_dim(
                 parameters=[(0,), (1,)],
                 ambient_indices=[(0,), (1,)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=100),
                 ],
             ),
             [
@@ -88,8 +88,8 @@ def test_parameter_jagged_space_lower_element_num_by_dim(
                 parameters=[(78, 1), (1, 78)],
                 ambient_indices=[(78, 1), (1, 78)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", step=1, ambient_size=100),
-                    DummyLineSegmentModel(name="y", type="int", step=1, ambient_size=100),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=100),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=100),
                 ],
             ),
             [

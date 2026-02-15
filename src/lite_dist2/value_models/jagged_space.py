@@ -7,12 +7,7 @@ from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
 from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.base_space import FlattenSegment, get_lower_element_num_by_dim
-from lite_dist2.value_models.line_segment import (
-    DummyLineSegmentModel,
-    LineSegment,
-    LineSegmentModel,
-    LineSegmentPortableModel,
-)
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ParamType, ScalarValue
 from lite_dist2.value_models.space_model import ParameterJaggedSpacePortableModel
 
@@ -27,7 +22,7 @@ class ParameterJaggedSpace:
         self,
         parameters: list[tuple[PrimitiveValueType, ...]],
         ambient_indices: list[tuple[int, ...]],
-        axes_info: list[DummyLineSegmentModel],
+        axes_info: list[DummyLineSegment],
     ) -> None:
         self.parameters = parameters
         self.ambient_indices = ambient_indices
@@ -125,7 +120,7 @@ class ParameterJaggedSpace:
             type="jagged",
             parameters=[tuple(self._primitive_to_portable(p) for p in primitive) for primitive in self.parameters],
             ambient_indices=[tuple(int2hex(idx) for idx in amb_idx) for amb_idx in self.ambient_indices],
-            axes_info=[LineSegmentPortableModel.from_line_segment_model(axis) for axis in self.axes_info],
+            axes_info=[LineSegmentPortableModel.from_line_segment(axis) for axis in self.axes_info],
         )
 
     @staticmethod
@@ -138,10 +133,10 @@ class ParameterJaggedSpace:
         axes_info = []
         for axis in model.axes_info:
             if not axis.is_dummy:
-                param = f"{LineSegmentModel.__name__}.type"
+                param = f"{LineSegment.__name__}.type"
                 msg = f"An axis of {ParameterJaggedSpace.__name__} is only allowed dummy axis."
                 raise LD2ParameterError(param, msg)
-            axes_info.append(axis.to_line_segment_model())
+            axes_info.append(axis.to_line_segment())
 
         return ParameterJaggedSpace(
             parameters=[

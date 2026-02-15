@@ -12,7 +12,7 @@ from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyP
 from lite_dist2.suggest_strategies.sequential_suggest_strategy import SequentialSuggestStrategy
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
-from lite_dist2.value_models.line_segment import DummyLineSegmentModel, LineSegment
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
             ParameterJaggedSpace(
                 parameters=[(0,), (1,), (2,)],
                 ambient_indices=[(0,), (1,), (2,)],
-                axes_info=[DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1)],
+                axes_info=[DummyLineSegment(name="x", type_="int", step=1, ambient_size=6)],
             ),
         ),
         (
@@ -56,7 +56,7 @@ if TYPE_CHECKING:
             ParameterJaggedSpace(
                 parameters=[(3,), (4,), (5,)],
                 ambient_indices=[(3,), (4,), (5,)],
-                axes_info=[DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1)],
+                axes_info=[DummyLineSegment(name="x", type_="int", step=1, ambient_size=6)],
             ),
         ),
         (
@@ -74,7 +74,7 @@ if TYPE_CHECKING:
             ParameterJaggedSpace(
                 parameters=[(4,), (5,)],
                 ambient_indices=[(4,), (5,)],
-                axes_info=[DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1)],
+                axes_info=[DummyLineSegment(name="x", type_="int", step=1, ambient_size=6)],
             ),
         ),
         (
@@ -94,8 +94,8 @@ if TYPE_CHECKING:
                 parameters=[(0, 0), (0, 1), (0, 2)],
                 ambient_indices=[(0, 0), (0, 1), (0, 2)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegmentModel(name="y", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=6),
                 ],
             ),
         ),
@@ -116,8 +116,8 @@ if TYPE_CHECKING:
                 parameters=[(0, 5), (1, 0), (1, 1)],
                 ambient_indices=[(0, 5), (1, 0), (1, 1)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegmentModel(name="y", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=6),
                 ],
             ),
         ),
@@ -130,7 +130,8 @@ def test_sequential_suggest_strategy_jagged_suggest(
     expected: ParameterJaggedSpace,
 ) -> None:
     actual = strategy._jagged_suggest(start, max_num)
-    assert actual == expected
+    assert actual is not None
+    assert actual.to_model() == expected.to_model()
 
 
 @pytest.mark.parametrize(
@@ -692,8 +693,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -760,8 +761,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 parameters=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 ambient_indices=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegmentModel(name="y", type="int", ambient_size=4, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                 ],
             ),
             id="2D continuing",
@@ -789,8 +790,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -831,8 +832,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(1, 1), (1, 2), (1, 3)],
                             ambient_indices=[(1, 1), (1, 2), (1, 3)],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -922,8 +923,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 parameters=[(0, 3), (1, 0)],
                 ambient_indices=[(0, 3), (1, 0)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegmentModel(name="y", type="int", ambient_size=4, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                 ],
             ),
             id="2D striping",
@@ -1158,8 +1159,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -1226,8 +1227,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 parameters=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 ambient_indices=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 axes_info=[
-                    DummyLineSegmentModel(name="x", type="int", ambient_size=None, step=1),
-                    DummyLineSegmentModel(name="y", type="int", ambient_size=4, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=None),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                 ],
             ),
             id="2D continuing infinite",

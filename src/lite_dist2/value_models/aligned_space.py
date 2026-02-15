@@ -5,12 +5,7 @@ from typing import TYPE_CHECKING
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.value_models.base_space import FlattenSegment, get_lower_element_num_by_dim
-from lite_dist2.value_models.line_segment import (
-    DummyLineSegmentModel,
-    LineSegment,
-    LineSegmentModel,
-    LineSegmentPortableModel,
-)
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product
 from lite_dist2.value_models.point import ParamType, ScalarValue
 from lite_dist2.value_models.space_model import ParameterAlignedSpacePortableModel
@@ -105,10 +100,10 @@ class ParameterAlignedSpace:
         return self.total is None
 
     @functools.cached_property
-    def dummy_info(self) -> list[DummyLineSegmentModel]:
+    def dummy_info(self) -> list[DummyLineSegment]:
         return self.get_dummy_info()
 
-    def get_dummy_info(self) -> list[DummyLineSegmentModel]:
+    def get_dummy_info(self) -> list[DummyLineSegment]:
         return [axis.to_dummy() for axis in self.axes]
 
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
@@ -182,7 +177,11 @@ class ParameterAlignedSpace:
             # 最深次元(空リスト)であれば True
             return False
 
-        if not all(self.axes[d].to_model() == other.axes[d].to_model() for d in range(target_dim)):
+        if not all(
+            LineSegmentPortableModel.from_line_segment(self.axes[d])
+            == LineSegmentPortableModel.from_line_segment(other.axes[d])
+            for d in range(target_dim)
+        ):
             # target_dim より浅層の各次元が一致していなければ False
             return False
 
@@ -210,7 +209,7 @@ class ParameterAlignedSpace:
     def to_model(self) -> ParameterAlignedSpacePortableModel:
         return ParameterAlignedSpacePortableModel(
             type="aligned",
-            axes=[LineSegmentPortableModel.from_line_segment_model(axis.to_model()) for axis in self.axes],
+            axes=[LineSegmentPortableModel.from_line_segment(axis) for axis in self.axes],
             check_lower_filling=self.check_lower_filling,
         )
 
@@ -234,10 +233,9 @@ class ParameterAlignedSpace:
         axes = []
         for axis_model in space_model.axes:
             if axis_model.is_dummy:
-                param = f"{LineSegmentModel.__name__}.type"
+                param = f"{LineSegmentPortableModel.__name__}.type"
                 msg = f"An axis of {ParameterAlignedSpace.__name__} is not allowed dummy axis."
                 raise LD2ParameterError(param, msg)
 
-            axes.append(axis_model.to_line_segment_model().to_line_segment())
-
+            axes.append(axis_model.to_line_segment())
         return ParameterAlignedSpace(axes=axes, check_lower_filling=space_model.check_lower_filling)

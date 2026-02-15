@@ -10,7 +10,7 @@ from lite_dist2.expections import LD2ParameterError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
-from lite_dist2.value_models.line_segment import DummyLineSegmentModel, LineSegment, LineSegmentPortableModel
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
@@ -312,8 +312,8 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                                 (1, 9),
                             ],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.done,
@@ -415,8 +415,8 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                                 (0, 4),
                             ],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.done,
@@ -483,8 +483,8 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                                 (0, 9),
                             ],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.running,
@@ -952,8 +952,8 @@ def test_trial_table_find_least_division(
                                 (0, 4),
                             ],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.done,
@@ -999,8 +999,8 @@ def test_trial_table_find_least_division(
                                 (0, 9),
                             ],
                             axes_info=[
-                                DummyLineSegmentModel(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegmentModel(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.running,
@@ -1490,8 +1490,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 0)],
                             ambient_indices=[(0, 0)],
                             axes_info=[
-                                DummyLineSegmentModel(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegmentModel(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1511,8 +1511,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 1)],
                             ambient_indices=[(0, 1)],
                             axes_info=[
-                                DummyLineSegmentModel(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegmentModel(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1532,8 +1532,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 2)],
                             ambient_indices=[(0, 2)],
                             axes_info=[
-                                DummyLineSegmentModel(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegmentModel(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1611,8 +1611,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 0)],
                             ambient_indices=[(0, 0)],
                             axes_info=[
-                                DummyLineSegmentModel(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegmentModel(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1632,8 +1632,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 1)],
                             ambient_indices=[(0, 1)],
                             axes_info=[
-                                DummyLineSegmentModel(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegmentModel(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1653,8 +1653,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 2)],
                             ambient_indices=[(0, 2)],
                             axes_info=[
-                                DummyLineSegmentModel(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegmentModel(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
