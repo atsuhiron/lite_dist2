@@ -19,6 +19,8 @@ from lite_dist2.table_node_api.table_response import (
 if TYPE_CHECKING:
     from typing import Any, ClassVar
 
+    from pydantic import BaseModel
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -38,7 +40,10 @@ class TableNodeClient:
         return True
 
     def register_study(self, param: StudyRegisterParam) -> StudyRegisteredResponse:
-        _, d = self._post("/study/register", self.INSTANT_API_TIMEOUT_SECONDS, param.model_dump(mode="json"))
+        status_code, d = self._post("/study/register", self.INSTANT_API_TIMEOUT_SECONDS, param)
+        if status_code != 200:
+            msg = f"Failed to register study. status_code={status_code}, response={d}"
+            raise LD2TableNodeServerError(msg)
 
         resp = StudyRegisteredResponse.model_validate(d)
         logger.info("Registered study: %s", resp.study_id)
@@ -58,7 +63,7 @@ class TableNodeClient:
             worker_node_name=worker_name,
             worker_node_id=worker_id,
         )
-        status_code, d = self._post("/trial/reserve", timeout_seconds, param.model_dump(mode="json"))
+        status_code, d = self._post("/trial/reserve", timeout_seconds, param)
 
         resp = TrialReserveResponse.model_validate(d)
         if status_code == 202 or resp.trial is None:
@@ -71,7 +76,7 @@ class TableNodeClient:
 
     def register_trial(self, trial: Trial, timeout_seconds: int) -> None:
         param = TrialRegisterParam(trial=trial.to_model())
-        status_code, _ = self._post("/trial/register", timeout_seconds, param.model_dump(mode="json"))
+        status_code, _ = self._post("/trial/register", timeout_seconds, param)
         if status_code == 409:
             logger.warning("Failed to register trial. This trial might be timed out or study might be cancelled.")
         elif status_code != 200:
@@ -99,12 +104,12 @@ class TableNodeClient:
         )
         return response.status_code, response.json()
 
-    def _post(self, path: str, timeout_seconds: int, body: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+    def _post(self, path: str, timeout_seconds: int, body: BaseModel) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
         response = requests.post(
             url,
             headers=self.HEADERS,
-            json=body,
+            json=body.model_dump(mode="json"),
             timeout=timeout_seconds,
         )
         return response.status_code, response.json()
