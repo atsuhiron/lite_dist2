@@ -1016,7 +1016,15 @@ start_in_thread()
 
 ### 開発環境のセットアップ
 ```shell
-uv sync --dev
+uv sync
+```
+
+### Linter と Formatter
+[ruff](https://github.com/astral-sh/ruff) と [ty](https://github.com/astral-sh/ty) を使用しています。
+```shell
+uv run ruff format
+uv run ruff check --fix
+uv run ty check
 ```
 
 ### テスト実行方法
@@ -1026,4 +1034,15 @@ uv run pytest
 また、以下のオプションをつけることでカバレッジ情報を取得できます。
 ```shell
 uv run pytest --cov --cov-config=pyproject.toml
+```
+
+### 統合コマンド
+Linter, formatter 及び単体テストは次のコマンドでまとめて実行できます。
+Mac か Linux:
+```shell
+./check.sh
+```
+Windows:
+```shell
+.\check.bat
 ```
