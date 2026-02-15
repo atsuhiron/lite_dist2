@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from lite_dist2.curriculum_models.mapping import MappingsStorage
 from lite_dist2.curriculum_models.trial import Trial
@@ -16,14 +16,15 @@ if TYPE_CHECKING:
 
 
 class FindExactStudyStrategy(BaseStudyStrategy):
-    def __init__(self, study_strategy_param: StudyStrategyParam | None) -> None:
-        super().__init__(study_strategy_param)
+    def __init__(self, study_strategy_param: StudyStrategyParam) -> None:
         self.found_mapping: Mapping | None = None
+        self.study_strategy_param = study_strategy_param
 
+    @override
     def is_done(
         self,
-        trial_table: TrialTable,  # noqa: ARG002
-        parameter_space: ParameterAlignedSpace,  # noqa: ARG002
+        trial_table: TrialTable,
+        parameter_space: ParameterAlignedSpace,
         trial_repository: BaseTrialRepository,
     ) -> bool:
         if self.found_mapping:
@@ -39,6 +40,7 @@ class FindExactStudyStrategy(BaseStudyStrategy):
                 return finding
         return None
 
+    @override
     def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         if not self.found_mapping:
             self.found_mapping = self._find(trial_repository)
@@ -50,6 +52,7 @@ class FindExactStudyStrategy(BaseStudyStrategy):
 
         return MappingsStorage(params_info=params, result_info=result, values=[self.found_mapping.to_tuple()])
 
+    @override
     def to_model(self) -> StudyStrategyModel:
         return StudyStrategyModel(
             type="find_exact",

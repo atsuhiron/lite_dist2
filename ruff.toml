@@ -9,9 +9,11 @@ ignore = [
     "TD002",    #
     "TD003",    #
     "PLR0913",  # Because of my lazy
+    "PLR2004",  # Magic number
     "ERA001",   # Ocurring False Positive
     "FBT001",   # flag parameter
     "FBT002",   # flag parameter
+    "COM812",   # avoid conflict
 ]
 
 [lint.per-file-ignores]
@@ -29,7 +31,8 @@ ignore = [
 
 [lint.flake8-type-checking]
 exempt-modules = [
-    "lite_dist2.table_node_api.table_param"
+    "typing",
+    "lite_dist2.table_node_api.table_param",
 ]
 runtime-evaluated-base-classes = [
     "pydantic.BaseModel",

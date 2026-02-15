@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import StrEnum, auto
 
 
-class StudyStatus(str, Enum):
-    wait = "wait"
-    running = "running"
-    done = "done"
-    not_found = "not_found"
+class StudyStatus(StrEnum):
+    wait = auto()
+    running = auto()
+    done = auto()
+    not_found = auto()

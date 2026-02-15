@@ -15,12 +15,11 @@ class BaseTableResponse(BaseModel):
 
 
 class OkResponse(BaseTableResponse):
-    ok: bool = Field(...)
+    ok: bool = Field()
 
 
 class TrialReserveResponse(BaseTableResponse):
     trial: TrialModel | None = Field(
-        ...,
         description=(
             "Reserved trial for the worker node. "
             "None if the curriculum is empty or no trial which can be processed by the worker node's capabilities."
@@ -29,17 +28,11 @@ class TrialReserveResponse(BaseTableResponse):
 
 
 class StudyRegisteredResponse(BaseTableResponse):
-    study_id: str = Field(
-        ...,
-        description="Published `study_id` of registered study.",
-    )
+    study_id: str = Field(description="Published `study_id` of registered study.")
 
 
 class StudyResponse(BaseTableResponse):
-    status: StudyStatus = Field(
-        ...,
-        description="Status of the target Study.",
-    )
+    status: StudyStatus = Field(description="Status of the target Study.")
     result: StudyStorage | None = Field(
         None,
         description="Results of completed study. If the study is not completed or not found, then `None`.",
@@ -47,10 +40,7 @@ class StudyResponse(BaseTableResponse):
 
 
 class CurriculumSummaryResponse(BaseTableResponse):
-    summaries: list[StudySummary] = Field(
-        ...,
-        description="The list of study (containing storage) summary.",
-    )
+    summaries: list[StudySummary] = Field(description="The list of study (containing storage) summary.")
 
 
 class ProgressSummaryResponse(BaseModel):

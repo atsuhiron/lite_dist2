@@ -132,7 +132,7 @@ class Curriculum:
                     study_id=study.study_id,
                     study_name=study.name,
                     records=study.trial_table.gen_done_record_list(max(cutoff_datetime, study.registered_timestamp)),
-                    total_grid=study.parameter_space.get_total(),
+                    total_grid=study.parameter_space.total,
                     done_grid=study.trial_table.count_grid(),
                 )
                 for study in self.studies

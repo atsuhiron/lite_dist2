@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 
 from lite_dist2.curriculum_models.mapping import Mapping
@@ -7,11 +11,13 @@ from lite_dist2.expections import LD2ParameterError
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.suggest_strategies.sequential_suggest_strategy import SequentialSuggestStrategy
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
-from lite_dist2.value_models.base_space import ParameterSpace
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
-from lite_dist2.value_models.line_segment import DummyLineSegment, ParameterRangeInt
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
+
+if TYPE_CHECKING:
+    from lite_dist2.value_models.space_type import ParameterSpaceType
 
 
 @pytest.mark.parametrize(
@@ -22,7 +28,7 @@ from tests.const import DT
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -32,7 +38,7 @@ from tests.const import DT
             ParameterJaggedSpace(
                 parameters=[(0,), (1,), (2,)],
                 ambient_indices=[(0,), (1,), (2,)],
-                axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
+                axes_info=[DummyLineSegment(name="x", type_="int", step=1, ambient_size=6)],
             ),
         ),
         (
@@ -40,7 +46,7 @@ from tests.const import DT
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -50,7 +56,7 @@ from tests.const import DT
             ParameterJaggedSpace(
                 parameters=[(3,), (4,), (5,)],
                 ambient_indices=[(3,), (4,), (5,)],
-                axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
+                axes_info=[DummyLineSegment(name="x", type_="int", step=1, ambient_size=6)],
             ),
         ),
         (
@@ -58,7 +64,7 @@ from tests.const import DT
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -68,7 +74,7 @@ from tests.const import DT
             ParameterJaggedSpace(
                 parameters=[(4,), (5,)],
                 ambient_indices=[(4,), (5,)],
-                axes_info=[DummyLineSegment(name="x", type="int", ambient_size=6, step=1)],
+                axes_info=[DummyLineSegment(name="x", type_="int", step=1, ambient_size=6)],
             ),
         ),
         (
@@ -76,8 +82,8 @@ from tests.const import DT
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=3, start=0, ambient_size=6, ambient_index=0),
-                        ParameterRangeInt(name="y", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=3, step=1, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -88,8 +94,8 @@ from tests.const import DT
                 parameters=[(0, 0), (0, 1), (0, 2)],
                 ambient_indices=[(0, 0), (0, 1), (0, 2)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegment(name="y", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=6),
                 ],
             ),
         ),
@@ -98,8 +104,8 @@ from tests.const import DT
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=3, start=0, ambient_size=6, ambient_index=0),
-                        ParameterRangeInt(name="y", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=3, step=1, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -110,8 +116,8 @@ from tests.const import DT
                 parameters=[(0, 5), (1, 0), (1, 1)],
                 ambient_indices=[(0, 5), (1, 0), (1, 1)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegment(name="y", type="int", ambient_size=6, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=6),
                 ],
             ),
         ),
@@ -124,7 +130,8 @@ def test_sequential_suggest_strategy_jagged_suggest(
     expected: ParameterJaggedSpace,
 ) -> None:
     actual = strategy._jagged_suggest(start, max_num)
-    assert actual == expected
+    assert actual is not None
+    assert actual.to_model() == expected.to_model()
 
 
 @pytest.mark.parametrize(
@@ -135,7 +142,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),  # 使わない
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -148,7 +155,7 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -161,8 +168,8 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=7, start=0, ambient_size=7, ambient_index=0),
-                        ParameterRangeInt(type="int", size=3, start=0, ambient_size=3, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=7, step=1, start=0, ambient_size=7, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=3, step=1, start=0, ambient_size=3, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -175,8 +182,8 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=7, start=0, ambient_size=7, ambient_index=0),
-                        ParameterRangeInt(type="int", size=3, start=0, ambient_size=3, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=7, step=1, start=0, ambient_size=7, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=3, step=1, start=0, ambient_size=3, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -189,8 +196,8 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=7, start=0, ambient_size=7, ambient_index=0),
-                        ParameterRangeInt(type="int", size=3, start=0, ambient_size=3, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=7, step=1, start=0, ambient_size=7, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=3, step=1, start=0, ambient_size=3, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -203,9 +210,9 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="z", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -218,9 +225,9 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="z", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -233,9 +240,9 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="z", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -248,9 +255,9 @@ def test_sequential_suggest_strategy_jagged_suggest(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="z", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -277,7 +284,9 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
+                        LineSegment(
+                            name="x", type_="int", size=None, step=1, start=0, ambient_size=None, ambient_index=0
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -290,7 +299,9 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
+                        LineSegment(
+                            name="x", type_="int", size=None, step=1, start=0, ambient_size=None, ambient_index=0
+                        ),
                     ],
                     check_lower_filling=True,
                 ),
@@ -303,8 +314,10 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(
+                            name="x", type_="int", size=None, step=1, start=0, ambient_size=None, ambient_index=0
+                        ),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -317,8 +330,10 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(
+                            name="x", type_="int", size=None, step=1, start=0, ambient_size=None, ambient_index=0
+                        ),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -331,8 +346,10 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(
+                            name="x", type_="int", size=None, step=1, start=0, ambient_size=None, ambient_index=0
+                        ),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -345,9 +362,11 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(
+                            name="x", type_="int", size=None, step=1, start=0, ambient_size=None, ambient_index=0
+                        ),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="z", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -360,9 +379,11 @@ def test_sequential_suggest_strategy_generate_available_next_finite(
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=None, start=0, ambient_size=None, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
-                        ParameterRangeInt(type="int", size=10, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(
+                            name="x", type_="int", size=None, step=1, start=0, ambient_size=None, ambient_index=0
+                        ),
+                        LineSegment(name="y", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
+                        LineSegment(name="z", type_="int", size=10, step=1, start=0, ambient_size=10, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -430,7 +451,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -442,7 +463,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             3,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=3, start=0, ambient_size=6, ambient_index=0),
+                    LineSegment(name="x", type_="int", size=3, step=1, start=0, ambient_size=6, ambient_index=0),
                 ],
                 check_lower_filling=True,
             ),
@@ -453,7 +474,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -468,10 +489,11 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=6,
                                     ambient_index=0,
@@ -504,10 +526,11 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=6,
                                     ambient_index=0,
@@ -521,7 +544,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             3,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=3, start=3, ambient_size=6, ambient_index=3),
+                    LineSegment(name="x", type_="int", size=3, step=1, start=3, ambient_size=6, ambient_index=3),
                 ],
                 check_lower_filling=True,
             ),
@@ -532,10 +555,11 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(
+                        LineSegment(
                             name="x",
-                            type="int",
+                            type_="int",
                             size=None,
+                            step=1,
                             start=0,
                             ambient_size=None,
                             ambient_index=0,
@@ -551,7 +575,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             3,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=3, start=0, ambient_size=None, ambient_index=0),
+                    LineSegment(name="x", type_="int", size=3, step=1, start=0, ambient_size=None, ambient_index=0),
                 ],
                 check_lower_filling=True,
             ),
@@ -562,10 +586,11 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(
+                        LineSegment(
                             name="x",
-                            type="int",
+                            type_="int",
                             size=None,
+                            step=1,
                             start=0,
                             ambient_size=None,
                             ambient_index=0,
@@ -584,10 +609,11 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=None,
                                     ambient_index=0,
@@ -620,10 +646,11 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=None,
                                     ambient_index=0,
@@ -637,7 +664,7 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             3,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=3, start=3, ambient_size=None, ambient_index=3),
+                    LineSegment(name="x", type_="int", size=3, step=1, start=3, ambient_size=None, ambient_index=3),
                 ],
                 check_lower_filling=True,
             ),
@@ -648,8 +675,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
-                        ParameterRangeInt(name="y", type="int", size=4, start=0, ambient_size=4, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=4, step=1, start=0, ambient_size=4, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -666,8 +693,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -705,18 +732,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=0,
                                     ambient_size=6,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=4,
                                     ambient_index=0,
@@ -732,8 +761,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 parameters=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 ambient_indices=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                 ],
             ),
             id="2D continuing",
@@ -743,8 +772,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
-                        ParameterRangeInt(name="y", type="int", size=4, start=0, ambient_size=4, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=4, step=1, start=0, ambient_size=4, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -761,8 +790,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -803,8 +832,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(1, 1), (1, 2), (1, 3)],
                             ambient_indices=[(1, 1), (1, 2), (1, 3)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -842,18 +871,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=0,
                                     ambient_size=6,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=4,
                                     ambient_index=0,
@@ -863,18 +894,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=1,
                                     ambient_size=6,
                                     ambient_index=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=1,
                                     ambient_size=4,
                                     ambient_index=1,
@@ -890,8 +923,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 parameters=[(0, 3), (1, 0)],
                 ambient_indices=[(0, 3), (1, 0)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                    DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                 ],
             ),
             id="2D striping",
@@ -901,8 +934,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=6, start=0, ambient_size=6, ambient_index=0),
-                        ParameterRangeInt(name="y", type="int", size=4, start=0, ambient_size=4, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=6, step=1, start=0, ambient_size=6, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=4, step=1, start=0, ambient_size=4, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -917,18 +950,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=0,
                                     ambient_size=6,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=4,
                                     ambient_index=0,
@@ -972,18 +1007,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=1,
                                     ambient_size=6,
                                     ambient_index=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=1,
                                     ambient_size=4,
                                     ambient_index=1,
@@ -1026,18 +1063,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=0,
                                     ambient_size=6,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=4,
                                     ambient_index=0,
@@ -1047,18 +1086,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=1,
                                     ambient_size=6,
                                     ambient_index=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=1,
                                     ambient_size=4,
                                     ambient_index=1,
@@ -1072,8 +1113,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             4,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=1, start=0, ambient_size=6, ambient_index=0),
-                    ParameterRangeInt(name="y", type="int", size=1, start=3, ambient_size=4, ambient_index=3),
+                    LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_size=6, ambient_index=0),
+                    LineSegment(name="y", type_="int", size=1, step=1, start=3, ambient_size=4, ambient_index=3),
                 ],
                 check_lower_filling=True,
             ),
@@ -1084,18 +1125,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=False),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(
+                        LineSegment(
                             name="x",
-                            type="int",
+                            type_="int",
                             size=None,
+                            step=1,
                             start=0,
                             ambient_size=None,
                             ambient_index=0,
                         ),
-                        ParameterRangeInt(
+                        LineSegment(
                             name="y",
-                            type="int",
+                            type_="int",
                             size=4,
+                            step=1,
                             start=0,
                             ambient_size=4,
                             ambient_index=0,
@@ -1116,8 +1159,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                             parameters=[(0, 0), (0, 1), (0, 2)],
                             ambient_indices=[(0, 0), (0, 1), (0, 2)],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=6, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
+                                DummyLineSegment(name="x", type_="int", step=1, ambient_size=6),
+                                DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                             ],
                         ),
                         result_type="scalar",
@@ -1155,18 +1198,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=0,
                                     ambient_size=None,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=3,
+                                    step=1,
                                     start=0,
                                     ambient_size=4,
                                     ambient_index=0,
@@ -1182,8 +1227,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 parameters=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 ambient_indices=[(0, 3), (1, 0), (1, 1), (1, 2)],
                 axes_info=[
-                    DummyLineSegment(name="x", type="int", ambient_size=None, step=1),
-                    DummyLineSegment(name="y", type="int", ambient_size=4, step=1),
+                    DummyLineSegment(name="x", type_="int", step=1, ambient_size=None),
+                    DummyLineSegment(name="y", type_="int", step=1, ambient_size=4),
                 ],
             ),
             id="2D continuing infinite",
@@ -1193,8 +1238,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
-                        ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -1209,18 +1254,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=2,
+                                    step=1,
                                     start=0,
                                     ambient_size=2,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=2,
+                                    step=1,
                                     start=0,
                                     ambient_size=2,
                                     ambient_index=0,
@@ -1269,18 +1316,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=0,
                                     ambient_size=2,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=2,
+                                    step=1,
                                     start=0,
                                     ambient_size=2,
                                     ambient_index=0,
@@ -1290,18 +1339,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=1,
                                     ambient_size=2,
                                     ambient_index=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=2,
+                                    step=1,
                                     start=0,
                                     ambient_size=2,
                                     ambient_index=0,
@@ -1322,8 +1373,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                 suggest_parameter=SuggestStrategyParam(strict_aligned=True),
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(name="x", type="int", size=51, start=0, ambient_size=51, ambient_index=0),
-                        ParameterRangeInt(name="y", type="int", size=51, start=0, ambient_size=51, ambient_index=0),
+                        LineSegment(name="x", type_="int", size=51, step=1, start=0, ambient_size=51, ambient_index=0),
+                        LineSegment(name="y", type_="int", size=51, step=1, start=0, ambient_size=51, ambient_index=0),
                     ],
                     check_lower_filling=True,
                 ),
@@ -1338,18 +1389,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1371,18 +1424,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=1,
                                     ambient_size=51,
                                     ambient_index=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1404,18 +1459,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=2,
                                     ambient_size=51,
                                     ambient_index=2,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1437,18 +1494,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=3,
                                     ambient_size=51,
                                     ambient_index=3,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1470,18 +1529,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=4,
                                     ambient_size=51,
                                     ambient_index=4,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1503,18 +1564,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=5,
                                     ambient_size=51,
                                     ambient_index=5,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1536,18 +1599,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=6,
                                     ambient_size=51,
                                     ambient_index=6,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1567,18 +1632,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=6,
                                     ambient_size=51,
                                     ambient_index=6,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1588,18 +1655,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=4,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1609,18 +1678,20 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     start=5,
                                     ambient_size=51,
                                     ambient_index=5,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=51,
+                                    step=1,
                                     start=0,
                                     ambient_size=51,
                                     ambient_index=0,
@@ -1635,8 +1706,8 @@ def test_sequential_suggest_strategy_nullable_min_raise_both_none() -> None:
             51,
             ParameterAlignedSpace(
                 axes=[
-                    ParameterRangeInt(name="x", type="int", size=1, start=7, ambient_size=51, ambient_index=7),
-                    ParameterRangeInt(name="y", type="int", size=51, start=0, ambient_size=51, ambient_index=0),
+                    LineSegment(name="x", type_="int", size=1, step=1, start=7, ambient_size=51, ambient_index=7),
+                    LineSegment(name="y", type_="int", size=51, step=1, start=0, ambient_size=51, ambient_index=0),
                 ],
                 check_lower_filling=True,
             ),
@@ -1648,7 +1719,11 @@ def test_sequential_suggest_strategy_suggest(
     strategy: SequentialSuggestStrategy,
     trial_table: TrialTable,
     max_num: int,
-    expected: ParameterSpace | None,
+    expected: ParameterSpaceType | None,
 ) -> None:
     actual = strategy.suggest(trial_table, max_num)
-    assert actual == expected
+    if expected is None:
+        assert actual is None
+    else:
+        assert actual is not None
+        assert actual.to_model() == expected.to_model()

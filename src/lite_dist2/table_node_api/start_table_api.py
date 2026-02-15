@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import logging
 import socket
+from collections.abc import Callable
 from pathlib import Path
 from threading import Event, Thread
 
@@ -71,8 +72,8 @@ def start() -> None:
 
 
 class StoppableThread(Thread):
-    def __init__(self, *args: object, **kwargs: object) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, target: Callable, daemon: bool, kwargs: dict[str, object] | None = None) -> None:
+        super().__init__(target=target, daemon=daemon, kwargs=kwargs)
         self._stop_event = Event()
 
     def stop(self) -> None:

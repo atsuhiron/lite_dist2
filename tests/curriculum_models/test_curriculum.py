@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 import pytest
 
@@ -20,20 +20,20 @@ from lite_dist2.suggest_strategies import BaseSuggestStrategy, SequentialSuggest
 from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
 from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
-from lite_dist2.value_models.line_segment import ParameterRangeInt
+from lite_dist2.value_models.line_segment import LineSegment
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 if TYPE_CHECKING:
     from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
-    from lite_dist2.value_models.base_space import ParameterSpace
+    from lite_dist2.value_models.space_type import ParameterSpaceType
 
 _DUMMY_TRIAL_PATH_DIR = Path(__file__).parent
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
     axes=[
-        ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
-        ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+        LineSegment(name="x", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
+        LineSegment(name="y", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
     ],
     check_lower_filling=True,
 )
@@ -110,34 +110,29 @@ _DUMMY_MAPPINGS_STORAGE = MappingsStorage(
 
 
 class MockStudyStrategy(BaseStudyStrategy):
-    def __init__(self) -> None:
-        super().__init__(None)
+    @override
+    def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
+        raise NotImplementedError
 
-    def extract_mappings(self, trial_table: TrialTable) -> list[Mapping]:
-        pass
-
-    def extract_mappings2(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
-        pass
-
+    @override
     def is_done(
         self,
         trial_table: TrialTable,
         parameter_space: ParameterAlignedSpace,
         trial_repository: BaseTrialRepository,
     ) -> bool:
-        pass
+        raise NotImplementedError
 
     def to_model(self) -> StudyStrategyModel:
         return _DUMMY_STUDY_STRATEGY_MODEL
 
 
 class MockSuggestStrategy(BaseSuggestStrategy):
-    def __init__(self) -> None:
-        super().__init__(SuggestStrategyParam(strict_aligned=False), _DUMMY_PARAMETER_SPACE)
+    @override
+    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpaceType:
+        raise NotImplementedError
 
-    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
-        pass
-
+    @override
     def to_model(self) -> SuggestStrategyModel:
         return _DUMMY_SUGGEST_STRATEGY_MODEL
 
@@ -360,40 +355,61 @@ def test_curriculum_load_or_create_empty(tmp_path: str) -> None:
     ],
 )
 def test_curriculum_get_available_study(retaining_capacity: set[str], expected_study_id: str | None) -> None:
-    _study_param = {
-        "name": "",
-        "registered_timestamp": DT,
-        "study_strategy": AllCalculationStudyStrategy(None),
-        "suggest_strategy": SequentialSuggestStrategy(
-            SuggestStrategyParam(strict_aligned=True),
-            _DUMMY_PARAMETER_SPACE,
-        ),
-        "const_param": None,
-        "parameter_space": _DUMMY_PARAMETER_SPACE,
-        "result_type": "scalar",
-        "result_value_type": "int",
-        "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
-        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
-    }
     curriculum = Curriculum(
         studies=[
             Study(
                 study_id="hash_1",
                 required_capacity={"hash"},
                 status=StudyStatus.wait,
-                **_study_param,
+                name="hash_1",
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
             Study(
                 study_id="hash_2",
                 required_capacity={"hash", "preimage"},
                 status=StudyStatus.running,
-                **_study_param,
+                name="hash_2",
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
             Study(
                 study_id="hash_3",
                 required_capacity={"hash", "preimage"},
                 status=StudyStatus.wait,
-                **_study_param,
+                name="hash_3",
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
         ],
         storages=[],
@@ -570,6 +586,7 @@ def test_curriculum_pop_storage(
     if expected_id is None:
         assert popped is None
     else:
+        assert popped is not None
         assert popped.study_id == expected_id
     assert curr.storages == expected_storages
 
@@ -757,40 +774,61 @@ def test_curriculum_cancel_study_raises() -> None:
     ],
 )
 def test_curriculum_get_study_status(study_id: str | None, name: str | None, expected: StudyStatus) -> None:
-    _study_args = {
-        "required_capacity": {"hash"},
-        "registered_timestamp": DT,
-        "study_strategy": AllCalculationStudyStrategy(None),
-        "suggest_strategy": SequentialSuggestStrategy(
-            SuggestStrategyParam(strict_aligned=True),
-            _DUMMY_PARAMETER_SPACE,
-        ),
-        "const_param": None,
-        "parameter_space": _DUMMY_PARAMETER_SPACE,
-        "result_type": "scalar",
-        "result_value_type": "int",
-        "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
-        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
-    }
     curr = Curriculum(
         studies=[
             Study(
                 study_id="s02",
                 name="n02",
                 status=StudyStatus.running,
-                **_study_args,
+                required_capacity={"hash"},
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
             Study(
                 study_id="s03",
                 name="n03",
                 status=StudyStatus.wait,
-                **_study_args,
+                required_capacity={"hash"},
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
             Study(
                 study_id="s04",
                 name="n04",
                 status=StudyStatus.done,
-                **_study_args,
+                required_capacity={"hash"},
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
         ],
         storages=[
@@ -836,46 +874,79 @@ def test_curriculum_get_study_status_raises() -> None:
     ],
 )
 def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
-    _study_args = {
-        "required_capacity": {"hash"},
-        "registered_timestamp": DT,
-        "study_strategy": AllCalculationStudyStrategy(None),
-        "suggest_strategy": SequentialSuggestStrategy(
-            SuggestStrategyParam(strict_aligned=True),
-            _DUMMY_PARAMETER_SPACE,
-        ),
-        "const_param": None,
-        "parameter_space": _DUMMY_PARAMETER_SPACE,
-        "result_type": "scalar",
-        "result_value_type": "int",
-        "trial_table": TrialTable.from_model(TrialTableModel.create_empty()),
-        "trial_repository": NormalTrialRepository(save_dir=Path("test/s01")),
-    }
     curr = Curriculum(
         studies=[
             Study(
                 study_id="s02",
                 name="n02",
                 status=StudyStatus.running,
-                **_study_args,
+                required_capacity={"hash"},
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
             Study(
                 study_id="s03",
                 name="n03",
                 status=StudyStatus.wait,
-                **_study_args,
+                required_capacity={"hash"},
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
             Study(
                 study_id="s04",
                 name="n04",
                 status=StudyStatus.done,
-                **_study_args,
+                required_capacity={"hash"},
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
             Study(
                 study_id="s05",
                 name=None,
                 status=StudyStatus.done,
-                **_study_args,
+                required_capacity={"hash"},
+                registered_timestamp=DT,
+                study_strategy=AllCalculationStudyStrategy(None),
+                suggest_strategy=SequentialSuggestStrategy(
+                    SuggestStrategyParam(strict_aligned=True),
+                    _DUMMY_PARAMETER_SPACE,
+                ),
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+                trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
             ),
         ],
         storages=[
@@ -918,7 +989,19 @@ def test_curriculum_try_insert_study(name: str | None, expected: bool) -> None:
         name=name,
         study_id="s07",
         status=StudyStatus.running,
-        **_study_args,
+        required_capacity={"hash"},
+        registered_timestamp=DT,
+        study_strategy=AllCalculationStudyStrategy(None),
+        suggest_strategy=SequentialSuggestStrategy(
+            SuggestStrategyParam(strict_aligned=True),
+            _DUMMY_PARAMETER_SPACE,
+        ),
+        const_param=None,
+        parameter_space=_DUMMY_PARAMETER_SPACE,
+        result_type="scalar",
+        result_value_type="int",
+        trial_table=TrialTable.from_model(TrialTableModel.create_empty()),
+        trial_repository=NormalTrialRepository(save_dir=Path("test/s01")),
     )
     actual = curr.try_insert_study(new_study)
     assert actual == expected

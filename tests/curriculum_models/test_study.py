@@ -16,10 +16,10 @@ from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyM
 from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
 from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
 from lite_dist2.type_definitions import TrialRepositoryType
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.line_segment import (
-    LineSegmentModel,
-    ParameterRangeFloat,
+    LineSegment,
+    LineSegmentPortableModel,
 )
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
@@ -41,10 +41,10 @@ from tests.const import DT
                     suggest_strategy_param=SuggestStrategyParam(strict_aligned=True),
                 ),
                 const_param=None,
-                parameter_space=ParameterAlignedSpaceModel(
+                parameter_space=ParameterAlignedSpacePortableModel(
                     type="aligned",
                     axes=[
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="x",
                             type="int",
                             size="0x64",
@@ -53,7 +53,7 @@ from tests.const import DT
                             ambient_size="0x64",
                             ambient_index="0x0",
                         ),
-                        LineSegmentModel(
+                        LineSegmentPortableModel(
                             name="y",
                             type="int",
                             size="0x64",
@@ -75,10 +75,10 @@ from tests.const import DT
                             reserved_timestamp=DT,
                             trial_status=TrialStatus.done,
                             const_param=None,
-                            parameter_space=ParameterAlignedSpaceModel(
+                            parameter_space=ParameterAlignedSpacePortableModel(
                                 type="aligned",
                                 axes=[
-                                    LineSegmentModel(
+                                    LineSegmentPortableModel(
                                         name="x",
                                         type="int",
                                         size="0x1",
@@ -87,7 +87,7 @@ from tests.const import DT
                                         ambient_size="0x64",
                                         ambient_index="0x0",
                                     ),
-                                    LineSegmentModel(
+                                    LineSegmentPortableModel(
                                         name="y",
                                         type="int",
                                         size="0x2",
@@ -134,10 +134,10 @@ from tests.const import DT
                             reserved_timestamp=DT,
                             trial_status=TrialStatus.running,
                             const_param=None,
-                            parameter_space=ParameterAlignedSpaceModel(
+                            parameter_space=ParameterAlignedSpacePortableModel(
                                 type="aligned",
                                 axes=[
-                                    LineSegmentModel(
+                                    LineSegmentPortableModel(
                                         name="x",
                                         type="int",
                                         size="0x1",
@@ -146,7 +146,7 @@ from tests.const import DT
                                         ambient_size="0x64",
                                         ambient_index="0x0",
                                     ),
-                                    LineSegmentModel(
+                                    LineSegmentPortableModel(
                                         name="y",
                                         type="int",
                                         size="0x2",
@@ -167,10 +167,10 @@ from tests.const import DT
                     aggregated_parameter_space={
                         -1: [],
                         0: [
-                            ParameterAlignedSpaceModel(
+                            ParameterAlignedSpacePortableModel(
                                 type="aligned",
                                 axes=[
-                                    LineSegmentModel(
+                                    LineSegmentPortableModel(
                                         name="x",
                                         type="int",
                                         size="0x1",
@@ -179,7 +179,7 @@ from tests.const import DT
                                         ambient_size="0x64",
                                         ambient_index="0x0",
                                     ),
-                                    LineSegmentModel(
+                                    LineSegmentPortableModel(
                                         name="y",
                                         type="int",
                                         size="0x2",
@@ -236,18 +236,18 @@ class MockTrialRepository(BaseTrialRepository):
 def test_study_suggest_receipt_single_thread() -> None:
     _parameter_space = ParameterAlignedSpace(
         axes=[
-            ParameterRangeFloat(
+            LineSegment(
                 name="x",
-                type="float",
+                type_="float",
                 size=20,
                 step=0.5,
                 start=0.0,
                 ambient_index=0,
                 ambient_size=20,
             ),
-            ParameterRangeFloat(
+            LineSegment(
                 name="y",
-                type="float",
+                type_="float",
                 size=20,
                 step=0.5,
                 start=0.0,
@@ -302,18 +302,18 @@ def test_study_suggest_receipt_single_thread() -> None:
 def test_study_suggest_receipt_multi_threads_synchronous() -> None:
     _parameter_space = ParameterAlignedSpace(
         axes=[
-            ParameterRangeFloat(
+            LineSegment(
                 name="x",
-                type="float",
+                type_="float",
                 size=20,
                 step=0.5,
                 start=0.0,
                 ambient_index=0,
                 ambient_size=20,
             ),
-            ParameterRangeFloat(
+            LineSegment(
                 name="y",
-                type="float",
+                type_="float",
                 size=20,
                 step=0.5,
                 start=0.0,
@@ -346,6 +346,7 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
         # trial 取得
         trial = study.suggest_next_trial(num=5, worker_node_name="w01", worker_node_id="w01")
 
+        assert trial is not None
         # 結果書き込み
         raw_mappings = []
         for parameter in trial.parameter_space.grid():

@@ -1020,7 +1020,15 @@ After the results are finally retrieved by the /study API, the `Study` directori
 
 ### Development environment setup
 ```shell
-uv sync --dev
+uv sync
+```
+
+### Linter and Formatter
+We use [ruff](https://github.com/astral-sh/ruff) and [ty](https://github.com/astral-sh/ty).
+```shell
+uv run ruff format
+uv run ruff check --fix
+uv run ty check
 ```
 
 ### Run test
@@ -1030,4 +1038,15 @@ uv run pytest
 Coverage information can also be obtained with the following options
 ```shell
 uv run pytest --cov --cov-config=pyproject.toml
+```
+
+### Integrated command
+Linter, formatter, and unit tests can be run together with the following command:
+Mac or Linux:
+```shell
+./check.sh
+```
+Windows:
+```shell
+.\check.bat
 ```

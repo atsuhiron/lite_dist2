@@ -7,17 +7,17 @@ from lite_dist2.curriculum_models.mapping import Mapping
 from lite_dist2.curriculum_models.trial import Trial, TrialModel, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable, TrialTableModel
 from lite_dist2.expections import LD2ParameterError
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
 from lite_dist2.value_models.base_space import FlattenSegment
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
-from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegmentModel, ParameterRangeInt
+from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ScalarValue
 from tests.const import DT
 
 _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
     axes=[
-        ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
-        ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+        LineSegment(name="x", type_="int", size=2, start=0, step=1, ambient_size=2, ambient_index=0),
+        LineSegment(name="y", type_="int", size=2, start=0, step=1, ambient_size=2, ambient_index=0),
     ],
     check_lower_filling=True,
 )
@@ -51,13 +51,14 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     -1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    name="x",
+                                    type_="int",
                                     size=10,
+                                    step=1,
+                                    start=0,
                                     ambient_index=0,
                                     ambient_size=10,
-                                    start=0,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
@@ -78,13 +79,14 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    name="x",
+                                    type_="int",
                                     size=10,
+                                    step=1,
+                                    start=0,
                                     ambient_index=0,
                                     ambient_size=None,
-                                    start=0,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
@@ -104,26 +106,28 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    name="x",
+                                    type_="int",
                                     size=10,
+                                    step=1,
+                                    start=0,
                                     ambient_index=0,
                                     ambient_size=100,
-                                    start=0,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    name="x",
+                                    type_="int",
                                     size=10,
+                                    step=1,
+                                    start=50,
                                     ambient_index=50,
                                     ambient_size=100,
-                                    start=50,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
@@ -143,26 +147,28 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    name="x",
+                                    type_="int",
                                     size=10,
+                                    step=1,
+                                    start=0,
                                     ambient_index=0,
                                     ambient_size=None,
-                                    start=0,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    name="x",
+                                    type_="int",
                                     size=10,
+                                    step=1,
+                                    start=50,
                                     ambient_index=50,
                                     ambient_size=None,
-                                    start=50,
-                                    step=1,
                                 ),
                             ],
                             check_lower_filling=True,
@@ -181,18 +187,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     -1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=10,
                                     ambient_index=0,
                                     ambient_size=10,
                                     start=0,
                                     step=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=10,
                                     ambient_index=0,
                                     ambient_size=10,
@@ -219,18 +225,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
                                     ambient_index=1,
                                     ambient_size=10,
                                     start=1,
                                     step=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=10,
                                     ambient_index=0,
                                     ambient_size=10,
@@ -244,18 +250,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
                                     ambient_index=0,
                                     ambient_size=10,
                                     start=0,
                                     step=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=5,
                                     ambient_index=0,
                                     ambient_size=10,
@@ -306,8 +312,8 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                                 (1, 9),
                             ],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.done,
@@ -409,8 +415,8 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                                 (0, 4),
                             ],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.done,
@@ -477,8 +483,8 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                                 (0, 9),
                             ],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.running,
@@ -493,18 +499,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
                                     ambient_index=1,
                                     ambient_size=10,
                                     start=1,
                                     step=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=10,
                                     ambient_index=0,
                                     ambient_size=10,
@@ -518,18 +524,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
                                     ambient_index=0,
                                     ambient_size=10,
                                     start=0,
                                     step=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=5,
                                     ambient_index=0,
                                     ambient_size=10,
@@ -556,18 +562,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=1,
                                     start=1,
                                     ambient_index=1,
                                     ambient_size=10,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=10,
                                     start=0,
@@ -662,18 +668,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=1,
                                     start=0,
                                     ambient_index=0,
                                     ambient_size=10,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=5,
                                     start=0,
@@ -733,18 +739,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=1,
                                     start=0,
                                     ambient_index=0,
                                     ambient_size=10,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=5,
                                     start=5,
@@ -766,18 +772,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     0: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
                                     ambient_index=1,
                                     ambient_size=10,
                                     start=1,
                                     step=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=10,
                                     ambient_index=0,
                                     ambient_size=10,
@@ -791,18 +797,18 @@ _DUMMY_PARAMETER_SPACE = ParameterAlignedSpace(
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     size=1,
                                     ambient_index=0,
                                     ambient_size=10,
                                     start=0,
                                     step=1,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     size=5,
                                     ambient_index=0,
                                     ambient_size=10,
@@ -851,18 +857,18 @@ def test_trial_table_find_least_division(
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=1,
                                     start=0,
                                     ambient_index=0,
                                     ambient_size=10,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=1,
                                     start=0,
@@ -894,18 +900,18 @@ def test_trial_table_find_least_division(
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="x",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=1,
                                     start=0,
                                     ambient_index=0,
                                     ambient_size=10,
                                 ),
-                                ParameterRangeInt(
+                                LineSegment(
                                     name="y",
-                                    type="int",
+                                    type_="int",
                                     step=1,
                                     size=1,
                                     start=0,
@@ -946,8 +952,8 @@ def test_trial_table_find_least_division(
                                 (0, 4),
                             ],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.done,
@@ -993,8 +999,8 @@ def test_trial_table_find_least_division(
                                 (0, 9),
                             ],
                             axes_info=[
-                                DummyLineSegment(name="x", type="int", ambient_size=10, step=1),
-                                DummyLineSegment(name="y", type="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=10, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=10, step=1),
                             ],
                         ),
                         trial_status=TrialStatus.running,
@@ -1034,10 +1040,10 @@ def test_trial_table_count_grid(
                     reserved_timestamp=DT,
                     trial_status=TrialStatus.running,
                     const_param=None,
-                    parameter_space=ParameterAlignedSpaceModel(
+                    parameter_space=ParameterAlignedSpacePortableModel(
                         type="aligned",
                         axes=[
-                            LineSegmentModel(
+                            LineSegmentPortableModel(
                                 type="int",
                                 size="0xa",
                                 step="0x1",
@@ -1064,10 +1070,10 @@ def test_trial_table_count_grid(
                     reserved_timestamp=DT,
                     trial_status=TrialStatus.running,
                     const_param=None,
-                    parameter_space=ParameterAlignedSpaceModel(
+                    parameter_space=ParameterAlignedSpacePortableModel(
                         type="aligned",
                         axes=[
-                            LineSegmentModel(
+                            LineSegmentPortableModel(
                                 type="int",
                                 size="0xa",
                                 step="0x1",
@@ -1126,17 +1132,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
@@ -1160,17 +1168,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=1,
                                     ambient_size=100,
                                     start=1,
@@ -1194,17 +1204,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=100,
                                     start=2,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=100,
                                     start=2,
@@ -1227,17 +1239,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
@@ -1248,17 +1262,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=100,
                                     start=2,
@@ -1282,17 +1298,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
@@ -1316,17 +1334,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=1,
                                     ambient_size=100,
                                     start=1,
@@ -1350,17 +1370,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         const_param=None,
                         parameter_space=ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=100,
                                     start=2,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=100,
                                     start=2,
@@ -1383,17 +1405,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
@@ -1404,17 +1428,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=100,
                                     start=2,
@@ -1425,17 +1451,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=100,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=1,
                                     ambient_size=100,
                                     start=1,
@@ -1462,8 +1490,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 0)],
                             ambient_indices=[(0, 0)],
                             axes_info=[
-                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1483,8 +1511,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 1)],
                             ambient_indices=[(0, 1)],
                             axes_info=[
-                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1504,8 +1532,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 2)],
                             ambient_indices=[(0, 2)],
                             axes_info=[
-                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1522,17 +1550,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=6,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=6,
                                     start=0,
@@ -1543,17 +1573,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=6,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=6,
                                     start=2,
@@ -1579,8 +1611,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 0)],
                             ambient_indices=[(0, 0)],
                             axes_info=[
-                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1600,8 +1632,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 1)],
                             ambient_indices=[(0, 1)],
                             axes_info=[
-                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1621,8 +1653,8 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                             parameters=[(0, 2)],
                             ambient_indices=[(0, 2)],
                             axes_info=[
-                                DummyLineSegment(type="int", name="x", ambient_size=6, step=1),
-                                DummyLineSegment(type="int", name="y", ambient_size=6, step=1),
+                                DummyLineSegment(name="x", type_="int", ambient_size=6, step=1),
+                                DummyLineSegment(name="y", type_="int", ambient_size=6, step=1),
                             ],
                         ),
                         result_type="scalar",
@@ -1639,17 +1671,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                     1: [
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=6,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=6,
                                     start=0,
@@ -1660,17 +1694,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=6,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=2,
                                     ambient_size=6,
                                     start=2,
@@ -1681,17 +1717,19 @@ def test_trial_table_to_model_from_model(model: TrialTableModel) -> None:
                         ),
                         ParameterAlignedSpace(
                             axes=[
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=0,
                                     ambient_size=6,
                                     start=0,
                                     name="x",
                                 ),
-                                ParameterRangeInt(
-                                    type="int",
+                                LineSegment(
+                                    type_="int",
                                     size=1,
+                                    step=1,
                                     ambient_index=1,
                                     ambient_size=6,
                                     start=1,
@@ -1723,7 +1761,6 @@ def test_trial_table_receipt_trial_result(
     assert actual_model.aggregated_parameter_space == expected_model.aggregated_parameter_space
 
 
-# noinspection SpellCheckingInspection
 def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
     trial_table = TrialTable(
         trials=[
@@ -1735,8 +1772,8 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
                 const_param=None,
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="x"),
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="y"),
+                        LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
+                        LineSegment(name="y", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
                     ],
                     check_lower_filling=True,
                 ),
@@ -1761,8 +1798,8 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
             1: [
                 ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="x"),
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="y"),
+                        LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
+                        LineSegment(name="y", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
                     ],
                     check_lower_filling=True,
                 ),
@@ -1774,7 +1811,6 @@ def test_trial_table_receipt_trial_result_raise_override_done_trial() -> None:
         trial_table.receipt_trial_result("t01", "w01")
 
 
-# noinspection SpellCheckingInspection
 def test_trial_table_receipt_trial_result_raise_not_found_trial() -> None:
     trial_table = TrialTable(
         trials=[],
@@ -1789,7 +1825,6 @@ def test_trial_table_receipt_trial_result_raise_not_found_trial() -> None:
         trial_table.receipt_trial_result("t01", "w01")
 
 
-# noinspection SpellCheckingInspection
 def test_trial_table_receipt_trial_result_raise_unmatch_worker_id() -> None:
     trial_table = TrialTable(
         trials=[
@@ -1801,8 +1836,8 @@ def test_trial_table_receipt_trial_result_raise_unmatch_worker_id() -> None:
                 const_param=None,
                 parameter_space=ParameterAlignedSpace(
                     axes=[
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="x"),
-                        ParameterRangeInt(type="int", size=1, ambient_index=0, ambient_size=100, start=0, name="y"),
+                        LineSegment(name="x", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
+                        LineSegment(name="y", type_="int", size=1, step=1, start=0, ambient_index=0, ambient_size=100),
                     ],
                     check_lower_filling=True,
                 ),
@@ -1843,31 +1878,66 @@ def test_trial_table_check_timeout_trial() -> None:
                 trial_id="running_but_created_now",
                 reserved_timestamp=now,
                 trial_status=TrialStatus.running,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
             Trial(
                 trial_id="running_little_past",
                 reserved_timestamp=now - timedelta(seconds=30),
                 trial_status=TrialStatus.running,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
             Trial(
                 trial_id="running_very_past",
                 reserved_timestamp=now - timedelta(seconds=3000),
                 trial_status=TrialStatus.running,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
             Trial(
                 trial_id="done_little_past",
                 reserved_timestamp=now - timedelta(seconds=40),
                 trial_status=TrialStatus.done,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
             Trial(
                 trial_id="done_very_past",
                 reserved_timestamp=now - timedelta(seconds=3000),
                 trial_status=TrialStatus.done,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
         ],
         aggregated_parameter_space={},
@@ -1879,25 +1949,53 @@ def test_trial_table_check_timeout_trial() -> None:
                 trial_id="running_but_created_now",
                 reserved_timestamp=now,
                 trial_status=TrialStatus.running,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
             Trial(
                 trial_id="running_little_past",
                 reserved_timestamp=now - timedelta(seconds=30),
                 trial_status=TrialStatus.running,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
             Trial(
                 trial_id="done_little_past",
                 reserved_timestamp=now - timedelta(seconds=40),
                 trial_status=TrialStatus.done,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
             Trial(
                 trial_id="done_very_past",
                 reserved_timestamp=now - timedelta(seconds=3000),
                 trial_status=TrialStatus.done,
-                **_trial_args,
+                study_id="s01",
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE,
+                result_type="scalar",
+                result_value_type="int",
+                results=[],
+                worker_node_name="w01",
+                worker_node_id="w01",
             ),
         ],
         aggregated_parameter_space={},

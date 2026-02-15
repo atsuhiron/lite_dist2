@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.suggest_strategies import BaseSuggestStrategy
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from lite_dist2.curriculum_models.trial_table import TrialTable
     from lite_dist2.suggest_strategies.base_suggest_strategy import SuggestStrategyParam
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
-    from lite_dist2.value_models.base_space import ParameterSpace
+    from lite_dist2.value_models.space_type import ParameterSpaceType
 
 
 class SequentialSuggestStrategy(BaseSuggestStrategy):
@@ -23,10 +23,12 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         suggest_parameter: SuggestStrategyParam,
         parameter_space: ParameterAlignedSpace,
     ) -> None:
-        super().__init__(suggest_parameter, parameter_space)
+        self.suggest_parameter = suggest_parameter
+        self.parameter_space = parameter_space
         self.strict_aligned = self.suggest_parameter.strict_aligned
 
-    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace | None:
+    @override
+    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpaceType | None:
         least_seg = trial_table.find_least_division(self.parameter_space.total)
         if least_seg.size == 0:
             return None
@@ -43,7 +45,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
             if infinite_flag:
                 max_available_gen = self._infinite_available_generator(
                     available_next,
-                    self.parameter_space.lower_element_num_by_dim()[0],
+                    self.parameter_space.lower_element_num_by_dim[0],
                 )
                 infinite_available_next = set()
                 for _next_index in max_available_gen:
@@ -60,11 +62,11 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
 
         start_loom = self.parameter_space.loom_by_flatten_index(
             start,
-            self.parameter_space.lower_element_num_by_dim(),
+            self.parameter_space.lower_element_num_by_dim,
         )
         end_loom = self.parameter_space.loom_by_flatten_index(
             max_available_next - 1,
-            self.parameter_space.lower_element_num_by_dim(),
+            self.parameter_space.lower_element_num_by_dim,
         )
         start_and_sizes = [(s, e - s + 1) for s, e in zip(start_loom, end_loom, strict=True)]
         return self.parameter_space.slice(start_and_sizes)
@@ -109,11 +111,11 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
     def _generate_available_next_finite(self, flatten_index: int) -> tuple[int, ...]:
         dims = self.parameter_space.dim
         reversed_dim_sizes = list(reversed(self.parameter_space.dimensional_sizes))
-        lower_dims = self.parameter_space.lower_element_num_by_dim()
+        lower_dims = self.parameter_space.lower_element_num_by_dim
         reversed_loomed_indices = list(reversed(self.parameter_space.loom_by_flatten_index(flatten_index, lower_dims)))
 
         total = self.parameter_space.total
-        if self.parameter_space.is_infinite():
+        if self.parameter_space.is_infinite() or total is None:
             msg = "Cannot use this method on infinite space"
             raise LD2InvalidSpaceError(msg)
         reversed_lower_dims = [*list(reversed(lower_dims)), total]
@@ -140,7 +142,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
     def _generate_available_next_infinite(self, flatten_index: int) -> tuple[tuple[int, ...], bool]:
         dims = self.parameter_space.dim
         reversed_dim_sizes = list(reversed(self.parameter_space.dimensional_sizes))
-        lower_dims = self.parameter_space.lower_element_num_by_dim()
+        lower_dims = self.parameter_space.lower_element_num_by_dim
         reversed_loomed_indices = list(reversed(self.parameter_space.loom_by_flatten_index(flatten_index, lower_dims)))
 
         if not self.parameter_space.is_infinite():
@@ -179,6 +181,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         for i in itertools.count(1):
             yield last_v + ratio * i
 
+    @override
     def to_model(self) -> SuggestStrategyModel:
         return SuggestStrategyModel(
             type="sequential",

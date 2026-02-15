@@ -37,6 +37,6 @@ class MappingsStorage(BaseModel):
         return tuple([False] * p_size + [True] * r_size)
 
     def get_types(self) -> tuple[Literal["bool", "int", "float"], ...]:
-        types = [param.value_type for param in self.params_info]
+        types: list[Literal["bool", "int", "float"]] = [param.value_type for param in self.params_info]
         types.extend(self.result_info.get_value_types())
         return tuple(types)

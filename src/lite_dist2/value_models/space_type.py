@@ -1,0 +1,4 @@
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
+from lite_dist2.value_models.jagged_space import ParameterJaggedSpace
+
+type ParameterSpaceType = ParameterAlignedSpace | ParameterJaggedSpace

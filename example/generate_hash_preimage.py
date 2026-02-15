@@ -79,7 +79,7 @@ class MD5Preimage(AutoMPTrialRunner):
 
     @staticmethod
     def to_bytes(val: int) -> bytes:
-        hex_str = hex(val)[2:]
+        hex_str = f"{val:x}"
         if len(hex_str) % 2 == 1:
             hex_str = "0" + hex_str
         return binascii.unhexlify(hex_str)

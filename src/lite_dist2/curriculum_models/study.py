@@ -66,7 +66,7 @@ class Study:
 
     def suggest_next_trial(
         self,
-        num: int | None,
+        num: int,
         worker_node_name: str | None,
         worker_node_id: str,
     ) -> Trial | None:
@@ -125,7 +125,7 @@ class Study:
         )
 
     def to_summary(self) -> StudySummary:
-        done_grids = sum(trial.parameter_space.get_total() for trial in self.trial_table.trials)
+        done_grids = sum(trial.parameter_space.total or 0 for trial in self.trial_table.trials)
         return StudySummary(
             name=self.name,
             study_id=self.study_id,

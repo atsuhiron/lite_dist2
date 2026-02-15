@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from lite_dist2.curriculum_models.mapping import MappingsStorage
 from lite_dist2.expections import LD2NotDoneError
@@ -8,19 +8,25 @@ from lite_dist2.study_strategies import BaseStudyStrategy, StudyStrategyModel
 
 if TYPE_CHECKING:
     from lite_dist2.curriculum_models.trial_table import TrialTable
+    from lite_dist2.study_strategies.base_study_strategy import StudyStrategyParam
     from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
 class AllCalculationStudyStrategy(BaseStudyStrategy):
+    def __init__(self, study_strategy_param: StudyStrategyParam | None) -> None:
+        self.study_strategy_param = study_strategy_param
+
+    @override
     def is_done(
         self,
         trial_table: TrialTable,
         parameter_space: ParameterAlignedSpace,
-        trial_repository: BaseTrialRepository,  # noqa: ARG002
+        trial_repository: BaseTrialRepository,
     ) -> bool:
         return trial_table.count_grid() == parameter_space.total
 
+    @override
     def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         trials = trial_repository.load_all()
         if not trials:
@@ -34,12 +40,14 @@ class AllCalculationStudyStrategy(BaseStudyStrategy):
         params = tuple(param.to_dummy() for param in first.params)
         result = first.result.to_dummy()
 
-        try:
-            values = [mapping.to_tuple() for trial in trials for mapping in trial.results]
-        except TypeError as e:
-            raise LD2NotDoneError from e
+        values = []
+        for trial in trials:
+            if trial.results is None:
+                raise LD2NotDoneError
+            values.extend(mapping.to_tuple() for mapping in trial.results)
         return MappingsStorage(params_info=params, result_info=result, values=values)
 
+    @override
     def to_model(self) -> StudyStrategyModel:
         return StudyStrategyModel(
             type="all_calculation",

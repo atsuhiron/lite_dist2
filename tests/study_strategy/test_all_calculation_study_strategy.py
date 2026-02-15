@@ -11,18 +11,18 @@ from lite_dist2.curriculum_models.trial_table import TrialTable
 from lite_dist2.expections import LD2NotDoneError
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.trial_repositories.base_trial_repository import BaseTrialRepository
-from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpaceModel
-from lite_dist2.value_models.line_segment import LineSegmentModel, ParameterRangeInt
+from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, ParameterAlignedSpacePortableModel
+from lite_dist2.value_models.line_segment import LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ScalarValue, VectorValue
 from tests.const import DT
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import TrialRepositoryType
 
-_DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpaceModel(
+_DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpacePortableModel(
     type="aligned",
     axes=[
-        LineSegmentModel(
+        LineSegmentPortableModel(
             name="x",
             type="int",
             size="0x2",
@@ -31,7 +31,7 @@ _DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpaceModel(
             ambient_index="0x0",
             step="0x1",
         ),
-        LineSegmentModel(
+        LineSegmentPortableModel(
             name="y",
             type="int",
             size="0x2",
@@ -73,7 +73,6 @@ class MockTrialRepository(BaseTrialRepository):
 def done_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
-    # noinspection PyUnusedLocal
     def fake_count_grid(self) -> int:  # noqa: ANN001
         return return_value
 
@@ -84,11 +83,11 @@ def done_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRe
 def all_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
-    # noinspection PyUnusedLocal
-    def fake_get_total(self) -> int:  # noqa: ANN001
-        return return_value
-
-    monkeypatch.setattr(ParameterAlignedSpace, "get_total", fake_get_total)
+    monkeypatch.setattr(
+        ParameterAlignedSpace,
+        "total",
+        property(lambda _: return_value),
+    )
 
 
 @pytest.mark.parametrize(
@@ -108,8 +107,8 @@ def test_all_calculation_study_strategy_is_done(
     trial_table = TrialTable(trials=[], aggregated_parameter_space=None)
     parameter_space = ParameterAlignedSpace(
         axes=[
-            ParameterRangeInt(name="x", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
-            ParameterRangeInt(name="y", type="int", size=2, start=0, ambient_size=2, ambient_index=0),
+            LineSegment(name="x", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
+            LineSegment(name="y", type_="int", size=2, step=1, start=0, ambient_size=2, ambient_index=0),
         ],
         check_lower_filling=True,
     )
@@ -121,7 +120,6 @@ def test_all_calculation_study_strategy_is_done(
 def trial_repository_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
-    # noinspection PyUnusedLocal
     def fake_load_all(self) -> int:  # noqa: ANN001
         return return_value
 
@@ -318,7 +316,7 @@ def trial_repository_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.Fi
     ],
     indirect=["trial_repository_fixture"],
 )
-def test_find_exact_study_strategy_extract_mapping(
+def test_all_calculation_study_strategy_extract_mapping(
     trial_repository_fixture: list[TrialModel],
     expected: MappingsStorage,
 ) -> None:
@@ -415,7 +413,7 @@ def test_find_exact_study_strategy_extract_mapping(
     ],
     indirect=["trial_repository_fixture"],
 )
-def test_find_exact_study_strategy_extract_mapping_raise(
+def test_all_calculation_study_strategy_extract_mapping_raise(
     trial_repository_fixture: list[TrialModel],
 ) -> None:
     repo = MockTrialRepository()

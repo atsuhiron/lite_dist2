@@ -18,17 +18,17 @@ def hex2float(hex_str: str) -> float:
 
 
 def float2hex(val: float) -> str:
-    return val.hex()
+    return float(val).hex()
 
 
 def numerize(type_name: Literal["bool", "int", "float"], value: PortableValueType) -> PrimitiveValueType:
     match type_name:
         case "bool":
-            return value
+            return bool(value)
         case "int":
-            return hex2int(value)
+            return hex2int(str(value))
         case "float":
-            return hex2float(value)
+            return hex2float(str(value))
         case _:
             raise LD2ModelTypeError(type_name)
 
@@ -36,9 +36,9 @@ def numerize(type_name: Literal["bool", "int", "float"], value: PortableValueTyp
 def portablize(type_name: Literal["bool", "int", "float"], value: PrimitiveValueType) -> PortableValueType:
     match type_name:
         case "bool":
-            return value
+            return bool(value)
         case "int":
-            return int2hex(value)
+            return int2hex(int(value))
         case "float":
             return float2hex(value)
         case _:

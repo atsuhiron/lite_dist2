@@ -4,7 +4,7 @@ import itertools
 from functools import reduce
 from typing import TYPE_CHECKING
 
-from lite_dist2.interfaces import Mergeable
+from lite_dist2.value_models.base_space import FlattenSegment
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
@@ -12,8 +12,11 @@ if TYPE_CHECKING:
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
+type Mergeable = ParameterAlignedSpace | FlattenSegment
+
+
 def simplify[T: Mergeable](mergeables: list[T], *args: object) -> list[T]:
-    new_aps: list[Mergeable] = []
+    new_aps = []
     mergeables_duplicated_group: dict[int, set[int]] = {}
     sub_space_num = len(mergeables)
     mergeables = sorted(mergeables, key=lambda spc: spc.get_start_index(*args))
@@ -41,7 +44,9 @@ def simplify[T: Mergeable](mergeables: list[T], *args: object) -> list[T]:
     new_aps.extend([mergeables[i] for i in not_mergeables])
 
     for group_index_set in mergeable_group:
-        group_space_list = sorted([mergeables[i] for i in group_index_set], key=lambda spc: spc.get_start_index(*args))
+        group_space_list: list[T] = sorted(
+            [mergeables[i] for i in group_index_set], key=lambda spc: spc.get_start_index(*args)
+        )
         merged = group_space_list[0]
         for space in group_space_list[1:]:
             merged = merged.merge(space, *args)
@@ -59,7 +64,7 @@ def remap_space(aps: list[ParameterAlignedSpace], dim: int) -> dict[int, list[Pa
     return remapped
 
 
-def infinite_product[T](*iterators: tuple[Iterable[T], ...]) -> Generator[tuple[T, ...], None, None]:
+def infinite_product[T](*iterators: Iterable[T]) -> Generator[tuple[T, ...], None, None]:
     if len(iterators) == 1:
         for infinite_element in iterators[0]:
             yield (infinite_element,)

@@ -7,8 +7,7 @@ from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from lite_dist2.curriculum_models.trial_table import TrialTable
-    from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
-    from lite_dist2.value_models.base_space import ParameterSpace
+    from lite_dist2.value_models.space_type import ParameterSpaceType
 
 
 class SuggestStrategyParam(BaseModel):
@@ -20,19 +19,11 @@ class SuggestStrategyModel(BaseModel):
     suggest_strategy_param: SuggestStrategyParam
 
 
-class BaseSuggestStrategy(metaclass=abc.ABCMeta):
-    def __init__(
-        self,
-        suggest_parameter: SuggestStrategyParam,
-        parameter_space: ParameterAlignedSpace,
-    ) -> None:
-        self.suggest_parameter = suggest_parameter
-        self.parameter_space = parameter_space
-
+class BaseSuggestStrategy(abc.ABC):
     @abc.abstractmethod
     def to_model(self) -> SuggestStrategyModel:
         pass
 
     @abc.abstractmethod
-    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpace:
+    def suggest(self, trial_table: TrialTable, max_num: int) -> ParameterSpaceType | None:
         pass
