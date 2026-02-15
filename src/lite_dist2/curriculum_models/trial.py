@@ -13,6 +13,7 @@ from lite_dist2.value_models.aligned_space import ParameterAlignedSpace, Paramet
 from lite_dist2.value_models.const_param import ConstParam
 from lite_dist2.value_models.jagged_space import ParameterJaggedSpace, ParameterJaggedSpacePortableModel
 from lite_dist2.value_models.point import ResultType, ScalarValue, VectorValue
+from lite_dist2.value_models.space_model import SpacePortableModelType
 
 if TYPE_CHECKING:
     from lite_dist2.type_definitions import RawParamType, RawResultType
@@ -47,7 +48,7 @@ class TrialModel(BaseModel):
     reserved_timestamp: datetime
     trial_status: TrialStatus
     const_param: ConstParam | None
-    parameter_space: ParameterAlignedSpacePortableModel | ParameterJaggedSpacePortableModel
+    parameter_space: SpacePortableModelType
     result_type: Literal["scalar", "vector"]
     result_value_type: Literal["bool", "int", "float"]
     worker_node_name: str | None
@@ -131,7 +132,7 @@ class Trial:
         if self.trial_status != TrialStatus.done or self.registered_timestamp is None:
             raise LD2NotDoneError
 
-        grid_size = self.parameter_space.get_total()
+        grid_size = self.parameter_space.total
         if not isinstance(grid_size, int):
             msg = "Parameter space in trial must be finite space."
             raise LD2InvalidSpaceError(msg)

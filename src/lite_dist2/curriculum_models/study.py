@@ -125,7 +125,7 @@ class Study:
         )
 
     def to_summary(self) -> StudySummary:
-        done_grids = sum(trial.parameter_space.get_total() or 0 for trial in self.trial_table.trials)
+        done_grids = sum(trial.parameter_space.total or 0 for trial in self.trial_table.trials)
         return StudySummary(
             name=self.name,
             study_id=self.study_id,

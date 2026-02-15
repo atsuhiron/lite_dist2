@@ -75,7 +75,7 @@ class AutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
-        total = parameter_space.get_total()
+        total = parameter_space.total
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
         if config.process_num is None or config.process_num > 1:
             parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
@@ -105,7 +105,7 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
-        total = parameter_space.get_total()
+        total = parameter_space.total
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
         if pool is not None:
             parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)

@@ -472,7 +472,7 @@ def test_line_segment_grid_without_rounding_error() -> None:
         ),
     ],
 )
-def test_line_segment_model_bool_to_model_from_model(model: LineSegmentPortableModel) -> None:
+def test_line_segment_portable_model_reconstruction_bool(model: LineSegmentPortableModel) -> None:
     segment = model.to_line_segment()
     reconstructed_model = LineSegmentPortableModel.from_line_segment(segment)
     assert model == reconstructed_model
@@ -500,7 +500,7 @@ def test_line_segment_model_bool_to_model_from_model(model: LineSegmentPortableM
         ),
     ],
 )
-def test_line_segment_model_int_to_model_from_model(model: LineSegmentPortableModel) -> None:
+def test_line_segment_portable_model_reconstruction_int(model: LineSegmentPortableModel) -> None:
     segment_model = model.to_line_segment()
     reconstructed_model = LineSegmentPortableModel.from_line_segment(segment_model)
     assert model == reconstructed_model
@@ -528,7 +528,7 @@ def test_line_segment_model_int_to_model_from_model(model: LineSegmentPortableMo
         ),
     ],
 )
-def test_line_segment_model_float_to_model_from_model(model: LineSegmentPortableModel) -> None:
+def test_line_segment_portable_model_reconstruction_float(model: LineSegmentPortableModel) -> None:
     segment = model.to_line_segment()
     reconstructed_model = LineSegmentPortableModel.from_line_segment(segment)
     assert model.name == reconstructed_model.name

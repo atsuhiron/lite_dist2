@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import functools
 from collections import defaultdict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
 from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
-from lite_dist2.value_models.base_space import FlattenSegment, get_lower_element_num_by_dim
+from lite_dist2.value_models.base_space import BaseSpace, FlattenSegment
 from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.point import ParamType, ScalarValue
 from lite_dist2.value_models.space_model import ParameterJaggedSpacePortableModel
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
 
-class ParameterJaggedSpace:
+class ParameterJaggedSpace(BaseSpace):
     def __init__(
         self,
         parameters: list[tuple[PrimitiveValueType, ...]],
@@ -28,27 +29,32 @@ class ParameterJaggedSpace:
         self.ambient_indices = ambient_indices
         self.axes_info = axes_info
 
+    @override
     def __eq__(self, other: object) -> bool:
         # for cache and test
         if isinstance(other, ParameterJaggedSpace):
             return (self.parameters == other.parameters) and (self.axes_info == other.axes_info)
         return False
 
+    @override
     def __hash__(self) -> int:
         return hash((*self.parameters, *self.ambient_indices, *self.axes_info))
 
-    def get_dim(self) -> int:
+    @override
+    @functools.cached_property
+    def dim(self) -> int:
         return len(self.axes_info)
 
-    def get_total(self) -> int:
+    @override
+    @functools.cached_property
+    def total(self) -> int:
         return len(self.parameters)
 
+    @override
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
         yield from self.parameters
 
-    def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
-        raise NotImplementedError  # 到達しないはず??
-
+    @override
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         return tuple(
             [
@@ -57,24 +63,8 @@ class ParameterJaggedSpace:
             ],
         )
 
-    def derived_by_same_ambient_space_with(self, other: object) -> bool:
-        if isinstance(other, ParameterJaggedSpace):
-            return self.axes_info == other.axes_info
-        return False
-
+    @override
     def to_aligned_list(self) -> list[ParameterAlignedSpace]:
-        # segment_types: list[type[LineSegment]] = []
-        # for dummy in self.axes_info:
-        #     match dummy.type:
-        #         case "bool":
-        #             segment_types.append(ParameterRangeBoolModel)
-        #         case "int":
-        #             segment_types.append(ParameterRangeIntModel)
-        #         case "float":
-        #             segment_types.append(ParameterRangeFloatModel)
-        #         case _:
-        #             raise LD2UndefinedError(dummy.type)
-
         space_by_line = defaultdict(list)
         for ambient_index, param in zip(self.ambient_indices, self.parameters, strict=True):
             space_by_line[ambient_index[1:]].append(
@@ -104,11 +94,14 @@ class ParameterJaggedSpace:
             spaces.extend(v)
         return spaces
 
+    @override
+    @functools.cached_property
     def lower_element_num_by_dim(self) -> tuple[int, ...]:
-        return get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes_info])
+        return self.get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes_info])
 
+    @override
     def get_flatten_ambient_start_and_size_list(self) -> list[FlattenSegment]:
-        lower_element_num_by_dim = self.lower_element_num_by_dim()
+        lower_element_num_by_dim = self.lower_element_num_by_dim
         flatten_segments = []
         for amb_idx in self.ambient_indices:
             flatten_index = sum(d * lower for d, lower in zip(amb_idx, lower_element_num_by_dim, strict=True))

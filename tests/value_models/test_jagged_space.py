@@ -62,7 +62,7 @@ def test_parameter_jagged_space_lower_element_num_by_dim(
     space: ParameterJaggedSpace,
     expected: tuple[int, ...],
 ) -> None:
-    actual = space.lower_element_num_by_dim()
+    actual = space.lower_element_num_by_dim
     assert actual == expected
 
 

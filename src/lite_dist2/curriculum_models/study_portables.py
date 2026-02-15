@@ -132,6 +132,6 @@ class StudyStorage(_StudyCommonModel):
             parameter_space=self.parameter_space,
             result_type=self.result_type,
             result_value_type=self.result_value_type,
-            total_grids=self.parameter_space.get_total(),
+            total_grids=self.parameter_space.total,
             done_grids=self.done_grids,
         )

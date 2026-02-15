@@ -66,7 +66,7 @@ class TableNodeClient:
             return None
 
         trial = Trial.from_model(resp.trial)
-        logger.info("Reserved trial (size=%d)", trial.parameter_space.get_total())
+        logger.info("Reserved trial (size=%d)", trial.parameter_space.total)
         return trial
 
     def register_trial(self, trial: Trial, timeout_seconds: int) -> None:

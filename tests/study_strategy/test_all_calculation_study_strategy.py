@@ -83,10 +83,11 @@ def done_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRe
 def all_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
-    def fake_get_total(self) -> int:  # noqa: ANN001
-        return return_value
-
-    monkeypatch.setattr(ParameterAlignedSpace, "get_total", fake_get_total)
+    monkeypatch.setattr(
+        ParameterAlignedSpace,
+        "total",
+        property(lambda _: return_value),
+    )
 
 
 @pytest.mark.parametrize(

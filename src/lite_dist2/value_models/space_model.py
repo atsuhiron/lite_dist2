@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 from typing import Literal
 
 from pydantic import BaseModel
@@ -14,7 +15,8 @@ class ParameterAlignedSpacePortableModel(BaseModel):
     axes: list[LineSegmentPortableModel]
     check_lower_filling: bool
 
-    def get_total(self) -> int | None:
+    @functools.cached_property
+    def total(self) -> int | None:
         t = 1
         for axis in self.axes:
             if axis.size is None:

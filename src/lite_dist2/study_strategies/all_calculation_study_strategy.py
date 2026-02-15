@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from lite_dist2.curriculum_models.mapping import MappingsStorage
 from lite_dist2.expections import LD2NotDoneError
@@ -17,14 +17,16 @@ class AllCalculationStudyStrategy(BaseStudyStrategy):
     def __init__(self, study_strategy_param: StudyStrategyParam | None) -> None:
         self.study_strategy_param = study_strategy_param
 
+    @override
     def is_done(
         self,
         trial_table: TrialTable,
         parameter_space: ParameterAlignedSpace,
-        trial_repository: BaseTrialRepository,  # noqa: ARG002
+        trial_repository: BaseTrialRepository,
     ) -> bool:
         return trial_table.count_grid() == parameter_space.total
 
+    @override
     def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         trials = trial_repository.load_all()
         if not trials:
@@ -45,6 +47,7 @@ class AllCalculationStudyStrategy(BaseStudyStrategy):
             values.extend(mapping.to_tuple() for mapping in trial.results)
         return MappingsStorage(params_info=params, result_info=result, values=values)
 
+    @override
     def to_model(self) -> StudyStrategyModel:
         return StudyStrategyModel(
             type="all_calculation",

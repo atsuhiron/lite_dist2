@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
-from lite_dist2.value_models.base_space import FlattenSegment, get_lower_element_num_by_dim
+from lite_dist2.value_models.base_space import BaseSpace, FlattenSegment
 from lite_dist2.value_models.line_segment import DummyLineSegment, LineSegment, LineSegmentPortableModel
 from lite_dist2.value_models.parameter_aligned_space_helper import infinite_product
 from lite_dist2.value_models.point import ParamType, ScalarValue
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from lite_dist2.type_definitions import PrimitiveValueType
 
 
-class ParameterAlignedSpace:
+class ParameterAlignedSpace(BaseSpace):
     def __init__(self, axes: list[LineSegment], check_lower_filling: bool) -> None:
         self.axes = axes  # larger index, deeper dimension
         self.filling_dim = [axis.is_universal() for axis in self.axes]
@@ -25,15 +25,17 @@ class ParameterAlignedSpace:
         if self.check_lower_filling:
             self._check_lower_filling()
 
-    def __hash__(self) -> int:
-        # for cache
-        return hash(tuple(hash(axis) for axis in self.axes))
-
+    @override
     def __eq__(self, other: object) -> bool:
         # for cache and test
         if isinstance(other, ParameterAlignedSpace):
             return self.axes == other.axes
         return False
+
+    @override
+    def __hash__(self) -> int:
+        # for cache
+        return hash(tuple(hash(axis) for axis in self.axes))
 
     def _check_lower_filling(self) -> None:
         #  F  F  F  T  T
@@ -67,25 +69,14 @@ class ParameterAlignedSpace:
                 msg = "Upper dimension must be size=1"
                 raise LD2InvalidSpaceError(msg)
 
+    @override
     @functools.cached_property
     def dim(self) -> int:
-        return self.get_dim()
-
-    def get_dim(self) -> int:
         return len(self.dimensional_sizes)
 
-    @functools.cached_property
-    def dimensional_sizes(self) -> tuple[int | None, ...]:
-        return self.get_dimensional_sizes()
-
-    def get_dimensional_sizes(self) -> tuple[int | None, ...]:
-        return tuple(axis.size for axis in self.axes)
-
+    @override
     @functools.cached_property
     def total(self) -> int | None:
-        return self.get_total()
-
-    def get_total(self) -> int | None:
         t = 1
         for axis in self.axes:
             if axis.size is None:
@@ -93,53 +84,14 @@ class ParameterAlignedSpace:
             t *= axis.size
         return t
 
-    def lower_element_num_by_dim(self) -> tuple[int, ...]:
-        return get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes])
-
-    def is_infinite(self) -> bool:
-        return self.total is None
-
-    @functools.cached_property
-    def dummy_info(self) -> list[DummyLineSegment]:
-        return self.get_dummy_info()
-
-    def get_dummy_info(self) -> list[DummyLineSegment]:
-        return [axis.to_dummy() for axis in self.axes]
-
+    @override
     def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
         yield from infinite_product(*(axis.grid() for axis in self.axes))
-
-    def get_flatten_ambient_start_and_size(self) -> FlattenSegment:
-        if not self.check_lower_filling:
-            msg = "Cannot get flatten info. Because check_lower_filling of this space is False."
-            raise LD2InvalidSpaceError(msg)
-
-        lower_element_num_by_dim = self.lower_element_num_by_dim()
-        flatten_index = 0
-        for di in range(self.dim):
-            flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
-        return FlattenSegment(flatten_index, self.total)
-
-    def get_flatten_ambient_start_and_size_list(self) -> list[FlattenSegment]:
-        return [self.get_flatten_ambient_start_and_size()]
-
-    def get_lower_not_universal_dim(self) -> int:
-        for i in reversed(range(self.dim)):
-            if not self.axes[i].is_universal():
-                return i
-        return -1
 
     def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
         yield from infinite_product(*(axis.indexed_grid() for axis in self.axes))
 
-    def slice(self, start_and_sizes: list[tuple[int, int]]) -> ParameterAlignedSpace:
-        if len(start_and_sizes) != self.dim:
-            msg = "start_and_sizes"
-            raise LD2ParameterError(msg, "different size to axes")
-
-        axes = [self.axes[i].slice(*start_and_sizes[i]) for i in range(self.dim)]
-        return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
-
+    @override
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         # TODO: type="vector" にも対応させる
         return tuple(
@@ -156,8 +108,83 @@ class ParameterAlignedSpace:
             return False
         return all(s.derived_by_same_ambient_space_with(o) for s, o in zip(self.axes, other.axes, strict=True))
 
+    @override
+    def to_aligned_list(self) -> list[ParameterAlignedSpace]:
+        return [self]
+
+    @override
+    @functools.cached_property
+    def lower_element_num_by_dim(self) -> tuple[int, ...]:
+        return self.get_lower_element_num_by_dim([axis.ambient_size for axis in self.axes])
+
+    def get_flatten_ambient_start_and_size_list(self) -> list[FlattenSegment]:
+        return [self.get_flatten_ambient_start_and_size()]
+
+    def to_model(self) -> ParameterAlignedSpacePortableModel:
+        return ParameterAlignedSpacePortableModel(
+            type="aligned",
+            axes=[LineSegmentPortableModel.from_line_segment(axis) for axis in self.axes],
+            check_lower_filling=self.check_lower_filling,
+        )
+
+    @staticmethod
+    def from_model(space_model: ParameterAlignedSpacePortableModel) -> ParameterAlignedSpace:
+        if not isinstance(space_model, ParameterAlignedSpacePortableModel):
+            param = f"{ParameterAlignedSpace.__name__}.from_model"
+            msg = f"Model type must be {ParameterAlignedSpacePortableModel.__name__}."
+            raise LD2ParameterError(param, msg)
+
+        axes = []
+        for axis_model in space_model.axes:
+            if axis_model.is_dummy:
+                param = f"{LineSegmentPortableModel.__name__}.type"
+                msg = f"An axis of {ParameterAlignedSpace.__name__} is not allowed dummy axis."
+                raise LD2ParameterError(param, msg)
+
+            axes.append(axis_model.to_line_segment())
+        return ParameterAlignedSpace(axes=axes, check_lower_filling=space_model.check_lower_filling)
+
+    @functools.cached_property
+    def dimensional_sizes(self) -> tuple[int | None, ...]:
+        return tuple(axis.size for axis in self.axes)
+
+    def is_infinite(self) -> bool:
+        return self.total is None
+
+    @functools.cached_property
+    def dummy_info(self) -> list[DummyLineSegment]:
+        return self.get_dummy_info()
+
+    def get_dummy_info(self) -> list[DummyLineSegment]:
+        return [axis.to_dummy() for axis in self.axes]
+
+    def get_lower_not_universal_dim(self) -> int:
+        for i in reversed(range(self.dim)):
+            if not self.axes[i].is_universal():
+                return i
+        return -1
+
+    def slice(self, start_and_sizes: list[tuple[int, int]]) -> ParameterAlignedSpace:
+        if len(start_and_sizes) != self.dim:
+            msg = "start_and_sizes"
+            raise LD2ParameterError(msg, "different size to axes")
+
+        axes = [self.axes[i].slice(*start_and_sizes[i]) for i in range(self.dim)]
+        return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
+
     def get_start_index(self, target_dim: int) -> int:
         return self.axes[target_dim].get_start_index()
+
+    def get_flatten_ambient_start_and_size(self) -> FlattenSegment:
+        if not self.check_lower_filling:
+            msg = "Cannot get flatten info. Because check_lower_filling of this space is False."
+            raise LD2InvalidSpaceError(msg)
+
+        lower_element_num_by_dim = self.lower_element_num_by_dim
+        flatten_index = 0
+        for di in range(self.dim):
+            flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
+        return FlattenSegment(flatten_index, self.total)
 
     def can_merge(self, other: ParameterAlignedSpace, target_dim: int) -> bool:
         if not self.derived_by_same_ambient_space_with(other):
@@ -203,16 +230,6 @@ class ParameterAlignedSpace:
 
         return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
 
-    def to_aligned_list(self) -> list[ParameterAlignedSpace]:
-        return [self]
-
-    def to_model(self) -> ParameterAlignedSpacePortableModel:
-        return ParameterAlignedSpacePortableModel(
-            type="aligned",
-            axes=[LineSegmentPortableModel.from_line_segment(axis) for axis in self.axes],
-            check_lower_filling=self.check_lower_filling,
-        )
-
     @staticmethod
     def loom_by_flatten_index(flatten_index: int, lower_element_num_by_dim: tuple[int, ...]) -> tuple[int, ...]:
         # x -> (a_i, b_j, c_k)
@@ -222,20 +239,3 @@ class ParameterAlignedSpace:
             loomed_indices.append(residual_flatten_index // size)
             residual_flatten_index = residual_flatten_index % size
         return tuple(loomed_indices)
-
-    @staticmethod
-    def from_model(space_model: ParameterAlignedSpacePortableModel) -> ParameterAlignedSpace:
-        if not isinstance(space_model, ParameterAlignedSpacePortableModel):
-            param = f"{ParameterAlignedSpace.__name__}.from_model"
-            msg = f"Model type must be {ParameterAlignedSpacePortableModel.__name__}."
-            raise LD2ParameterError(param, msg)
-
-        axes = []
-        for axis_model in space_model.axes:
-            if axis_model.is_dummy:
-                param = f"{LineSegmentPortableModel.__name__}.type"
-                msg = f"An axis of {ParameterAlignedSpace.__name__} is not allowed dummy axis."
-                raise LD2ParameterError(param, msg)
-
-            axes.append(axis_model.to_line_segment())
-        return ParameterAlignedSpace(axes=axes, check_lower_filling=space_model.check_lower_filling)
