@@ -21,7 +21,7 @@ class FindExactStudyStrategy(BaseStudyStrategy):
         self.study_strategy_param = study_strategy_param
 
     @override
-    def is_done(
+    async def is_done(
         self,
         trial_table: TrialTable,
         parameter_space: ParameterAlignedSpace,
@@ -29,11 +29,11 @@ class FindExactStudyStrategy(BaseStudyStrategy):
     ) -> bool:
         if self.found_mapping:
             return True
-        self.found_mapping = self._find(trial_repository)
+        self.found_mapping = await self._find(trial_repository)
         return bool(self.found_mapping)
 
-    def _find(self, trial_repository: BaseTrialRepository) -> Mapping | None:
-        trials = trial_repository.load_all()
+    async def _find(self, trial_repository: BaseTrialRepository) -> Mapping | None:
+        trials = await trial_repository.load_all()
         for trial in trials:
             finding = Trial.from_model(trial).find_target_value(self.study_strategy_param.target_value)
             if finding:
@@ -41,9 +41,9 @@ class FindExactStudyStrategy(BaseStudyStrategy):
         return None
 
     @override
-    def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
+    async def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         if not self.found_mapping:
-            self.found_mapping = self._find(trial_repository)
+            self.found_mapping = await self._find(trial_repository)
         if not self.found_mapping:
             raise LD2NotDoneError
 

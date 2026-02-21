@@ -32,48 +32,48 @@ def handle_ping() -> OkResponse:
 
 
 @app.get("/save")
-def handle_save() -> OkResponse:
-    curr = CurriculumProvider.get()
-    curr.save()
+async def handle_save() -> OkResponse:
+    curr = await CurriculumProvider.get()
+    await curr.save()
     return OkResponse(ok=True)
 
 
 @app.get("/status", response_model=CurriculumSummaryResponse)
-def handle_status() -> CurriculumSummaryResponse:
-    curr = CurriculumProvider.get()
+async def handle_status() -> CurriculumSummaryResponse:
+    curr = await CurriculumProvider.get()
     return CurriculumSummaryResponse(summaries=curr.to_summaries())
 
 
 @app.get("/status/progress", response_model=ProgressSummaryResponse)
-def handle_status_progress(
+async def handle_status_progress(
     cutoff_sec: Annotated[int, Query(description="Time range of Trial used for ETA estimation.")] = 600,
 ) -> ProgressSummaryResponse:
-    curr = CurriculumProvider.get()
+    curr = await CurriculumProvider.get()
     return curr.report_progress(cutoff_sec)
 
 
 @app.post("/study/register", response_model=StudyRegisteredResponse)
-def handle_study_register(
+async def handle_study_register(
     study_registry: Annotated[StudyRegisterParam, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse:
     if not study_registry.study.is_valid():
         raise HTTPException(status_code=400, detail="Cannot use together infinite space and all_calculation strategy.")
 
-    curr = CurriculumProvider.get()
+    curr = await CurriculumProvider.get()
     new_study = Study.from_model(study_registry.study.to_study_model(curr.trial_file_dir))
 
     if curr.try_insert_study(new_study):
-        new_study.trial_repo.clean_save_dir()
+        await new_study.trial_repo.clean_save_dir()
         return StudyRegisteredResponse(study_id=new_study.study_id)
     raise HTTPException(status_code=400, detail=f'The name("{new_study.name}") of study is already registered.')
 
 
 @app.post("/trial/reserve", response_model=TrialReserveResponse)
-def handle_trial_reserve(
+async def handle_trial_reserve(
     param: Annotated[TrialReserveParam, Body(description="Reserved trial parameter")],
     response: Response,
 ) -> TrialReserveResponse:
-    curr = CurriculumProvider.get()
+    curr = await CurriculumProvider.get()
     study = curr.get_available_study(param.retaining_capacity)
     if study is None:
         response.status_code = status.HTTP_202_ACCEPTED
@@ -87,27 +87,27 @@ def handle_trial_reserve(
 
 
 @app.post("/trial/register", response_model=OkResponse)
-def handle_trial_register(
+async def handle_trial_register(
     param: Annotated[TrialRegisterParam, Body(description="Registering trial")],
 ) -> OkResponse:
-    curr = CurriculumProvider.get()
+    curr = await CurriculumProvider.get()
     trial = param.trial
     study = curr.find_study_by_id(trial.study_id)
     if study is None:
         raise HTTPException(status_code=404, detail=f"Study not found: study_id={trial.study_id}")
 
     try:
-        study.receipt_trial(Trial.from_model(trial))
+        await study.receipt_trial(Trial.from_model(trial))
     except LD2ParameterError as e:
         raise HTTPException(
             status_code=409, detail="Invalid trial. Maybe the trial is not reserved or already registered."
         ) from e
-    curr.to_storage_if_done()
+    await curr.to_storage_if_done()
     return OkResponse(ok=True)
 
 
 @app.get("/study", response_model=StudyResponse)
-def handle_study(
+async def handle_study(
     response: Response,
     study_id: Annotated[str | None, Query(description="`study_id` of the target study")] = None,
     name: Annotated[str | None, Query(description="`name` of the target study")] = None,
@@ -117,10 +117,10 @@ def handle_study(
     if study_id is not None and name is not None:
         raise HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
 
-    curr = CurriculumProvider.get()
+    curr = await CurriculumProvider.get()
     storage = curr.pop_storage(study_id, name)
     if storage is not None:
-        storage.consume_trial()
+        await storage.consume_trial()
         return StudyResponse(status=StudyStatus.done, result=storage)
 
     # 見つからなかったか、終わってない
@@ -134,7 +134,7 @@ def handle_study(
 
 
 @app.delete("/study", response_model=OkResponse)
-def handle_study_cancel(
+async def handle_study_cancel(
     study_id: Annotated[str | None, Query(description="`study_id` of the target study")] = None,
     name: Annotated[str | None, Query(description="`name` of the target study")] = None,
 ) -> OkResponse:
@@ -143,9 +143,9 @@ def handle_study_cancel(
     if study_id is not None and name is not None:
         raise HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
 
-    curr = CurriculumProvider.get()
+    curr = await CurriculumProvider.get()
     try:
-        found_and_cancel = curr.cancel_study(study_id, name)
+        found_and_cancel = await curr.cancel_study(study_id, name)
     except LD2ParameterError as e:
         raise HTTPException(status_code=400, detail="Invalid study_id or name.") from e
 

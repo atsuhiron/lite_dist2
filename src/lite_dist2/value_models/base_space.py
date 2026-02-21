@@ -32,7 +32,7 @@ class BaseSpace(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
+    def grid(self) -> Generator[tuple[PrimitiveValueType, ...]]:
         pass
 
     @abc.abstractmethod

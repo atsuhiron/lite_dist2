@@ -1,5 +1,7 @@
-target-version = "py312"
+target-version = "py313"
 line-length = 119
+
+src = ["example", "src", "test"]
 
 [lint]
 select = ["ALL"]
@@ -24,6 +26,8 @@ ignore = [
     "S101",     # pytest use assert
     "SLF001",   # test private method
     "ARG001",   # Fixture
+    "ASYNC240", # use Path
+    "ASYNC230", # use blocking io 
 ]
 "example/**.py" = [
     "INP001",   # Example is not package

@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 from typing import Literal
 
 import pytest
@@ -89,3 +91,16 @@ def test_portablize(
 ) -> None:
     actual = common.portablize(type_name, value)
     assert actual == expected
+
+
+@pytest.mark.asyncio
+async def test_async_file_io(tmp_path: Path) -> None:
+    test_data = b'{"test data": 123}'
+    test_file = tmp_path / "test_file.json"
+
+    await common.async_write_file(test_file, test_data)
+    assert test_file.exists()
+
+    read_data = await common.async_read_file(test_file)
+    json_data = json.loads(read_data)
+    assert json_data == {"test data": 123}

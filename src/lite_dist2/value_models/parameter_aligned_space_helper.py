@@ -64,7 +64,7 @@ def remap_space(aps: list[ParameterAlignedSpace], dim: int) -> dict[int, list[Pa
     return remapped
 
 
-def infinite_product[T](*iterators: Iterable[T]) -> Generator[tuple[T, ...], None, None]:
+def infinite_product[T](*iterators: Iterable[T]) -> Generator[tuple[T, ...]]:
     if len(iterators) == 1:
         for infinite_element in iterators[0]:
             yield (infinite_element,)

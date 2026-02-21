@@ -25,7 +25,7 @@ class StudyStrategyModel(BaseModel):
 
 class BaseStudyStrategy(abc.ABC):
     @abc.abstractmethod
-    def is_done(
+    async def is_done(
         self,
         trial_table: TrialTable,
         parameter_space: ParameterAlignedSpace,
@@ -34,7 +34,7 @@ class BaseStudyStrategy(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
+    async def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         pass
 
     @abc.abstractmethod

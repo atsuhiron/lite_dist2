@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from lite_dist2.curriculum_models.trial import TrialModel, TrialStatus
 from lite_dist2.trial_repositories.normal_trial_repository import NormalTrialRepository
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpacePortableModel
@@ -15,20 +17,22 @@ def test_normal_trial_repository_get_repository_type() -> None:
     assert actual == expected
 
 
-def test_normal_trial_repository_clean_save_dir_empty(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_normal_trial_repository_clean_save_dir_empty(tmp_path: str) -> None:
     save_dir = Path(tmp_path) / "some_study"
 
     # 空であることを確認
     assert not save_dir.exists()
 
     repo = NormalTrialRepository(save_dir)
-    repo.clean_save_dir()
+    await repo.clean_save_dir()
     assert save_dir.exists()
     assert save_dir.is_dir()
     assert not bool(list(save_dir.iterdir()))
 
 
-def test_normal_trial_repository_clean_save_dir_filled(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_normal_trial_repository_clean_save_dir_filled(tmp_path: str) -> None:
     save_dir = Path(tmp_path) / "some_study"
 
     # 空であることを確認
@@ -41,7 +45,7 @@ def test_normal_trial_repository_clean_save_dir_filled(tmp_path: str) -> None:
     assert bool(list(save_dir.iterdir()))
 
     repo = NormalTrialRepository(save_dir)
-    repo.clean_save_dir()
+    await repo.clean_save_dir()
 
     # 初期状態が空じゃなくても空になることを確認
     assert save_dir.exists()
@@ -49,7 +53,8 @@ def test_normal_trial_repository_clean_save_dir_filled(tmp_path: str) -> None:
     assert not bool(list(save_dir.iterdir()))
 
 
-def test_normal_trial_repository_save(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_normal_trial_repository_save(tmp_path: str) -> None:
     save_dir = Path(tmp_path) / "s01"
     trial_model = TrialModel(
         study_id="s01",
@@ -80,10 +85,10 @@ def test_normal_trial_repository_save(tmp_path: str) -> None:
     )
 
     repo = NormalTrialRepository(save_dir)
-    repo.clean_save_dir()
+    await repo.clean_save_dir()
 
     # save
-    repo.save(trial_model)
+    await repo.save(trial_model)
 
     # save されているか確認
     trial_file = save_dir / "t01.json"
@@ -98,7 +103,8 @@ def test_normal_trial_repository_save(tmp_path: str) -> None:
     assert trial_model == loaded_trial_model
 
 
-def test_normal_trial_repository_load(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_normal_trial_repository_load(tmp_path: str) -> None:
     save_dir = Path(tmp_path) / "s01"
     trial_model = TrialModel(
         study_id="s01",
@@ -129,7 +135,7 @@ def test_normal_trial_repository_load(tmp_path: str) -> None:
     )
 
     repo = NormalTrialRepository(save_dir)
-    repo.clean_save_dir()
+    await repo.clean_save_dir()
 
     # マニュアル save
     trial_file = save_dir / "t01.json"
@@ -142,13 +148,14 @@ def test_normal_trial_repository_load(tmp_path: str) -> None:
     assert trial_file.exists()
 
     # load
-    loaded_trial_model = repo.load("t01")
+    loaded_trial_model = await repo.load("t01")
 
     # 同じものか確認
     assert trial_model == loaded_trial_model
 
 
-def test_normal_trial_repository_load_all(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_normal_trial_repository_load_all(tmp_path: str) -> None:
     save_dir = Path(tmp_path) / "s01"
     trial_models = [
         TrialModel(
@@ -183,29 +190,31 @@ def test_normal_trial_repository_load_all(tmp_path: str) -> None:
 
     # マニュアル save
     repo = NormalTrialRepository(save_dir)
-    repo.clean_save_dir()
+    await repo.clean_save_dir()
     for trial in trial_models:
         path = save_dir / f"{trial.trial_id}.json"
         with path.open("w") as f:
             json.dump(trial.model_dump(mode="json"), f)
 
-    loaded_trials = repo.load_all()
+    loaded_trials = await repo.load_all()
     assert loaded_trials == trial_models
 
 
-def test_normal_trial_repository_delete_save_dir_not_exist(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_normal_trial_repository_delete_save_dir_not_exist(tmp_path: str) -> None:
     save_dir = Path(tmp_path) / "some_study"
 
     # 空であることを確認
     assert not save_dir.exists()
 
     repo = NormalTrialRepository(save_dir)
-    repo.delete_save_dir()
+    await repo.delete_save_dir()
 
     assert not save_dir.exists()
 
 
-def test_normal_trial_repository_delete_save_dir_exist(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_normal_trial_repository_delete_save_dir_exist(tmp_path: str) -> None:
     save_dir = Path(tmp_path) / "some_study"
 
     # 空であることを確認
@@ -218,6 +227,6 @@ def test_normal_trial_repository_delete_save_dir_exist(tmp_path: str) -> None:
     assert bool(list(save_dir.iterdir()))
 
     repo = NormalTrialRepository(save_dir)
-    repo.delete_save_dir()
+    await repo.delete_save_dir()
 
     assert not save_dir.exists()

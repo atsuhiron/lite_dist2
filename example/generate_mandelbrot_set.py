@@ -1,3 +1,4 @@
+import asyncio
 import time
 from pathlib import Path
 
@@ -26,13 +27,13 @@ def set_table_config() -> None:
     TableConfigProvider.set(config)
 
 
-def register_study(table_ip: str, table_port: int) -> None:
+async def register_study(table_ip: str, table_port: int) -> None:
     _resolution = 10
     _half_size = 2.0
 
     study_register_param = StudyRegisterParam(
         study=StudyRegistry(
-            name="mandelbrot",
+            name=f"mandelbrot-{int(time.time())}",
             required_capacity=set(),
             study_strategy=StudyStrategyModel(type="all_calculation", study_strategy_param=None),
             suggest_strategy=SuggestStrategyModel(
@@ -69,7 +70,7 @@ def register_study(table_ip: str, table_port: int) -> None:
         ),
     )
     client = TableNodeClient(table_ip, table_port)
-    client.register_study(study_register_param)
+    await client.register_study(study_register_param)
 
 
 class Mandelbrot(AutoMPTrialRunner):
@@ -87,7 +88,7 @@ class Mandelbrot(AutoMPTrialRunner):
         return iter_count
 
 
-def run_worker(table_ip: str, table_port: int) -> None:
+async def run_worker(table_ip: str, table_port: int) -> None:
     worker_config = WorkerConfig(
         name="w_01",
         process_num=2,
@@ -101,10 +102,10 @@ def run_worker(table_ip: str, table_port: int) -> None:
         port=table_port,
         config=worker_config,
     )
-    worker.start(stop_at_no_trial=True)
+    await worker.start(stop_at_no_trial=True)
 
 
-if __name__ == "__main__":
+async def main() -> None:
     # 1. Set table config for example
     #    Execution node type in normal use: Table
     #    NOTE: For normal use, change the `table_config.json` file in the root directory.
@@ -114,27 +115,23 @@ if __name__ == "__main__":
     #    Execution node type in normal use: Table
     #    NOTE: In most cases, use `start()` (or `uv run start`) instead of `start_in_thread()`
     #          since table nodes and worker nodes are separated.
-    table_thread = start_in_thread()
-    time.sleep(1)  # wait for activate
+    start_in_thread()
+    await asyncio.sleep(1)  # wait for activate
 
     # 3. Register study to table node
     #    Execution node type in normal use: Management
     #    NOTE: If the management node is also a worker node or a table node,
     #          `TableNodeClient.register_study` is available.
     #          Otherwise, studies can be registered using the curl command.
-    register_study(table_ip="127.0.0.1", table_port=8000)
+    await register_study(table_ip="127.0.0.1", table_port=8000)
 
     # 4. run worker node
     #    Execution node type in normal use: Worker
     #    NOTE: In this example, the entire process should be completed within 10 seconds.
     #          10 seconds later, example_curriculum.json should be saved in the same directory as this file.
     #          The saving interval can be changed from the `TableConfig.curriculum_save_interval_seconds`.
-    run_worker(table_ip="127.0.0.1", table_port=8000)
+    await run_worker(table_ip="127.0.0.1", table_port=8000)
 
-    # 5. Stop table node
-    #    Execution node type in normal use: Table
-    #    NOTE: Used to explicitly terminate a table node.
-    #          In this example, however, the node is running on a daemon thread,
-    #          so there is no need to terminate it explicitly.
-    # table_thread.stop()
-    # table_thread.join()
+
+if __name__ == "__main__":
+    asyncio.run(main())

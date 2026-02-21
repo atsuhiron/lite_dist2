@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import asyncio
 import logging
-import time
 import uuid
 from typing import TYPE_CHECKING, Annotated
 
@@ -37,23 +37,23 @@ class Worker:
         self.config = config
         self.id = str(uuid.uuid1())
 
-    def start(self, stop_at_no_trial: bool = False, *args: object, **kwargs: object) -> None:
-        if not self.client.ping():
+    async def start(self, stop_at_no_trial: bool = False, *args: object, **kwargs: object) -> None:
+        if not await self.client.ping():
             msg = "Table node server not responding"
             raise LD2TableNodeServerError(msg)
 
         while True:
-            has_next = self._step(*args, **kwargs)
+            has_next = await self._step(*args, **kwargs)
             if (not has_next) and stop_at_no_trial:
                 logger.info("No trial. Stop worker after saving.")
-                self.client.save()
+                await self.client.save()
                 return
             if not has_next:
                 logger.info("No trial. Waiting %d seconds...", self.config.wait_seconds_on_no_trial)
-                time.sleep(self.config.wait_seconds_on_no_trial)
+                await asyncio.sleep(self.config.wait_seconds_on_no_trial)
 
-    def _step(self, *args: object, **kwargs: object) -> bool:
-        trial = self.client.reserve_trial(
+    async def _step(self, *args: object, **kwargs: object) -> bool:
+        trial = await self.client.reserve_trial(
             self.id,
             self.config.name,
             self.config.max_size,
@@ -65,5 +65,5 @@ class Worker:
 
         kwargs |= trial.const_param.to_dict() if trial.const_param is not None else {}
         done_trial = self.trial_runner.run(trial, self.config, self.pool, *args, **kwargs)
-        self.client.register_trial(done_trial, self.config.table_node_request_timeout_seconds)
+        await self.client.register_trial(done_trial, self.config.table_node_request_timeout_seconds)
         return True

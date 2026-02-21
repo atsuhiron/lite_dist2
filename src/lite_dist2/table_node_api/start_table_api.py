@@ -43,7 +43,7 @@ async def _periodic_timeout_check() -> None:
     while True:
         await asyncio.sleep(interval)
         logger.info("Performing periodic timeout check of trials")
-        await CurriculumProvider.check_timeout()
+        CurriculumProvider.check_timeout()
 
 
 def _run_periodic_timeout_check() -> None:

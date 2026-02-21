@@ -51,7 +51,7 @@ class ParameterJaggedSpace(BaseSpace):
         return len(self.parameters)
 
     @override
-    def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
+    def grid(self) -> Generator[tuple[PrimitiveValueType, ...]]:
         yield from self.parameters
 
     @override

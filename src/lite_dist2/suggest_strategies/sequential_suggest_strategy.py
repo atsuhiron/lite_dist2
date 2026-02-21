@@ -175,7 +175,7 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         return tuple(ticks), is_infinitely_available
 
     @staticmethod
-    def _infinite_available_generator(init: tuple[int, ...], ratio: int) -> Generator[int, Any, None]:
+    def _infinite_available_generator(init: tuple[int, ...], ratio: int) -> Generator[int, Any]:
         yield from init
         last_v = init[-1]
         for i in itertools.count(1):
