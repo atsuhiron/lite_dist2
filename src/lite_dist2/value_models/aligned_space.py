@@ -85,10 +85,10 @@ class ParameterAlignedSpace(BaseSpace):
         return t
 
     @override
-    def grid(self) -> Generator[tuple[PrimitiveValueType, ...], None, None]:
+    def grid(self) -> Generator[tuple[PrimitiveValueType, ...]]:
         yield from infinite_product(*(axis.grid() for axis in self.axes))
 
-    def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...], None, None]:
+    def indexed_grid(self) -> Generator[tuple[tuple[int, PrimitiveValueType], ...]]:
         yield from infinite_product(*(axis.indexed_grid() for axis in self.axes))
 
     @override

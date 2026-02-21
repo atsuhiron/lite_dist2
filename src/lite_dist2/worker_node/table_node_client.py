@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-import requests
+import httpx
 
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial
@@ -32,15 +32,15 @@ class TableNodeClient:
     def __init__(self, ip: str, port: int | str) -> None:
         self.domain = f"http://{ip}:{port}"
 
-    def ping(self) -> bool:
+    async def ping(self) -> bool:
         try:
-            _ = self._get("/ping", timeout=self.INSTANT_API_TIMEOUT_SECONDS)
+            _ = await self._get("/ping", timeout_seconds=self.INSTANT_API_TIMEOUT_SECONDS)
         except LD2TableNodeServerError:
             return False
         return True
 
-    def register_study(self, param: StudyRegisterParam) -> StudyRegisteredResponse:
-        status_code, d = self._post("/study/register", self.INSTANT_API_TIMEOUT_SECONDS, param)
+    async def register_study(self, param: StudyRegisterParam) -> StudyRegisteredResponse:
+        status_code, d = await self._post("/study/register", self.INSTANT_API_TIMEOUT_SECONDS, param)
         if status_code != 200:
             msg = f"Failed to register study. status_code={status_code}, response={d}"
             raise LD2TableNodeServerError(msg)
@@ -49,7 +49,7 @@ class TableNodeClient:
         logger.info("Registered study: %s", resp.study_id)
         return resp
 
-    def reserve_trial(
+    async def reserve_trial(
         self,
         worker_id: str,
         worker_name: str | None,
@@ -63,7 +63,7 @@ class TableNodeClient:
             worker_node_name=worker_name,
             worker_node_id=worker_id,
         )
-        status_code, d = self._post("/trial/reserve", timeout_seconds, param)
+        status_code, d = await self._post("/trial/reserve", timeout_seconds, param)
 
         resp = TrialReserveResponse.model_validate(d)
         if status_code == 202 or resp.trial is None:
@@ -74,42 +74,49 @@ class TableNodeClient:
         logger.info("Reserved trial (size=%d)", trial.parameter_space.total)
         return trial
 
-    def register_trial(self, trial: Trial, timeout_seconds: int) -> None:
+    async def register_trial(self, trial: Trial, timeout_seconds: int) -> None:
         param = TrialRegisterParam(trial=trial.to_model())
-        status_code, _ = self._post("/trial/register", timeout_seconds, param)
+        status_code, _ = await self._post("/trial/register", timeout_seconds, param)
         if status_code == 409:
             logger.warning("Failed to register trial. This trial might be timed out or study might be cancelled.")
         elif status_code != 200:
             logger.warning("Failed to register trial.")
 
-    def study(self, study_id: str | None = None, name: str | None = None) -> StudyResponse | None:
-        _, resp = self._get("/study", self.INSTANT_API_TIMEOUT_SECONDS, {"study_id": study_id, "name": name})
+    async def study(self, study_id: str | None = None, name: str | None = None) -> StudyResponse | None:
+        _, resp = await self._get("/study", self.INSTANT_API_TIMEOUT_SECONDS, {"study_id": study_id, "name": name})
         study_response = StudyResponse.model_validate(resp)
         if study_response.status != StudyStatus.done:
             detail_info = f"{study_id=}" if study_id is not None else f"{name=}"
             logger.info("Study(%s) is %s", detail_info, str(study_response))
         return study_response
 
-    def save(self) -> OkResponse:
-        _, resp = self._get("/save", self.INSTANT_API_TIMEOUT_SECONDS)
+    async def save(self) -> OkResponse:
+        _, resp = await self._get("/save", self.INSTANT_API_TIMEOUT_SECONDS)
         return OkResponse.model_validate(resp)
 
-    def _get(self, path: str, timeout: int, query: dict[str, str | None] | None = None) -> tuple[int, dict[str, Any]]:
+    async def _get(
+        self,
+        path: str,
+        timeout_seconds: int,
+        query: dict[str, str | None] | None = None,
+    ) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
-        response = requests.get(
-            url,
-            headers=self.HEADERS,
-            params=query,
-            timeout=timeout,
-        )
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                headers=self.HEADERS,
+                params=query,
+                timeout=timeout_seconds,
+            )
         return response.status_code, response.json()
 
-    def _post(self, path: str, timeout_seconds: int, body: BaseModel) -> tuple[int, dict[str, Any]]:
+    async def _post(self, path: str, timeout_seconds: int, body: BaseModel) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
-        response = requests.post(
-            url,
-            headers=self.HEADERS,
-            json=body.model_dump(mode="json"),
-            timeout=timeout_seconds,
-        )
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                headers=self.HEADERS,
+                json=body.model_dump(mode="json"),
+                timeout=timeout_seconds,
+            )
         return response.status_code, response.json()

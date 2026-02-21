@@ -56,13 +56,13 @@ class Study:
         self._table_lock = threading.Lock()
         self.trial_repo = trial_repository
 
-    def update_status(self) -> None:
-        if self.is_done():
+    async def update_status(self) -> None:
+        if await self.is_done():
             self.status = StudyStatus.done
             return
 
-    def is_done(self) -> bool:
-        return self.study_strategy.is_done(self.trial_table, self.parameter_space, self.trial_repo)
+    async def is_done(self) -> bool:
+        return await self.study_strategy.is_done(self.trial_table, self.parameter_space, self.trial_repo)
 
     def suggest_next_trial(
         self,
@@ -94,19 +94,22 @@ class Study:
             self.trial_table.init_aps(trial)
         return trial
 
-    def receipt_trial(self, trial: Trial) -> None:
+    async def receipt_trial(self, trial: Trial) -> None:
         with self._table_lock:
             self.trial_table.receipt_trial_result(trial.trial_id, trial.worker_node_id)
             self.trial_table.simplify_aps()
 
         trial.trial_status = TrialStatus.done
         trial.set_registered_timestamp()
-        self.trial_repo.save(trial.to_model())
+        await self.trial_repo.save(trial.to_model())
 
     def check_timeout_trial(self, now: datetime, timeout_seconds: int) -> list[str]:
         return self.trial_table.check_timeout_trial(now, timeout_seconds)
 
-    def to_storage(self) -> StudyStorage:
+    async def delete_trial_jsons(self) -> None:
+        await self.trial_repo.delete_save_dir()
+
+    async def to_storage(self) -> StudyStorage:
         return StudyStorage(
             study_id=self.study_id,
             name=self.name,
@@ -119,7 +122,7 @@ class Study:
             done_timestamp=publish_timestamp(),
             result_type=self.result_type,
             result_value_type=self.result_value_type,
-            results=self.study_strategy.extract_mappings(self.trial_repo),
+            results=await self.study_strategy.extract_mappings(self.trial_repo),
             done_grids=self.trial_table.count_grid(),
             trial_repository=self.trial_repo.to_model(),
         )

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import logging
 import threading
 import time
@@ -10,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from lite_dist2.common import publish_timestamp
+from lite_dist2.common import async_read_file, async_write_file, publish_timestamp
 from lite_dist2.config import TableConfigProvider
 from lite_dist2.curriculum_models.progress_summary import ReportMaterial, report_study_progress
 from lite_dist2.curriculum_models.study import Study
@@ -67,23 +66,23 @@ class Curriculum:
             self.studies.append(study)
         return True
 
-    def to_storage_if_done(self) -> None:
+    async def to_storage_if_done(self) -> None:
         updated = False
         with self._lock:
             studies = []
             for study in self.studies:
-                if not self._move_to_storage_if_done(study):
+                if not await self._move_to_storage_if_done(study):
                     studies.append(study)
                     updated = True
 
             self.studies = studies
             if updated:
-                self.save()
+                await self.save()
 
-    def _move_to_storage_if_done(self, study: Study) -> bool:
-        study.update_status()
-        if study.is_done():
-            self.storages.append(study.to_storage())
+    async def _move_to_storage_if_done(self, study: Study) -> bool:
+        await study.update_status()
+        if await study.is_done():
+            self.storages.append(await study.to_storage())
             return True
         return False
 
@@ -189,18 +188,17 @@ class Curriculum:
             trial_file_dir=model.trial_file_dir,
         )
 
-    def save(self, curr_json_path: pathlib.Path | None = None) -> None:
+    async def save(self, curr_json_path: pathlib.Path | None = None) -> None:
         save_start_time = time.perf_counter()
         if curr_json_path is None:
             curr_json_path = TableConfigProvider.get().curriculum_path
 
         model = self.to_model()
-        with curr_json_path.open("w", encoding="utf-8") as f:
-            json.dump(model.model_dump(mode="json"), f, ensure_ascii=False)
+        await async_write_file(curr_json_path, model.model_dump_json().encode("utf-8"))
         save_end_time = time.perf_counter()
         logger.info("Saved curriculum in %.3f msec", (save_end_time - save_start_time) * 1000)
 
-    def cancel_study(self, study_id: str | None, name: str | None) -> bool:
+    async def cancel_study(self, study_id: str | None, name: str | None) -> bool:
         studies = []
         found = False
         if study_id is not None:
@@ -208,6 +206,7 @@ class Curriculum:
                 for study in self.studies:
                     if study.study_id == study_id:
                         found = True
+                        await study.delete_trial_jsons()
                         continue
                     studies.append(study)
                 self.studies = studies
@@ -218,6 +217,7 @@ class Curriculum:
                 for study in self.studies:
                     if study.name == name:
                         found = True
+                        await study.delete_trial_jsons()
                         continue
                     studies.append(study)
                 self.studies = studies
@@ -227,15 +227,14 @@ class Curriculum:
         raise LD2ParameterError(p, e)
 
     @staticmethod
-    def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
+    async def load_or_create(curr_json_path: pathlib.Path | None = None) -> Curriculum:
         load_start_time = time.perf_counter()
         if curr_json_path is None:
             curr_json_path = TableConfigProvider.get().curriculum_path
 
         if curr_json_path.exists():
-            with curr_json_path.open("r", encoding="utf-8") as f:
-                json_dict = json.load(f)
-            model = CurriculumModel.model_validate(json_dict)
+            curr_bin = await async_read_file(curr_json_path)
+            model = CurriculumModel.model_validate_json(curr_bin)
             return Curriculum.from_model(model)
         load_end_time = time.perf_counter()
         logger.info("Loaded curriculum in %.3f msec", (load_end_time - load_start_time) * 1000)
@@ -246,20 +245,20 @@ class CurriculumProvider:
     _CURR: Curriculum | None = None
 
     @classmethod
-    def get(cls) -> Curriculum:
+    async def get(cls) -> Curriculum:
         if cls._CURR is not None:
             return cls._CURR
-        cls._CURR = Curriculum.load_or_create()
+        cls._CURR = await Curriculum.load_or_create()
         return cls._CURR
 
     @classmethod
     async def save_async(cls) -> None:
         if cls._CURR is None:
             return
-        cls._CURR.save()
+        await cls._CURR.save()
 
     @classmethod
-    async def check_timeout(cls) -> None:
+    def check_timeout(cls) -> None:
         if cls._CURR is None:
             return
         cls._CURR.check_timeout_trial()

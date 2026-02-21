@@ -1,8 +1,16 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
+
+import aiofiles
 
 from lite_dist2.expections import LD2ModelTypeError
-from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
 
 def hex2int(hex_str: str) -> int:
@@ -47,3 +55,13 @@ def portablize(type_name: Literal["bool", "int", "float"], value: PrimitiveValue
 
 def publish_timestamp() -> datetime:
     return datetime.now(tz=timezone(timedelta(hours=+9), "JST"))
+
+
+async def async_read_file(path: Path) -> bytes:
+    async with aiofiles.open(path, mode="rb") as f:
+        return await f.read()
+
+
+async def async_write_file(path: Path, data: bytes) -> None:
+    async with aiofiles.open(path, mode="wb") as f:
+        await f.write(data)

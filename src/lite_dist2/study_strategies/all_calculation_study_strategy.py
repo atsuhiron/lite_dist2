@@ -18,7 +18,7 @@ class AllCalculationStudyStrategy(BaseStudyStrategy):
         self.study_strategy_param = study_strategy_param
 
     @override
-    def is_done(
+    async def is_done(
         self,
         trial_table: TrialTable,
         parameter_space: ParameterAlignedSpace,
@@ -27,8 +27,8 @@ class AllCalculationStudyStrategy(BaseStudyStrategy):
         return trial_table.count_grid() == parameter_space.total
 
     @override
-    def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
-        trials = trial_repository.load_all()
+    async def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
+        trials = await trial_repository.load_all()
         if not trials:
             raise LD2NotDoneError
 

@@ -1,0 +1,6 @@
+[src]
+include = [
+    "example",
+    "src",
+    "tests",
+]

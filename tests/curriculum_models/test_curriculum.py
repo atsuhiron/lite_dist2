@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, override
 
 import pytest
 
+from lite_dist2.config import TableConfig, TableConfigProvider
 from lite_dist2.curriculum_models.curriculum import Curriculum, CurriculumModel
 from lite_dist2.curriculum_models.mapping import Mapping, MappingsStorage
 from lite_dist2.curriculum_models.study import Study
@@ -111,11 +112,11 @@ _DUMMY_MAPPINGS_STORAGE = MappingsStorage(
 
 class MockStudyStrategy(BaseStudyStrategy):
     @override
-    def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
+    async def extract_mappings(self, trial_repository: BaseTrialRepository) -> MappingsStorage:
         raise NotImplementedError
 
     @override
-    def is_done(
+    async def is_done(
         self,
         trial_table: TrialTable,
         parameter_space: ParameterAlignedSpace,
@@ -123,6 +124,7 @@ class MockStudyStrategy(BaseStudyStrategy):
     ) -> bool:
         raise NotImplementedError
 
+    @override
     def to_model(self) -> StudyStrategyModel:
         return _DUMMY_STUDY_STRATEGY_MODEL
 
@@ -157,13 +159,16 @@ class MockStudy(Study):
         self.study_id = study_id
         self._done = done
 
-    def is_done(self) -> bool:
+    @override
+    async def is_done(self) -> bool:
         return self._done
 
-    def update_status(self) -> None:
+    @override
+    async def update_status(self) -> None:
         pass
 
-    def to_storage(self) -> StudyStorage:
+    @override
+    async def to_storage(self) -> StudyStorage:
         return StudyStorage(
             study_id=self.study_id,
             name=self.study_id,
@@ -192,13 +197,22 @@ def not_done_study_fixture() -> MockStudy:
     return MockStudy(study_id="not_done_study", done=False)
 
 
-def test_curriculum_to_storage_if_done(done_study_fixture: MockStudy, not_done_study_fixture: MockStudy) -> None:
+@pytest.mark.asyncio
+async def test_curriculum_to_storage_if_done(
+    done_study_fixture: MockStudy,
+    not_done_study_fixture: MockStudy,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    mock_table_config = TableConfig(curriculum_path=tmp_path / "curriculum.json")
+    monkeypatch.setattr(TableConfigProvider, "get", lambda: mock_table_config)
+
     curriculum = Curriculum(
         studies=[done_study_fixture, not_done_study_fixture],
         storages=[],
         trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
-    curriculum.to_storage_if_done()
+    await curriculum.to_storage_if_done()
 
     assert len(curriculum.studies) == 1
     assert len(curriculum.storages) == 1
@@ -306,11 +320,12 @@ def sample_curriculum_fixture() -> Curriculum:
     return Curriculum(studies, storages, _DUMMY_TRIAL_PATH_DIR)
 
 
-def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> None:
+@pytest.mark.asyncio
+async def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curriculum) -> None:
     json_path = Path(f"{tmp_path}/curriculum.json")
     assert not json_path.exists()
 
-    sample_curriculum_fixture.save(json_path)
+    await sample_curriculum_fixture.save(json_path)
     assert json_path.exists()
 
     with json_path.open("r", encoding="utf-8") as f:
@@ -318,16 +333,17 @@ def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture: Curr
     model = CurriculumModel.model_validate(json_data)
     assert model is not None
 
-    loaded_curriculum = Curriculum.load_or_create(json_path)
+    loaded_curriculum = await Curriculum.load_or_create(json_path)
     assert len(loaded_curriculum.studies) == len(sample_curriculum_fixture.studies)
     assert len(loaded_curriculum.storages) == len(sample_curriculum_fixture.storages)
     assert loaded_curriculum.studies[0].name == sample_curriculum_fixture.studies[0].name
     assert loaded_curriculum.storages[0].name == sample_curriculum_fixture.storages[0].name
 
 
-def test_curriculum_load_or_create_empty(tmp_path: str) -> None:
+@pytest.mark.asyncio
+async def test_curriculum_load_or_create_empty(tmp_path: str) -> None:
     json_path = Path(f"{tmp_path}/non_existent.json")
-    curriculum = Curriculum.load_or_create(json_path)
+    curriculum = await Curriculum.load_or_create(json_path)
 
     assert isinstance(curriculum, Curriculum)
     assert len(curriculum.studies) == 0
@@ -597,6 +613,7 @@ def test_curriculum_pop_storage_raises() -> None:
         _ = curr.pop_storage(None, None)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("study_id", "name", "expected_cancel_result", "expected_studies"),
     [
@@ -698,7 +715,7 @@ def test_curriculum_pop_storage_raises() -> None:
         ),
     ],
 )
-def test_curriculum_cancel_study(
+async def test_curriculum_cancel_study(
     study_id: str | None,
     name: str | None,
     expected_cancel_result: bool,
@@ -747,7 +764,7 @@ def test_curriculum_cancel_study(
         trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
     )
 
-    actual_cancel_result = curr.cancel_study(study_id, name)
+    actual_cancel_result = await curr.cancel_study(study_id, name)
     assert actual_cancel_result == expected_cancel_result
 
     assert len(curr.studies) == len(expected_studies)
@@ -755,10 +772,11 @@ def test_curriculum_cancel_study(
         assert actual_study.to_model() == expected_study.to_model()
 
 
-def test_curriculum_cancel_study_raises() -> None:
+@pytest.mark.asyncio
+async def test_curriculum_cancel_study_raises() -> None:
     curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
     with pytest.raises(LD2ParameterError):
-        _ = curr.cancel_study(None, None)
+        _ = await curr.cancel_study(None, None)
 
 
 @pytest.mark.parametrize(

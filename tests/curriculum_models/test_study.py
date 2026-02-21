@@ -1,5 +1,6 @@
-import threading
+import asyncio
 from pathlib import Path
+from typing import override
 
 import pytest
 
@@ -211,29 +212,42 @@ def test_study_to_model_from_model(model: StudyModel) -> None:
 
 class MockTrialRepository(BaseTrialRepository):
     def __init__(self) -> None:
-        super().__init__(Path("test/s01"))
+        self.save_dir = Path("test/s01")
 
     @staticmethod
     def get_repository_type() -> TrialRepositoryType:
         return "normal"
 
-    def clean_save_dir(self) -> None:
+    @override
+    async def clean_save_dir(self) -> None:
         pass
 
-    def save(self, trial: TrialModel) -> None:
+    @override
+    async def save(self, trial: TrialModel) -> None:
         pass
 
-    def load(self, trial_id: str) -> TrialModel:
+    @override
+    async def load(self, trial_id: str) -> TrialModel:
         raise NotImplementedError
 
-    def load_all(self) -> list[TrialModel]:
+    @override
+    async def load_all(self) -> list[TrialModel]:
         return []
 
-    def delete_save_dir(self) -> None:
+    @override
+    async def delete_save_dir(self) -> None:
         pass
 
+    @override
+    def to_model(self) -> TrialRepositoryModel:
+        return TrialRepositoryModel(
+            type=self.get_repository_type(),
+            save_dir=self.save_dir,
+        )
 
-def test_study_suggest_receipt_single_thread() -> None:
+
+@pytest.mark.asyncio
+async def test_study_suggest_receipt_single_thread() -> None:
     _parameter_space = ParameterAlignedSpace(
         axes=[
             LineSegment(
@@ -276,7 +290,7 @@ def test_study_suggest_receipt_single_thread() -> None:
         trial_repository=MockTrialRepository(),
     )
 
-    def contract_and_submit() -> None:
+    async def contract_and_submit() -> None:
         # trial 取得
         trial = study.suggest_next_trial(num=5, worker_node_name="w01", worker_node_id="w01")
         if trial is None:
@@ -290,16 +304,17 @@ def test_study_suggest_receipt_single_thread() -> None:
         trial.set_result(trial.convert_mappings_from(raw_mappings))
 
         # trial 送信
-        study.receipt_trial(trial)
+        await study.receipt_trial(trial)
 
-    while not study.is_done():
-        contract_and_submit()
+    while not await study.is_done():
+        await contract_and_submit()
 
     expected_trial_num = 80  # 20*20/5
     assert study.trial_table.count_trial() == expected_trial_num
 
 
-def test_study_suggest_receipt_multi_threads_synchronous() -> None:
+@pytest.mark.asyncio
+async def test_study_suggest_receipt_multi_threads_synchronous() -> None:
     _parameter_space = ParameterAlignedSpace(
         axes=[
             LineSegment(
@@ -342,35 +357,21 @@ def test_study_suggest_receipt_multi_threads_synchronous() -> None:
         trial_repository=MockTrialRepository(),
     )
 
-    def contract_and_submit() -> None:
-        # trial 取得
+    async def contract_and_submit() -> None:
         trial = study.suggest_next_trial(num=5, worker_node_name="w01", worker_node_id="w01")
-
-        assert trial is not None
-        # 結果書き込み
+        if trial is None:
+            return
         raw_mappings = []
         for parameter in trial.parameter_space.grid():
             dummy_result = 0.5
             raw_mappings.append((parameter, dummy_result))
         trial.set_result(trial.convert_mappings_from(raw_mappings))
+        await study.receipt_trial(trial)
 
-        # trial 送信
-        study.receipt_trial(trial)
-
-    # スレッドを複数作成
-
-    num_threads = 10
-    while not study.is_done():
-        threads = []
-        for i in range(num_threads):
-            thread = threading.Thread(target=contract_and_submit, name=f"Thread-{i + 1}")
-            threads.append(thread)
-
-        for thread in threads:
-            thread.start()
-
-        for thread in threads:
-            thread.join()
+    num_tasks = 10
+    while not await study.is_done():
+        tasks = [asyncio.create_task(contract_and_submit()) for _ in range(num_tasks)]
+        await asyncio.gather(*tasks)
 
     expected_trial_num = 80  # 20*20/5
     assert study.trial_table.count_trial() == expected_trial_num

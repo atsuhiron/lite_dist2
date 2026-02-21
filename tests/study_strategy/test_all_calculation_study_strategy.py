@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 import pytest
 
@@ -17,6 +17,7 @@ from lite_dist2.value_models.point import ScalarValue, VectorValue
 from tests.const import DT
 
 if TYPE_CHECKING:
+    from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
     from lite_dist2.type_definitions import TrialRepositoryType
 
 _DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpacePortableModel(
@@ -47,26 +48,36 @@ _DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpacePortableModel(
 
 class MockTrialRepository(BaseTrialRepository):
     def __init__(self) -> None:
-        super().__init__(Path("test/s01"))
+        self.save_dir = Path("test/s01")
 
+    @override
     @staticmethod
     def get_repository_type() -> TrialRepositoryType:
         return "normal"
 
-    def clean_save_dir(self) -> None:
+    @override
+    async def clean_save_dir(self) -> None:
         pass
 
-    def save(self, trial: TrialModel) -> None:
+    @override
+    async def save(self, trial: TrialModel) -> None:
         pass
 
-    def load(self, trial_id: str) -> TrialModel:
+    @override
+    async def load(self, trial_id: str) -> TrialModel:
         raise NotImplementedError
 
-    def load_all(self) -> list[TrialModel]:
+    @override
+    async def load_all(self) -> list[TrialModel]:
         raise NotImplementedError
 
-    def delete_save_dir(self) -> None:
+    @override
+    async def delete_save_dir(self) -> None:
         pass
+
+    @override
+    def to_model(self) -> TrialRepositoryModel:
+        raise NotImplementedError
 
 
 @pytest.fixture
@@ -90,6 +101,7 @@ def all_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureReq
     )
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("done_grid_fixture", "all_grid_fixture", "expected"),
     [
@@ -98,7 +110,7 @@ def all_grid_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureReq
     ],
     indirect=["done_grid_fixture", "all_grid_fixture"],
 )
-def test_all_calculation_study_strategy_is_done(
+async def test_all_calculation_study_strategy_is_done(
     done_grid_fixture: int,
     all_grid_fixture: int,
     expected: bool,
@@ -112,7 +124,7 @@ def test_all_calculation_study_strategy_is_done(
         ],
         check_lower_filling=True,
     )
-    actual = strategy.is_done(trial_table, parameter_space, MockTrialRepository())
+    actual = await strategy.is_done(trial_table, parameter_space, MockTrialRepository())
     assert actual == expected
 
 
@@ -120,12 +132,13 @@ def test_all_calculation_study_strategy_is_done(
 def trial_repository_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
-    def fake_load_all(self) -> int:  # noqa: ANN001
+    async def fake_load_all(self) -> int:  # noqa: ANN001
         return return_value
 
     monkeypatch.setattr(MockTrialRepository, "load_all", fake_load_all)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("trial_repository_fixture", "expected"),
     [
@@ -316,16 +329,17 @@ def trial_repository_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.Fi
     ],
     indirect=["trial_repository_fixture"],
 )
-def test_all_calculation_study_strategy_extract_mapping(
+async def test_all_calculation_study_strategy_extract_mapping(
     trial_repository_fixture: list[TrialModel],
     expected: MappingsStorage,
 ) -> None:
     repo = MockTrialRepository()
     strategy = AllCalculationStudyStrategy(None)
-    actual = strategy.extract_mappings(repo)
+    actual = await strategy.extract_mappings(repo)
     assert actual == expected
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "trial_repository_fixture",
     [
@@ -413,10 +427,10 @@ def test_all_calculation_study_strategy_extract_mapping(
     ],
     indirect=["trial_repository_fixture"],
 )
-def test_all_calculation_study_strategy_extract_mapping_raise(
+async def test_all_calculation_study_strategy_extract_mapping_raise(
     trial_repository_fixture: list[TrialModel],
 ) -> None:
     repo = MockTrialRepository()
     strategy = AllCalculationStudyStrategy(None)
     with pytest.raises(LD2NotDoneError):
-        _ = strategy.extract_mappings(repo)
+        _ = await strategy.extract_mappings(repo)

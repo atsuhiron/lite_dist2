@@ -46,7 +46,7 @@ class LineSegment[T: PrimitiveValueType]:
             yield self._dtype(fstart + i * fstep)
             i += 1
 
-    def indexed_grid(self) -> Generator[tuple[int, T], None, None]:
+    def indexed_grid(self) -> Generator[tuple[int, T]]:
         i = 0
         while self.size is None or i < self.size:
             yield i + self.ambient_index, self.start + i * self.step

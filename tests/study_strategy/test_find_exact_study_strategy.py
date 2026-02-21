@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 import pytest
 
@@ -18,6 +18,7 @@ from lite_dist2.value_models.point import ResultType, ScalarValue
 from tests.const import DT
 
 if TYPE_CHECKING:
+    from lite_dist2.trial_repositories.trial_repository_model import TrialRepositoryModel
     from lite_dist2.type_definitions import TrialRepositoryType
 
 _DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpacePortableModel(
@@ -48,38 +49,49 @@ _DUMMY_PARAMETER_SPACE_MODEL = ParameterAlignedSpacePortableModel(
 
 class MockTrialRepository(BaseTrialRepository):
     def __init__(self) -> None:
-        super().__init__(Path("test/s01"))
+        self.save_dir = Path("test/s01")
 
+    @override
     @staticmethod
     def get_repository_type() -> TrialRepositoryType:
         return "normal"
 
-    def clean_save_dir(self) -> None:
+    @override
+    async def clean_save_dir(self) -> None:
         pass
 
-    def save(self, trial: TrialModel) -> None:
+    @override
+    async def save(self, trial: TrialModel) -> None:
         pass
 
-    def load(self, trial_id: str) -> TrialModel:
+    @override
+    async def load(self, trial_id: str) -> TrialModel:
         raise NotImplementedError
 
-    def load_all(self) -> list[TrialModel]:
+    @override
+    async def load_all(self) -> list[TrialModel]:
         raise NotImplementedError
 
-    def delete_save_dir(self) -> None:
+    @override
+    async def delete_save_dir(self) -> None:
         pass
+
+    @override
+    def to_model(self) -> TrialRepositoryModel:
+        raise NotImplementedError
 
 
 @pytest.fixture
 def trial_repository_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest) -> None:
     return_value = request.param
 
-    def fake_load_all(self) -> int:  # noqa: ANN001
+    async def fake_load_all(self) -> int:  # noqa: ANN001
         return return_value
 
     monkeypatch.setattr(MockTrialRepository, "load_all", fake_load_all)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("trial_repository_fixture", "target_value", "expected"),
     [
@@ -197,7 +209,7 @@ def trial_repository_fixture(monkeypatch: pytest.MonkeyPatch, request: pytest.Fi
     ],
     indirect=["trial_repository_fixture"],
 )
-def test_find_exact_study_strategy_is_done(
+async def test_find_exact_study_strategy_is_done(
     trial_repository_fixture: list[TrialModel],
     target_value: ResultType,
     expected: bool,
@@ -212,10 +224,11 @@ def test_find_exact_study_strategy_is_done(
         check_lower_filling=True,
     )
 
-    actual = strategy.is_done(table, parameter_space, MockTrialRepository())
+    actual = await strategy.is_done(table, parameter_space, MockTrialRepository())
     assert actual == expected
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("target_value", "trial_repository_fixture", "expected"),
     [
@@ -266,17 +279,18 @@ def test_find_exact_study_strategy_is_done(
     ],
     indirect=["trial_repository_fixture"],
 )
-def test_find_exact_study_strategy_extract_mapping(
+async def test_find_exact_study_strategy_extract_mapping(
     target_value: ResultType,
     trial_repository_fixture: list[TrialModel],
     expected: MappingsStorage,
 ) -> None:
     repo = MockTrialRepository()
     strategy = FindExactStudyStrategy(StudyStrategyParam(target_value=target_value))
-    actual = strategy.extract_mappings(repo)
+    actual = await strategy.extract_mappings(repo)
     assert actual == expected
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("target_value", "trial_repository_fixture"),
     [
@@ -322,11 +336,11 @@ def test_find_exact_study_strategy_extract_mapping(
     ],
     indirect=["trial_repository_fixture"],
 )
-def test_find_exact_study_strategy_extract_mapping_raise(
+async def test_find_exact_study_strategy_extract_mapping_raise(
     target_value: ResultType,
     trial_repository_fixture: list[TrialModel],
 ) -> None:
     repo = MockTrialRepository()
     strategy = FindExactStudyStrategy(StudyStrategyParam(target_value=target_value))
     with pytest.raises(LD2NotDoneError):
-        _ = strategy.extract_mappings(repo)
+        _ = await strategy.extract_mappings(repo)
