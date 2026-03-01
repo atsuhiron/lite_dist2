@@ -1,8 +1,13 @@
 # Changelog
 
 ## [Unreleased]
+
+# [0.6.0] - 2026-02-22
+
 ### Changed
-- Rearchitecture
+- Rearchitecture([#26](https://github.com/atsuhiron/lite_dist2/pull/26)).
+- Apply async function([#27](https://github.com/atsuhiron/lite_dist2/pull/27))
+- Bump up libraries([#28](https://github.com/atsuhiron/lite_dist2/pull/28))
 
 ## [0.5.1] - 2025-07-22
 

@@ -23,7 +23,9 @@ from lite_dist2.table_node_api.table_response import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    version="0.6.0",
+)
 
 
 @app.get("/ping")
