@@ -615,6 +615,124 @@ def test_curriculum_pop_storage_raises() -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
+    ("study_id", "name", "expected_id"),
+    [
+        pytest.param("s01", None, "s01", id="get by id"),
+        pytest.param(None, "n02", "s02", id="get by name"),
+    ],
+)
+async def test_curriculum_get_storage(
+    study_id: str | None,
+    name: str | None,
+    expected_id: str,
+) -> None:
+    curr = Curriculum(
+        studies=[],
+        storages=[
+            StudyStorage(
+                study_id="s01",
+                name="n01",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scalar",
+                result_value_type="int",
+                results=_DUMMY_MAPPINGS_STORAGE,
+                done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
+            ),
+            StudyStorage(
+                study_id="s02",
+                name="n02",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scalar",
+                result_value_type="int",
+                results=_DUMMY_MAPPINGS_STORAGE,
+                done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
+            ),
+        ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
+    )
+
+    actual_storage = curr.get_storage(study_id, name)
+    assert actual_storage is not None
+    assert actual_storage.study_id == expected_id
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("study_id", "name"),
+    [
+        pytest.param("s03", None, id="try to get by id"),
+        pytest.param(None, "n04", id="try to get by name"),
+    ],
+)
+async def test_curriculum_get_storage_not_found(
+    study_id: str | None,
+    name: str | None,
+) -> None:
+    curr = Curriculum(
+        studies=[],
+        storages=[
+            StudyStorage(
+                study_id="s01",
+                name="n01",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scalar",
+                result_value_type="int",
+                results=_DUMMY_MAPPINGS_STORAGE,
+                done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
+            ),
+            StudyStorage(
+                study_id="s02",
+                name="n02",
+                required_capacity=set(),
+                registered_timestamp=DT,
+                study_strategy=_DUMMY_STUDY_STRATEGY_MODEL,
+                suggest_strategy=_DUMMY_SUGGEST_STRATEGY_MODEL,
+                const_param=None,
+                parameter_space=_DUMMY_PARAMETER_SPACE.to_model(),
+                done_timestamp=DT,
+                result_type="scalar",
+                result_value_type="int",
+                results=_DUMMY_MAPPINGS_STORAGE,
+                done_grids=4,
+                trial_repository=_DUMMY_TRIAL_REPOSITORY.to_model(),
+            ),
+        ],
+        trial_file_dir=_DUMMY_TRIAL_PATH_DIR,
+    )
+
+    actual_storage = curr.get_storage(study_id, name)
+    assert actual_storage is None
+
+
+def test_curriculum_get_storage_raises() -> None:
+    curr = Curriculum(studies=[], storages=[], trial_file_dir=_DUMMY_TRIAL_PATH_DIR)
+    with pytest.raises(LD2ParameterError):
+        _ = curr.get_storage(None, None)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
     ("study_id", "name", "expected_cancel_result", "expected_studies"),
     [
         pytest.param(
