@@ -9,6 +9,7 @@ from lite_dist2.expections import LD2TableNodeServerError
 from lite_dist2.worker_node.table_node_client import TableNodeClient
 
 if TYPE_CHECKING:
+    from concurrent.futures import ProcessPoolExecutor
     from multiprocessing.pool import Pool
 
     from lite_dist2.config import WorkerConfig
@@ -27,7 +28,7 @@ class Worker:
         port: Annotated[int | str, "Port number  of the table node server"],
         config: Annotated[WorkerConfig, "Configuration of  the worker node"],
         pool: Annotated[
-            Pool | None,
+            Pool | ProcessPoolExecutor | None,
             "Process pool for parallel execution. Ignored except `SemiAutoMPTrialRunner`.",
         ] = None,
     ) -> None:
