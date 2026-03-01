@@ -101,11 +101,12 @@ class TableNodeClient:
         query: dict[str, str | None] | None = None,
     ) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
+        _query = None if query is None else {k: v for k, v in query.items() if v is not None}
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 url,
                 headers=self.HEADERS,
-                params=query,
+                params=_query,
                 timeout=timeout_seconds,
             )
         return response.status_code, response.json()
