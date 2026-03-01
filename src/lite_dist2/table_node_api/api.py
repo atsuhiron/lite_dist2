@@ -120,7 +120,7 @@ async def handle_study(
         raise HTTPException(status_code=400, detail="Only one of study_id or name should be set.")
 
     curr = await CurriculumProvider.get()
-    storage = curr.pop_storage(study_id, name)
+    storage = curr.get_storage(study_id, name)
     if storage is not None:
         await storage.consume_trial()
         return StudyResponse(status=StudyStatus.done, result=storage)

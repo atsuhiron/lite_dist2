@@ -110,6 +110,22 @@ class Curriculum:
         e = "Both are None"
         raise LD2ParameterError(p, e)
 
+    def get_storage(self, study_id: str | None, name: str | None) -> StudyStorage | None:
+        if study_id is not None:
+            for storage in self.storages:
+                if storage.study_id == study_id:
+                    return storage
+            return None
+
+        if name is not None:
+            for storage in self.storages:
+                if storage.name == name:
+                    return storage
+            return None
+        p = "study_id, name"
+        e = "Both are None"
+        raise LD2ParameterError(p, e)
+
     def get_study_status(self, study_id: str | None, name: str | None) -> StudyStatus:
         if study_id is not None:
             return self._get_study_status_by_id(study_id)
