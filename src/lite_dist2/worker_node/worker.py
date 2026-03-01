@@ -37,7 +37,10 @@ class Worker:
         self.config = config
         self.id = str(uuid.uuid1())
 
-    async def start(self, stop_at_no_trial: bool = False, *args: object, **kwargs: object) -> None:
+    def start(self, stop_at_no_trial: bool = False, *args: object, **kwargs: object) -> None:
+        asyncio.run(self.start_async(stop_at_no_trial, *args, **kwargs))
+
+    async def start_async(self, stop_at_no_trial: bool = False, *args: object, **kwargs: object) -> None:
         if not await self.client.ping():
             msg = "Table node server not responding"
             raise LD2TableNodeServerError(msg)

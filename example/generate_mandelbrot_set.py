@@ -102,7 +102,7 @@ async def run_worker(table_ip: str, table_port: int) -> None:
         port=table_port,
         config=worker_config,
     )
-    await worker.start(stop_at_no_trial=True)
+    await worker.start_async(stop_at_no_trial=True)
 
 
 async def main() -> None:

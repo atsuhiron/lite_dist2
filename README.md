@@ -215,6 +215,8 @@ uv run start-table -c path/to/table_config.json
 Register `Study` from an administrative node to a table node with /study/register. You can register a study in Python via a client class or by using an API tool such as curl.    
 In Python:
 ```python
+import asyncio
+
 from lite_dist2.common import float2hex, int2hex
 from lite_dist2.curriculum_models.study_portables import StudyRegistry
 from lite_dist2.study_strategies import StudyStrategyModel
@@ -261,7 +263,7 @@ study_register_param = StudyRegisterParam(
     ),
 )
 client = TableNodeClient(ip="xxx.xxx.xxx.xxx", port=8000)
-client.register_study(study_register_param)
+asyncio.run(client.register_study(study_register_param))
 ```
 In curl:
 ```shell
@@ -326,9 +328,11 @@ The `Study` can be identified either by the `study_id` issued in /study/register
 As before, this process can be done in Python via a client class or using API tools such as curl.
 In Python:
 ```python
+import asyncio
+
 from lite_dist2.worker_node.table_node_client import TableNodeClient
 client = TableNodeClient(ip="xxx.xxx.xxx.xxx", port=8000)
-study = client.study(name="mandelbrot")
+study = asyncio.run(client.study(name="mandelbrot"))
 ```
 
 In curl:
@@ -835,26 +839,26 @@ Since the creation of a child process is a heavy process, it is more efficient t
 The `SemiAutoMPTrialRunner` solves this problem by allowing process pools to be injected from the outside.
 The definition is almost the same as in `AutoMPTrialRunner`, only the source of inheritance is different.
 ```diff
-from lite_dist2.type_definitions import RawParamType, RawResultType
+  from lite_dist2.type_definitions import RawParamType, RawResultType
 - from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 + from lite_dist2.worker_node.trial_runner import SemiAutoMPTrialRunner
 
 
 - class Mandelbrot(AutoMPTrialRunner):
 + class Mandelbrot(SemiAutoMPTrialRunner):
-    _ABS_THRESHOLD = 2.0
-    _MAX_ITER = 255
+      _ABS_THRESHOLD = 2.0
+      _MAX_ITER = 255
 
-    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
-        x = float(parameters[0])
-        y = float(parameters[1])
-        c = complex(x, y)
-        z = complex(0, 0)
-        iter_count = 0
-        while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
-            z = z ** 2 + c
-            iter_count += 1
-        return iter_count
+      def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+          x = float(parameters[0])
+          y = float(parameters[1])
+          c = complex(x, y)
+          z = complex(0, 0)
+          iter_count = 0
+          while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
+              z = z ** 2 + c
+              iter_count += 1
+          return iter_count
 ```
 
 When executing, the process pool is injected from the outside. Also, `WorkerConfig.process_num` is ignored.
@@ -862,17 +866,17 @@ When executing, the process pool is injected from the outside. Also, `WorkerConf
 ```diff
 + from multiprocessing.pool import Pool
 
-from lite_dist2.config import WorkerConfig
-from lite_dist2.worker_node.worker import Worker
+  from lite_dist2.config import WorkerConfig
+  from lite_dist2.worker_node.worker import Worker
 
-def run_worker(table_ip: str) -> None:
-    worker_config = WorkerConfig(
-        name="w_01",
+  def run_worker(table_ip: str) -> None:
+      worker_config = WorkerConfig(
+          name="w_01",
 -         process_num=2,
-        max_size=10,
-        wait_seconds_on_no_trial=5,
-        table_node_request_timeout_seconds=60,
-    )
+          max_size=10,
+          wait_seconds_on_no_trial=5,
+          table_node_request_timeout_seconds=60,
+      )
 -     worker = Worker(
 -         trial_runner=Mandelbrot(),
 -         ip=table_ip,
@@ -941,52 +945,52 @@ const_param = ConstParam.from_dict(_const_dict)
 These constants can be `str` as well as `int`, `float`, and `bool`.  
 In `TrialRunner`, this value can be obtained from a keyword argument.
 ```diff
-from lite_dist2.type_definitions import RawParamType, RawResultType
-from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+  from lite_dist2.type_definitions import RawParamType, RawResultType
+  from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 
 
-class Mandelbrot(AutoMPTrialRunner):
+  class Mandelbrot(AutoMPTrialRunner):
 -     _ABS_THRESHOLD = 2.0
 -     _MAX_ITER = 255
 -
-    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+      def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
 +         abs_threshold = self.get_typed("abs_threshold", float, kwargs)
 +         max_iter = self.get_typed("max_iter", int, kwargs)
-        x = float(parameters[0])
-        y = float(parameters[1])
-        c = complex(x, y)
-        z = complex(0, 0)
-        iter_count = 0
+          x = float(parameters[0])
+          y = float(parameters[1])
+          c = complex(x, y)
+          z = complex(0, 0)
+          iter_count = 0
 -         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
 +         while abs(z) <= abs_threshold and iter_count < max_iter:
-            z = z ** 2 + c
-            iter_count += 1
-        return iter_count
+              z = z ** 2 + c
+              iter_count += 1
+          return iter_count
 ```
 Here, we use the `get_typed` method defined in `BaseTrialRunner`. This is a helper method to specify types strictly.
 If you don't mind type checkers and exception handling, you can write the following way.
 ```diff
-from lite_dist2.type_definitions import RawParamType, RawResultType
-from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+  from lite_dist2.type_definitions import RawParamType, RawResultType
+  from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 
 
-class Mandelbrot(AutoMPTrialRunner):
+  class Mandelbrot(AutoMPTrialRunner):
 -     _ABS_THRESHOLD = 2.0
 -     _MAX_ITER = 255
 -
-    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+      def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
 +         abs_threshold = kwargs["abs_threshold"]
 +         max_iter = kwargs["max_iter"]
-        x = float(parameters[0])
-        y = float(parameters[1])
-        c = complex(x, y)
-        z = complex(0, 0)
-        iter_count = 0
+          x = float(parameters[0])
+          y = float(parameters[1])
+          c = complex(x, y)
+          z = complex(0, 0)
+          iter_count = 0
 -         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
 +         while abs(z) <= abs_threshold and iter_count < max_iter:
-            z = z ** 2 + c
-            iter_count += 1
-        return iter_count
+              z = z ** 2 + c
+              iter_count += 1
+          return iter_count
 ```
 
 ### Startup table node in your Python script
