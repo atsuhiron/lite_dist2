@@ -831,26 +831,26 @@ x, y のサイズが変わっていることに注目してください。それ
 `SemiAutoMPTrialRunner` ではこの問題を解決するためにプロセスプールを外から注入できるようになっています。
 定義の方法は `AutoMPTrialRunner` とほとんど同じで、継承元が変わるだけです。
 ```diff
-from lite_dist2.type_definitions import RawParamType, RawResultType
+  from lite_dist2.type_definitions import RawParamType, RawResultType
 - from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 + from lite_dist2.worker_node.trial_runner import SemiAutoMPTrialRunner
 
 
 - class Mandelbrot(AutoMPTrialRunner):
 + class Mandelbrot(SemiAutoMPTrialRunner):
-    _ABS_THRESHOLD = 2.0
-    _MAX_ITER = 255
+      _ABS_THRESHOLD = 2.0
+      _MAX_ITER = 255
 
-    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
-        x = float(parameters[0])
-        y = float(parameters[1])
-        c = complex(x, y)
-        z = complex(0, 0)
-        iter_count = 0
-        while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
-            z = z ** 2 + c
-            iter_count += 1
-        return iter_count
+      def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+          x = float(parameters[0])
+          y = float(parameters[1])
+          c = complex(x, y)
+          z = complex(0, 0)
+          iter_count = 0
+          while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
+              z = z ** 2 + c
+              iter_count += 1
+          return iter_count
 ```
 
 実行する際は外からプロセスプールを注入します。また `WorkerConfig.process_num` は無視されます。
@@ -858,16 +858,16 @@ from lite_dist2.type_definitions import RawParamType, RawResultType
 ```diff
 + from multiprocessing.pool import Pool
 
-from lite_dist2.config import WorkerConfig
-from lite_dist2.worker_node.worker import Worker
+  from lite_dist2.config import WorkerConfig
+  from lite_dist2.worker_node.worker import Worker
 
-def run_worker(table_ip: str) -> None:
-    worker_config = WorkerConfig(
-        name="w_01",
+  def run_worker(table_ip: str) -> None:
+      worker_config = WorkerConfig(
+          name="w_01",
 -         process_num=2,
-        max_size=10,
-        wait_seconds_on_no_trial=5,
-        table_node_request_timeout_seconds=60,
+          max_size=10,
+          wait_seconds_on_no_trial=5,
+          table_node_request_timeout_seconds=60,
     )
 -     worker = Worker(
 -         trial_runner=Mandelbrot(),
@@ -937,52 +937,52 @@ const_param = ConstParam.from_dict(_const_dict)
 これらの定数は、`int`、`float`、`bool` のほかに `str` も使用できます。  
 `TrialRunner` ではキーワード引数からこの値を取得できます。
 ```diff
-from lite_dist2.type_definitions import RawParamType, RawResultType
-from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+  from lite_dist2.type_definitions import RawParamType, RawResultType
+  from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 
 
-class Mandelbrot(AutoMPTrialRunner):
+  class Mandelbrot(AutoMPTrialRunner):
 -     _ABS_THRESHOLD = 2.0
 -     _MAX_ITER = 255
 -
-    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+     def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
 +         abs_threshold = self.get_typed("abs_threshold", float, kwargs)
 +         max_iter = self.get_typed("max_iter", int, kwargs)
-        x = float(parameters[0])
-        y = float(parameters[1])
-        c = complex(x, y)
-        z = complex(0, 0)
-        iter_count = 0
+          x = float(parameters[0])
+          y = float(parameters[1])
+          c = complex(x, y)
+          z = complex(0, 0)
+          iter_count = 0
 -         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
 +         while abs(z) <= abs_threshold and iter_count < max_iter:
-            z = z ** 2 + c
-            iter_count += 1
-        return iter_count
+              z = z ** 2 + c
+              iter_count += 1
+          return iter_count
 ```
 ここで、`BaseTrialRunner` に定義されている `get_typed` メソッドを利用しています。これは型を厳密に指定するためのヘルパーメソッドです。
 型チェッカーや例外処理を気にしないのであれば次の書き方でも問題ありません。
 ```diff
-from lite_dist2.type_definitions import RawParamType, RawResultType
-from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
+  from lite_dist2.type_definitions import RawParamType, RawResultType
+  from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 
 
-class Mandelbrot(AutoMPTrialRunner):
+  class Mandelbrot(AutoMPTrialRunner):
 -     _ABS_THRESHOLD = 2.0
 -     _MAX_ITER = 255
 -
-    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+     def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
 +         abs_threshold = kwargs["abs_threshold"]
 +         max_iter = kwargs["max_iter"]
-        x = float(parameters[0])
-        y = float(parameters[1])
-        c = complex(x, y)
-        z = complex(0, 0)
-        iter_count = 0
+          x = float(parameters[0])
+          y = float(parameters[1])
+          c = complex(x, y)
+          z = complex(0, 0)
+          iter_count = 0
 -         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
 +         while abs(z) <= abs_threshold and iter_count < max_iter:
-            z = z ** 2 + c
-            iter_count += 1
-        return iter_count
+              z = z ** 2 + c
+              iter_count += 1
+          return iter_count
 ```
 
 ### Python スクリプト内でのテーブルノードの起動
