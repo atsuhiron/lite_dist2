@@ -40,13 +40,13 @@ async def handle_save() -> OkResponse:
     return OkResponse(ok=True)
 
 
-@app.get("/status", response_model=CurriculumSummaryResponse)
+@app.get("/status")
 async def handle_status() -> CurriculumSummaryResponse:
     curr = await CurriculumProvider.get()
     return CurriculumSummaryResponse(summaries=curr.to_summaries())
 
 
-@app.get("/status/progress", response_model=ProgressSummaryResponse)
+@app.get("/status/progress")
 async def handle_status_progress(
     cutoff_sec: Annotated[int, Query(description="Time range of Trial used for ETA estimation.")] = 600,
 ) -> ProgressSummaryResponse:
@@ -54,7 +54,7 @@ async def handle_status_progress(
     return curr.report_progress(cutoff_sec)
 
 
-@app.post("/study/register", response_model=StudyRegisteredResponse)
+@app.post("/study/register")
 async def handle_study_register(
     study_registry: Annotated[StudyRegisterParam, Body(description="Registry of processing study")],
 ) -> StudyRegisteredResponse:
@@ -70,7 +70,7 @@ async def handle_study_register(
     raise HTTPException(status_code=400, detail=f'The name("{new_study.name}") of study is already registered.')
 
 
-@app.post("/trial/reserve", response_model=TrialReserveResponse)
+@app.post("/trial/reserve")
 async def handle_trial_reserve(
     param: Annotated[TrialReserveParam, Body(description="Reserved trial parameter")],
     response: Response,
@@ -88,7 +88,7 @@ async def handle_trial_reserve(
     return TrialReserveResponse(trial=trial.to_model())
 
 
-@app.post("/trial/register", response_model=OkResponse)
+@app.post("/trial/register")
 async def handle_trial_register(
     param: Annotated[TrialRegisterParam, Body(description="Registering trial")],
 ) -> OkResponse:
@@ -108,7 +108,7 @@ async def handle_trial_register(
     return OkResponse(ok=True)
 
 
-@app.get("/study", response_model=StudyResponse)
+@app.get("/study")
 async def handle_study(
     response: Response,
     study_id: Annotated[str | None, Query(description="`study_id` of the target study")] = None,
@@ -135,7 +135,7 @@ async def handle_study(
     return resp
 
 
-@app.delete("/study", response_model=OkResponse)
+@app.delete("/study")
 async def handle_study_cancel(
     study_id: Annotated[str | None, Query(description="`study_id` of the target study")] = None,
     name: Annotated[str | None, Query(description="`name` of the target study")] = None,
