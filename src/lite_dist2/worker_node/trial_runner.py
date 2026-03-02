@@ -84,15 +84,23 @@ class AutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
         if config.process_num is None or config.process_num > 1:
             parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
-            with Pool(processes=config.process_num) as _pool, tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in _pool.imap_unordered(
-                    func=parameter_pass_func,
-                    iterable=parameter_space.grid(),
-                    chunksize=config.chunk_size,
-                ):
-                    raw_mappings.append((arg_tuple, result_iter))
-                    p_bar.update(1)
-            return raw_mappings
+            _pool = Pool(processes=config.process_num)
+            try:
+                with tqdm.tqdm(**tqdm_kwargs) as p_bar:
+                    for arg_tuple, result_iter in _pool.imap_unordered(
+                        func=parameter_pass_func,
+                        iterable=parameter_space.grid(),
+                        chunksize=config.chunk_size,
+                    ):
+                        raw_mappings.append((arg_tuple, result_iter))
+                        p_bar.update(1)
+                return raw_mappings
+            except KeyboardInterrupt:
+                _pool.terminate()
+                _pool.join()
+            else:
+                _pool.close()
+                _pool.join()
         return [
             self.parameter_pass_func(arg_tuple, args, kwargs)
             for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)
