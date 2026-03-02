@@ -885,6 +885,38 @@ x, y のサイズが変わっていることに注目してください。それ
 +         worker.start()
 ```
 
+`multiprocessing.pool.Pool` の代わりに `concurrent.futures.ProcessPoolExecutor` を使うこともできます。
+
+```diff
++ from concurrent.futures import ProcessPoolExecutor
+
+  from lite_dist2.config import WorkerConfig
+  from lite_dist2.worker_node.worker import Worker
+
+  def run_worker(table_ip: str) -> None:
+      worker_config = WorkerConfig(
+          name="w_01",
+-         process_num=2,
+          max_size=10,
+          wait_seconds_on_no_trial=5,
+          table_node_request_timeout_seconds=60,
+    )
+-     worker = Worker(
+-         trial_runner=Mandelbrot(),
+-         ip=table_ip,
+-         config=worker_config,
+-     )
+-     worker.start()
++     with ProcessPoolExecutor(max_worker=2) as pool:
++         worker = Worker(
++             trial_runner=Mandelbrot(),
++             ip=table_ip,
++             config=worker_config,
++             pool=Pool,
++         )
++         worker.start()
+```
+
 #### ManualMPTrialRunner
 もしあなたがパラメータの組のリストを受け取って処理する部分を自分で実装したい場合（例えば、並列処理の部分を自分で実装したい）、`ManualMPTrialRunner` が利用できます。
 このクラスを利用する場合は `func` メソッドの代わりに `batch_func` メソッドを実装します。  
