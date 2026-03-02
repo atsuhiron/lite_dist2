@@ -1,0 +1,49 @@
+services:
+  table:
+    build: .
+    container_name: lite_dist2-table
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: "1"
+    command: python -m example.run_table
+    volumes:
+      - curriculum_data:/app
+    networks:
+      - lite_dist2-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/ping', timeout=5.0)"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  worker:
+    build: .
+    container_name: lite_dist2-worker
+    depends_on:
+      table:
+        condition: service_healthy
+    environment:
+      PYTHONUNBUFFERED: "1"
+    command: python -m example.run_worker
+    networks:
+      - lite_dist2-network
+
+  management:
+    build: .
+    container_name: lite_dist2-management
+    depends_on:
+      table:
+        condition: service_healthy
+    environment:
+      PYTHONUNBUFFERED: "1"
+    command: python -m example.run_management
+    networks:
+      - lite_dist2-network
+
+volumes:
+  curriculum_data:
+
+networks:
+  lite_dist2-network:
+    driver: bridge
