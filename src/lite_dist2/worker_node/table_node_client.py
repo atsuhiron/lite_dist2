@@ -120,4 +120,5 @@ class TableNodeClient:
                 json=body.model_dump(mode="json"),
                 timeout=timeout_seconds,
             )
+        response.raise_for_status()
         return response.status_code, response.json()

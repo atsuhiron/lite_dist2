@@ -1,5 +1,6 @@
 [src]
 include = [
+    "docker_example",
     "example",
     "src",
     "tests",

@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import abc
 import functools
+import logging
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from multiprocessing.pool import Pool
 from typing import TYPE_CHECKING, Any, override
 
 import tqdm
 
 from lite_dist2.expections import LD2TypeError
-from lite_dist2.type_definitions import ConstParamType
+from lite_dist2.type_definitions import ConstParamType, PrimitiveValueType
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -17,6 +19,9 @@ if TYPE_CHECKING:
     from lite_dist2.curriculum_models.trial import Trial
     from lite_dist2.type_definitions import RawParamType, RawResultType
     from lite_dist2.value_models.space_type import ParameterSpaceType
+
+
+logger = logging.getLogger(__name__)
 
 
 class BaseTrialRunner(abc.ABC):
@@ -29,7 +34,7 @@ class BaseTrialRunner(abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | None = None,
+        pool: Pool | ProcessPoolExecutor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
@@ -47,7 +52,7 @@ class BaseTrialRunner(abc.ABC):
         self,
         trial: Trial,
         config: WorkerConfig,
-        pool: Pool | None = None,
+        pool: Pool | ProcessPoolExecutor | None = None,
         *args: object,
         **kwargs: object,
     ) -> Trial:
@@ -70,7 +75,7 @@ class AutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | None = None,
+        pool: Pool | ProcessPoolExecutor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
@@ -79,15 +84,23 @@ class AutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
         if config.process_num is None or config.process_num > 1:
             parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
-            with Pool(processes=config.process_num) as _pool, tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in _pool.imap_unordered(
-                    func=parameter_pass_func,
-                    iterable=parameter_space.grid(),
-                    chunksize=config.chunk_size,
-                ):
-                    raw_mappings.append((arg_tuple, result_iter))
-                    p_bar.update(1)
-            return raw_mappings
+            _pool = Pool(processes=config.process_num)
+            try:
+                with tqdm.tqdm(**tqdm_kwargs) as p_bar:
+                    for arg_tuple, result_iter in _pool.imap_unordered(
+                        func=parameter_pass_func,
+                        iterable=parameter_space.grid(),
+                        chunksize=config.chunk_size,
+                    ):
+                        raw_mappings.append((arg_tuple, result_iter))
+                        p_bar.update(1)
+                return raw_mappings
+            except KeyboardInterrupt:
+                _pool.terminate()
+                _pool.join()
+            else:
+                _pool.close()
+                _pool.join()
         return [
             self.parameter_pass_func(arg_tuple, args, kwargs)
             for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)
@@ -100,28 +113,65 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | None = None,
+        pool: Pool | ProcessPoolExecutor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
-        raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         total = parameter_space.total
         tqdm_kwargs = {"total": total, "disable": config.disable_function_progress_bar}
-        if pool is not None:
-            parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
-            with tqdm.tqdm(**tqdm_kwargs) as p_bar:
-                for arg_tuple, result_iter in pool.imap_unordered(
-                    func=parameter_pass_func,
-                    iterable=parameter_space.grid(),
-                    chunksize=config.chunk_size,
-                ):
-                    raw_mappings.append((arg_tuple, result_iter))
-                    p_bar.update(1)
-            return raw_mappings
-        return [
-            self.parameter_pass_func(arg_tuple, args, kwargs)
-            for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)
-        ]
+
+        if pool is None:
+            logger.warning("pool is None, running in single-threaded mode")
+            return [
+                self.parameter_pass_func(arg_tuple, args, kwargs)
+                for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)
+            ]
+
+        parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
+        grid = parameter_space.grid()
+        match pool:
+            case Pool():
+                return self._run_pool(pool, parameter_pass_func, grid, config.chunk_size, tqdm_kwargs)
+            case ProcessPoolExecutor():
+                return self._run_process_pool_executor(pool, parameter_pass_func, grid, tqdm_kwargs)
+            case _:
+                n = "pool"
+                raise LD2TypeError(n, "Pool or ProcessPoolExecutor", type(pool))
+
+    def _run_pool(
+        self,
+        pool: Pool,
+        parameter_pass_func: functools.partial[tuple[RawParamType, RawResultType]],
+        grid: Iterator[tuple[PrimitiveValueType, ...]],
+        chunk_size: int,
+        tqdm_kwargs: dict[str, object],
+    ) -> list[tuple[RawParamType, RawResultType]]:
+        raw_mappings: list[tuple[RawParamType, RawResultType]] = []
+        with tqdm.tqdm(**tqdm_kwargs) as p_bar:
+            for arg_tuple, result_iter in pool.imap_unordered(
+                func=parameter_pass_func,
+                iterable=grid,
+                chunksize=chunk_size,
+            ):
+                raw_mappings.append((arg_tuple, result_iter))
+                p_bar.update(1)
+        return raw_mappings
+
+    def _run_process_pool_executor(
+        self,
+        pool: ProcessPoolExecutor,
+        parameter_pass_func: functools.partial[tuple[RawParamType, RawResultType]],
+        grid: Iterator[tuple[PrimitiveValueType, ...]],
+        tqdm_kwargs: dict[str, object],
+    ) -> list[tuple[RawParamType, RawResultType]]:
+        raw_mappings: list[tuple[RawParamType, RawResultType]] = []
+        futures = {pool.submit(parameter_pass_func, arg_tuple): arg_tuple for arg_tuple in grid}
+        with tqdm.tqdm(**tqdm_kwargs) as p_bar:
+            for future in as_completed(futures):
+                arg_tuple, result_iter = future.result()
+                raw_mappings.append((arg_tuple, result_iter))
+                p_bar.update(1)
+        return raw_mappings
 
 
 class ManualMPTrialRunner(BaseTrialRunner, abc.ABC):
@@ -144,7 +194,7 @@ class ManualMPTrialRunner(BaseTrialRunner, abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | None = None,
+        pool: Pool | ProcessPoolExecutor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:

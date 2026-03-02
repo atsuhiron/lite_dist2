@@ -893,6 +893,38 @@ When executing, the process pool is injected from the outside. Also, `WorkerConf
 +         worker.start()
 ```
 
+You can use `concurrent.futures.ProcessPoolExecutor` instead of `multiprocessing.pool.Pool`.
+
+```diff
++ from concurrent.futures import ProcessPoolExecutor
+
+  from lite_dist2.config import WorkerConfig
+  from lite_dist2.worker_node.worker import Worker
+
+  def run_worker(table_ip: str) -> None:
+      worker_config = WorkerConfig(
+          name="w_01",
+-         process_num=2,
+          max_size=10,
+          wait_seconds_on_no_trial=5,
+          table_node_request_timeout_seconds=60,
+    )
+-     worker = Worker(
+-         trial_runner=Mandelbrot(),
+-         ip=table_ip,
+-         config=worker_config,
+-     )
+-     worker.start()
++     with ProcessPoolExecutor(max_worker=2) as pool:
++         worker = Worker(
++             trial_runner=Mandelbrot(),
++             ip=table_ip,
++             config=worker_config,
++             pool=Pool,
++         )
++         worker.start()
+```
+
 #### ManualMPTrialRunner
 If you want to implement the part that takes a list of parameter pairs and processes them yourself (for example, the parallel processing part), you can use `ManualMPTrialRunner`.
 If you use this class, implement the `batch_func` method instead of the `func` method.  
