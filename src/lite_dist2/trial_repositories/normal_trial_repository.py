@@ -34,6 +34,8 @@ class NormalTrialRepository(BaseTrialRepository):
                 else:
                     warnings.warn(f"Unexpected item in save_dir: {item}", stacklevel=2)
         else:
+            if not self.save_dir.parent.exists():
+                await aiofiles.os.mkdir(self.save_dir.parent)
             await aiofiles.os.mkdir(self.save_dir)
 
     @override
