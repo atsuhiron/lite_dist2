@@ -2,7 +2,12 @@
 
 ## [Unreleased]
 
-# [0.6.1] - 2026-03-01
+## [0.6.2] - 2026-03-02
+
+### Changed
+- Improve cancelling behaviour([#35](https://github.com/atsuhiron/lite_dist2/pull/35)).
+
+## [0.6.1] - 2026-03-01
 
 ### Changed
 - Modify to execute synchronously in the top-level method([#31](https://github.com/atsuhiron/lite_dist2/pull/31)).
@@ -12,7 +17,7 @@
 - Fix sending empty query parameter([#30](https://github.com/atsuhiron/lite_dist2/pull/30)).
 - Fix /study behavior. No longer study will disappear after call /study([#32](https://github.com/atsuhiron/lite_dist2/pull/32)).
 
-# [0.6.0] - 2026-02-22
+## [0.6.0] - 2026-02-22
 
 ### Changed
 - Rearchitecture([#26](https://github.com/atsuhiron/lite_dist2/pull/26)).
