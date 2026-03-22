@@ -14,6 +14,7 @@ from lite_dist2.worker_node.table_node_client import TableNodeClient
 
 logger = logging.getLogger(__name__)
 
+
 async def register_study(table_ip: str, table_port: int) -> None:
     _resolution = 10
     _half_size = 2.0
@@ -68,7 +69,7 @@ async def main() -> None:
             await register_study(table_ip="table", table_port=8000)  # Docker Compose でのサービス名
             logger.info("Management: Study registration completed")
         except Exception as e:  # noqa: BLE001
-            logger.warning("Waiting for table node... (%d/30): %s", i+1, e)
+            logger.warning("Waiting for table node... (%d/30): %s", i + 1, e)
             await asyncio.sleep(1)
         else:
             return
