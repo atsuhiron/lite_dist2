@@ -144,7 +144,7 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         parameter_pass_func: functools.partial[tuple[RawParamType, RawResultType]],
         grid: Iterator[tuple[PrimitiveValueType, ...]],
         chunk_size: int,
-        tqdm_kwargs: dict[str, object],
+        tqdm_kwargs: dict[str, Any],
     ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         with tqdm.tqdm(**tqdm_kwargs) as p_bar:
@@ -162,7 +162,7 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         pool: ProcessPoolExecutor,
         parameter_pass_func: functools.partial[tuple[RawParamType, RawResultType]],
         grid: Iterator[tuple[PrimitiveValueType, ...]],
-        tqdm_kwargs: dict[str, object],
+        tqdm_kwargs: dict[str, Any],
     ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         futures = {pool.submit(parameter_pass_func, arg_tuple): arg_tuple for arg_tuple in grid}
