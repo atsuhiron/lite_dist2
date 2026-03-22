@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-03-22
+
+### Changed
+- Bump up libraries([#37](https://github.com/atsuhiron/lite_dist2/pull/37)).
+
 ## [0.6.2] - 2026-03-02
 
 ### Changed
