@@ -13,7 +13,7 @@ from lite_dist2.expections import LD2TypeError
 from lite_dist2.type_definitions import ConstParamType, PrimitiveValueType
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Mapping
 
     from lite_dist2.config import WorkerConfig
     from lite_dist2.curriculum_models.trial import Trial
@@ -62,7 +62,7 @@ class BaseTrialRunner(abc.ABC):
         return trial
 
     @staticmethod
-    def get_typed[T](key: str, value_type: type[T], d: dict[str, object]) -> T:
+    def get_typed[T](key: str, value_type: type[T], d: Mapping[str, object]) -> T:
         v = d.get(key)
         if isinstance(v, value_type):
             return v

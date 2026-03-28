@@ -16,6 +16,8 @@ from lite_dist2.value_models.point import ResultType, ScalarValue, VectorValue
 from lite_dist2.value_models.space_model import SpacePortableModelType
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from lite_dist2.type_definitions import RawParamType, RawResultType
     from lite_dist2.value_models.base_space import FlattenSegment
     from lite_dist2.value_models.space_type import ParameterSpaceType
@@ -86,7 +88,7 @@ class Trial:
         self.result = results
         self.registered_timestamp = registered_timestamp
 
-    def convert_mappings_from(self, raw_mappings: list[tuple[RawParamType, RawResultType]]) -> list[Mapping]:
+    def convert_mappings_from(self, raw_mappings: Sequence[tuple[RawParamType, RawResultType]]) -> list[Mapping]:
         mappings = []
         for raw_param, raw_res in raw_mappings:
             param = self.parameter_space.value_tuple_to_param_type(raw_param)
@@ -94,8 +96,8 @@ class Trial:
             mappings.append(Mapping(params=param, result=result))
         return mappings
 
-    def set_result(self, mappings: list[Mapping]) -> None:
-        self.result = mappings
+    def set_result(self, mappings: Sequence[Mapping]) -> None:
+        self.result = list(mappings)
 
     def set_registered_timestamp(self) -> None:
         self.registered_timestamp = publish_timestamp()
