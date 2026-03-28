@@ -11,7 +11,7 @@ from lite_dist2.value_models.point import ParamType, ScalarValue
 from lite_dist2.value_models.space_model import ParameterAlignedSpacePortableModel
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Generator, Sequence
 
     from lite_dist2.type_definitions import PrimitiveValueType
 
@@ -164,7 +164,7 @@ class ParameterAlignedSpace(BaseSpace):
                 return i
         return -1
 
-    def slice(self, start_and_sizes: list[tuple[int, int]]) -> ParameterAlignedSpace:
+    def slice(self, start_and_sizes: Sequence[tuple[int, int]]) -> ParameterAlignedSpace:
         if len(start_and_sizes) != self.dim:
             msg = "start_and_sizes"
             raise LD2ParameterError(msg, "different size to axes")

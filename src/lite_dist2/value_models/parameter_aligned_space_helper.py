@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from lite_dist2.value_models.base_space import FlattenSegment
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Iterable
+    from collections.abc import Generator, Iterable, Sequence
 
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 type Mergeable = ParameterAlignedSpace | FlattenSegment
 
 
-def simplify[T: Mergeable](mergeables: list[T], *args: object) -> list[T]:
+def simplify[T: Mergeable](mergeables: Sequence[T], *args: object) -> list[T]:
     new_aps = []
     mergeables_duplicated_group: dict[int, set[int]] = {}
     sub_space_num = len(mergeables)
@@ -55,7 +55,7 @@ def simplify[T: Mergeable](mergeables: list[T], *args: object) -> list[T]:
     return sorted(new_aps, key=lambda spc: spc.get_start_index(*args))
 
 
-def remap_space(aps: list[ParameterAlignedSpace], dim: int) -> dict[int, list[ParameterAlignedSpace]]:
+def remap_space(aps: Sequence[ParameterAlignedSpace], dim: int) -> dict[int, list[ParameterAlignedSpace]]:
     remapped = {i: [] for i in range(-1, dim)}
 
     for space in aps:
