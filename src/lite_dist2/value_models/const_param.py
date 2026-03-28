@@ -9,6 +9,8 @@ from lite_dist2.common import float2hex, int2hex, numerize
 from lite_dist2.expections import LD2UndefinedError
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from lite_dist2.type_definitions import ConstParamType
 
 
@@ -48,5 +50,5 @@ class ConstParam(BaseModel):
         return {const.key: const.unpack() for const in self.consts}
 
     @staticmethod
-    def from_dict(d: dict[str, ConstParamType]) -> ConstParam:
+    def from_dict(d: Mapping[str, ConstParamType]) -> ConstParam:
         return ConstParam(consts=list(starmap(ConstParamElement.from_kv, d.items())))
