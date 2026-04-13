@@ -5,6 +5,14 @@
 ## [0.6.4] - 2026-03-28
 
 ### Changed
+- Bump up libraries([#42](https://github.com/atsuhiron/lite_dist2/pull/42)).
+
+### Fixed
+-  Fix type error in Jagged Space([#42](https://github.com/atsuhiron/lite_dist2/pull/42)).
+
+## [0.6.4] - 2026-03-28
+
+### Changed
 - Bump up libraries([#39](https://github.com/atsuhiron/lite_dist2/pull/39)).
 - Use immutable type([#40](https://github.com/atsuhiron/lite_dist2/pull/40)).
 
