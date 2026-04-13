@@ -4,7 +4,7 @@ import functools
 from collections import defaultdict
 from typing import TYPE_CHECKING, override
 
-from lite_dist2.common import float2hex, hex2float, hex2int, int2hex
+from lite_dist2.common import float2hex, hex2float, hex2int, int2hex, portablize
 from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
 from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 from lite_dist2.value_models.base_space import BaseSpace, FlattenSegment
@@ -58,7 +58,7 @@ class ParameterJaggedSpace(BaseSpace):
     def value_tuple_to_param_type(self, values: tuple[PrimitiveValueType, ...]) -> ParamType:
         return tuple(
             [
-                ScalarValue(type="scalar", value_type=ax.type, value=val, name=ax.name)
+                ScalarValue(type="scalar", value_type=ax.type, value=portablize(ax.type, val), name=ax.name)
                 for val, ax in zip(values, self.axes_info, strict=True)
             ],
         )
