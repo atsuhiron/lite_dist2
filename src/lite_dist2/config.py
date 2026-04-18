@@ -50,8 +50,8 @@ class TableConfig(BaseModel):
             default_config = TableConfig()
             with path.open(mode="w") as f:
                 json.dump(default_config.model_dump(mode="json"), f, indent=4)
-        with path.open() as f:
-            return TableConfig.model_validate(json.load(f))
+        with path.open(mode="rb") as f:
+            return TableConfig.model_validate_json(f.read())
 
 
 class WorkerConfig(BaseModel):

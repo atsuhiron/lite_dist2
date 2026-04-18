@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import TYPE_CHECKING, override
 
@@ -328,9 +327,8 @@ async def test_curriculum_save_and_load(tmp_path: str, sample_curriculum_fixture
     await sample_curriculum_fixture.save(json_path)
     assert json_path.exists()
 
-    with json_path.open("r", encoding="utf-8") as f:
-        json_data = json.load(f)
-    model = CurriculumModel.model_validate(json_data)
+    with json_path.open("rb") as f:
+        model = CurriculumModel.model_validate_json(f.read())
     assert model is not None
 
     loaded_curriculum = await Curriculum.load_or_create(json_path)
