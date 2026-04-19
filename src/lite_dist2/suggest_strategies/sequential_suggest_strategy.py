@@ -129,8 +129,12 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         ticks = [flatten_index + 1]
         for reverse_dim in range(available_max_upper_reverse_dim + 1):
             lower_dim = reversed_lower_dims[reverse_dim]
+            reversed_dim_size = reversed_dim_sizes[reverse_dim]
+            if reversed_dim_size is None:
+                msg = "Cannot use this method on infinite space"
+                raise LD2InvalidSpaceError(msg)
 
-            size = reversed_dim_sizes[reverse_dim] - reversed_loomed_indices[reverse_dim]
+            size = reversed_dim_size - reversed_loomed_indices[reverse_dim]
             if size <= 1:
                 continue
             d_init = ticks[-1]
@@ -160,10 +164,11 @@ class SequentialSuggestStrategy(BaseSuggestStrategy):
         ticks = [flatten_index + 1]
         for reverse_dim in range(available_max_upper_reverse_dim + 1):
             lower_dim = reversed_lower_dims[reverse_dim]
-            if reversed_dim_sizes[reverse_dim] is None:
+            reversed_dim_size = reversed_dim_sizes[reverse_dim]
+            if reversed_dim_size is None:
                 break
 
-            size = reversed_dim_sizes[reverse_dim] - reversed_loomed_indices[reverse_dim]
+            size = reversed_dim_size - reversed_loomed_indices[reverse_dim]
             if size <= 1:
                 continue
             d_init = ticks[-1]

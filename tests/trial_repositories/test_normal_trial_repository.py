@@ -95,9 +95,8 @@ async def test_normal_trial_repository_save(tmp_path: str) -> None:
     assert trial_file.exists()
 
     # マニュアル load
-    with trial_file.open() as f:
-        d = json.load(f)
-        loaded_trial_model = TrialModel.model_validate(d)
+    with trial_file.open(mode="rb") as f:
+        loaded_trial_model = TrialModel.model_validate_json(f.read())
 
     # 同じものか確認
     assert trial_model == loaded_trial_model
