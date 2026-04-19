@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-## [0.6.4] - 2026-03-28
+## [0.6.6] - 2026-04-19
+### Changed
+- Improve performance([#44](https://github.com/atsuhiron/lite_dist2/pull/44)).
+
+## [0.6.5] - 2026-04-13
 
 ### Changed
 - Bump up libraries([#42](https://github.com/atsuhiron/lite_dist2/pull/42)).
