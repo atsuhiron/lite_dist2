@@ -1,3 +1,3 @@
-Remove-Item -Recurse -Force dist/
+rm -r dist/
 uv build
-uv publish --token $env:PYPI_TOKEN
+uv publish --token "$PYPI_TOKEN"
