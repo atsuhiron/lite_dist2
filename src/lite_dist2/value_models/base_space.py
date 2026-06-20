@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 import itertools
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from lite_dist2.expections import LD2InvalidSpaceError
 
@@ -89,7 +89,7 @@ class FlattenSegment:
     def get_start_index(self, *_: object) -> int:
         return self.start
 
-    def can_merge(self, other: FlattenSegment, *_: object) -> bool:
+    def can_merge(self, other: Self, *_: object) -> bool:
         if self.start < other.start:
             smaller = self
             larger = other
@@ -102,7 +102,7 @@ class FlattenSegment:
 
         return smaller.start + smaller.size >= larger.start
 
-    def merge(self, other: FlattenSegment, *_: object) -> FlattenSegment:
+    def merge(self, other: Self, *_: object) -> Self:
         if self.start < other.start:
             smaller = self
             larger = other
@@ -110,7 +110,7 @@ class FlattenSegment:
             smaller = other
             larger = self
         merged_size = None if smaller.size is None or larger.size is None else larger.start + larger.size
-        return FlattenSegment(smaller.start, merged_size)
+        return self.__class__(smaller.start, merged_size)
 
     def next_start_index(self) -> int:
         if self.size is None:

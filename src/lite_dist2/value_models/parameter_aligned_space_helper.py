@@ -4,7 +4,7 @@ import itertools
 from functools import reduce
 from typing import TYPE_CHECKING
 
-from lite_dist2.value_models.base_space import FlattenSegment
+from lite_dist2.value_models.protocols import Mergeable
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Sequence
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from lite_dist2.value_models.aligned_space import ParameterAlignedSpace
 
 
-type Mergeable = ParameterAlignedSpace | FlattenSegment
+# type Mergeable = ParameterAlignedSpace | FlattenSegment
 
 
 def simplify[T: Mergeable](mergeables: Sequence[T], *args: object) -> list[T]:

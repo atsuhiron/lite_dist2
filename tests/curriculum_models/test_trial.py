@@ -455,7 +455,7 @@ def test_done_in_after(trial: Trial, cutoff_datetime: datetime, expected: bool) 
                     LineSegmentPortableModel(
                         name="x",
                         type="int",
-                        size="0x1",
+                        size=None,
                         start="0x0",
                         step="0x1",
                         ambient_index="0x0",
@@ -483,7 +483,7 @@ def test_done_in_after(trial: Trial, cutoff_datetime: datetime, expected: bool) 
                     LineSegmentPortableModel(
                         name="x",
                         type="int",
-                        size="0x1",
+                        size=None,
                         start="0x0",
                         step="0x1",
                         ambient_index="0x0",

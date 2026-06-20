@@ -129,7 +129,7 @@ class ParameterJaggedSpace(BaseSpace):
                 param = f"{LineSegment.__name__}.type"
                 msg = f"An axis of {ParameterJaggedSpace.__name__} is only allowed dummy axis."
                 raise LD2ParameterError(param, msg)
-            axes_info.append(axis.to_line_segment())
+            axes_info.append(axis.to_line_segment().to_dummy())
 
         return ParameterJaggedSpace(
             parameters=[
