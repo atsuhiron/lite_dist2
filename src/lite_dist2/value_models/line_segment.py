@@ -47,19 +47,24 @@ class LineSegment[T: PrimitiveValueType]:
             i += 1
 
     def indexed_grid(self) -> Generator[tuple[int, T]]:
+        fstart = float(self.start)
+        fstep = float(self.step)
         i = 0
         while self.size is None or i < self.size:
-            yield i + self.ambient_index, self.start + i * self.step
+            yield i + self.ambient_index, self._dtype(fstart + i * fstep)
             i += 1
 
     def slice(self, start_index: int, size: int) -> LineSegment[T]:
         if self.size is not None and size > self.size - start_index:
             msg = f"{size=}"
             raise LD2ParameterError(msg, "larger than ambient")
+
+        fstart = float(self.start)
+        fstep = float(self.step)
         return LineSegment[T](
             name=self.name,
             type_=self.type,
-            start=self._dtype(self.start + start_index * self.step),
+            start=self._dtype(fstart + start_index * fstep),
             size=size,
             step=self.step,
             ambient_index=self.ambient_index + start_index,

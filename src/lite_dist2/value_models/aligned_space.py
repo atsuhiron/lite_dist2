@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, override
+from typing import TYPE_CHECKING, Self, override
 
 from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.value_models.base_space import BaseSpace, FlattenSegment
@@ -186,7 +186,25 @@ class ParameterAlignedSpace(BaseSpace):
             flatten_index += self.axes[di].ambient_index * lower_element_num_by_dim[di]
         return FlattenSegment(flatten_index, self.total)
 
-    def can_merge(self, other: ParameterAlignedSpace, target_dim: int) -> bool:
+    def _get_target_dim_from_args(self, *args: object) -> int:
+        if len(args) == 0:
+            target_dim = self.get_lower_not_universal_dim()
+            if target_dim == -1:
+                msg = "Cannot get target dim. Because all axes are universal."
+                raise LD2InvalidSpaceError(msg)
+            return target_dim
+
+        if not isinstance(args[0], int):
+            msg = "target_dim"
+            raise LD2ParameterError(msg, "must be int")
+        target_dim = args[0]
+        if not (0 <= target_dim < self.dim):
+            msg = "target_dim"
+            raise LD2ParameterError(msg, f"must be in [0, {self.dim})")
+        return target_dim
+
+    def can_merge(self, other: Self, *args: object) -> bool:
+        target_dim = self._get_target_dim_from_args(*args)
         if not self.derived_by_same_ambient_space_with(other):
             # 同じ母空間から誘導されたものでなければ False
             return False
@@ -216,7 +234,8 @@ class ParameterAlignedSpace(BaseSpace):
         other_axis = other.axes[target_dim]
         return self_axis.can_merge(other_axis)
 
-    def merge(self, other: ParameterAlignedSpace, target_dim: int) -> ParameterAlignedSpace:
+    def merge(self, other: Self, *args: object) -> Self:
+        target_dim = self._get_target_dim_from_args(*args)
         axes = []
         for d in range(self.dim):
             if d != target_dim:
@@ -228,7 +247,7 @@ class ParameterAlignedSpace(BaseSpace):
             merged_axis = self.axes[d].merge(other.axes[d])
             axes.append(merged_axis)
 
-        return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
+        return self.__class__(axes=axes, check_lower_filling=self.check_lower_filling)
 
     @staticmethod
     def loom_by_flatten_index(flatten_index: int, lower_element_num_by_dim: tuple[int, ...]) -> tuple[int, ...]:
