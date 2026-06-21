@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.6.7] - 2026-06-21
+### Changes
+- Bump up libraries([#46](https://github.com/atsuhiron/lite_dist2/pull/46)).
+- Bump up libraries([#47](https://github.com/atsuhiron/lite_dist2/pull/47)).
+- Use `assert_never` function on `match` statement([#48](https://github.com/atsuhiron/lite_dist2/pull/48)).
+
 ## [0.6.6] - 2026-04-19
 ### Changed
 - Improve performance([#44](https://github.com/atsuhiron/lite_dist2/pull/44)).
