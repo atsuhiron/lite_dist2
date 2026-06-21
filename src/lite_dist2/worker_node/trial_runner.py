@@ -5,7 +5,7 @@ import functools
 import logging
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from multiprocessing.pool import Pool
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any, assert_never, override
 
 import tqdm
 
@@ -134,9 +134,8 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
                 return self._run_pool(pool, parameter_pass_func, grid, config.chunk_size, tqdm_kwargs)
             case ProcessPoolExecutor():
                 return self._run_process_pool_executor(pool, parameter_pass_func, grid, tqdm_kwargs)
-            case _:
-                n = "pool"
-                raise LD2TypeError(n, "Pool or ProcessPoolExecutor", type(pool))
+            case _ as unreachable:
+                assert_never(unreachable)
 
     def _run_pool(
         self,

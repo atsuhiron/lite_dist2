@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import threading
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, assert_never
 
 from lite_dist2.common import int2hex, publish_timestamp
 from lite_dist2.curriculum_models.study_portables import StudyModel, StudyStorage, StudySummary
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial, TrialStatus
 from lite_dist2.curriculum_models.trial_table import TrialTable
-from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.study_strategies.study_strategy_factory import create_study_strategy
 from lite_dist2.suggest_strategies import SequentialSuggestStrategy
 from lite_dist2.trial_repositories.trial_repository_factory import create_trial_repository
@@ -174,8 +173,8 @@ class Study:
                 raise NotImplementedError
             case "designated":
                 raise NotImplementedError
-            case _:
-                raise LD2ModelTypeError(model.type)
+            case _ as unreachable:
+                assert_never(unreachable)
 
     @staticmethod
     def from_model(study_model: StudyModel) -> Study:

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from itertools import starmap
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, assert_never
 
 from pydantic import BaseModel
 
 from lite_dist2.common import float2hex, int2hex, numerize
-from lite_dist2.expections import LD2UndefinedError
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -25,8 +24,8 @@ class ConstParamElement(BaseModel):
                 return numerize(self.type, self.value)
             case "str":
                 return self.value
-            case _:
-                raise LD2UndefinedError(self.type)
+            case _ as unreachable:
+                assert_never(unreachable)
 
     @staticmethod
     def from_kv(key: str, value: ConstParamType) -> ConstParamElement:
@@ -39,8 +38,8 @@ class ConstParamElement(BaseModel):
                 return ConstParamElement(type="float", key=key, value=float2hex(value))
             case str():
                 return ConstParamElement(type="str", key=key, value=value)
-            case _:
-                raise LD2UndefinedError(type(value))
+            case _ as unreachable:
+                assert_never(unreachable)
 
 
 class ConstParam(BaseModel):

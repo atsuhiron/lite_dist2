@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, assert_never
 
 from pydantic import BaseModel
 
 from lite_dist2.common import numerize, portablize
-from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.type_definitions import PortableValueType
 
 if TYPE_CHECKING:
@@ -22,8 +21,8 @@ def _get_default_value(value_type: Literal["bool", "int", "float"]) -> PortableV
             return "0x0"
         case "float":
             return "0x0.0p+0"
-        case _:
-            raise LD2ModelTypeError(value_type)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 class ScalarValue(BaseModel):

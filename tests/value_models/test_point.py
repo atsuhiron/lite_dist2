@@ -2,7 +2,6 @@ from typing import Any, Literal
 
 import pytest
 
-from lite_dist2.expections import LD2ModelTypeError
 from lite_dist2.value_models.point import ScalarValue, VectorValue
 
 
@@ -41,13 +40,6 @@ def test_scalar_value_numerize(scalar_value: ScalarValue, expected: bool | float
     assert actual == expected
 
 
-def test_scalar_value_numerize_value_type_error() -> None:
-    scalar = ScalarValue(type="scalar", value_type="bool", value=True)
-    scalar.value_type = "invalid"  # ty: ignore[invalid-assignment]
-    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
-        _ = scalar.numerize()
-
-
 @pytest.mark.parametrize(
     ("raw_result_value", "value_type", "name", "expected"),
     [
@@ -64,11 +56,6 @@ def test_scalar_value_create_from_numeric(
 ) -> None:
     actual = ScalarValue.create_from_numeric(raw_result_value, value_type, name)
     assert actual == expected
-
-
-def test_scalar_value_create_from_numeric_value_type_error() -> None:
-    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
-        _ = ScalarValue.create_from_numeric(raw_result_value=True, value_type="invalid")  # ty: ignore[invalid-argument-type]
 
 
 @pytest.mark.parametrize(
@@ -106,13 +93,6 @@ def test_vector_value_numerize(vector_value: VectorValue, expected: list[bool | 
     assert actual == expected
 
 
-def test_vector_value_numerize_value_type_error() -> None:
-    vector = VectorValue(type="vector", value_type="bool", values=[True])
-    vector.value_type = "invalid"  # ty: ignore[invalid-assignment]
-    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
-        _ = vector.numerize()
-
-
 @pytest.mark.parametrize(
     ("raw_result_value", "value_type", "name", "expected"),
     [
@@ -129,8 +109,3 @@ def test_vector_value_create_from_numeric(
 ) -> None:
     actual = VectorValue.create_from_numeric(raw_result_value, value_type, name)
     assert actual == expected
-
-
-def test_vector_value_create_from_numeric_value_type_error() -> None:
-    with pytest.raises(LD2ModelTypeError, match=r"Unknown\stype:\s"):
-        _ = VectorValue.create_from_numeric(raw_result_value=[True], value_type="invalid")  # ty: ignore[invalid-argument-type]
