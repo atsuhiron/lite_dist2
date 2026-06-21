@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import functools
 from collections import defaultdict
-from typing import TYPE_CHECKING, override
+from typing import TYPE_CHECKING, assert_never, override
 
 from lite_dist2.common import float2hex, hex2float, hex2int, int2hex, portablize
 from lite_dist2.expections import LD2ParameterError, LD2UndefinedError
@@ -148,8 +148,8 @@ class ParameterJaggedSpace(BaseSpace):
                 return int2hex(primitive)
             case float():
                 return float2hex(primitive)
-            case _:
-                raise LD2UndefinedError(str(type(primitive)))
+            case _ as unreachable:
+                assert_never(unreachable)
 
     @staticmethod
     def _portable_to_primitive(portable: PortableValueType) -> PrimitiveValueType:

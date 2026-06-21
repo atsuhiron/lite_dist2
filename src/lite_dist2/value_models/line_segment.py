@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, assert_never
 
 from pydantic import BaseModel
 
 from lite_dist2.common import hex2float, hex2int, int2hex, portablize
-from lite_dist2.expections import LD2InvalidSpaceError, LD2ModelTypeError, LD2ParameterError
+from lite_dist2.expections import LD2InvalidSpaceError, LD2ParameterError
 from lite_dist2.type_definitions import PortableValueType, PrimitiveValueType
 
 if TYPE_CHECKING:
@@ -202,9 +202,8 @@ class LineSegmentPortableModel(BaseModel):
                     ambient_size=None if self.ambient_size is None else hex2int(self.ambient_size),
                     is_dummy=False,
                 )
-            case _:
-                msg = f"Invalid line segment type: {self.type}"
-                raise LD2InvalidSpaceError(msg)
+            case _ as unreachable:
+                assert_never(unreachable)
 
     @staticmethod
     def from_line_segment(line_segment: LineSegment | DummyLineSegment) -> LineSegmentPortableModel:
@@ -231,5 +230,5 @@ class LineSegmentPortableModel(BaseModel):
                     ambient_size=None if line_segment.ambient_size is None else int2hex(line_segment.ambient_size),
                     is_dummy=line_segment.is_dummy,
                 )
-            case _:
-                raise LD2ModelTypeError(line_segment)
+            case _ as unreachable:
+                assert_never(unreachable)

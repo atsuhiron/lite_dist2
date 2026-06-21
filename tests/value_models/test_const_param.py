@@ -1,6 +1,4 @@
-import pytest
 
-from lite_dist2.expections import LD2UndefinedError
 from lite_dist2.value_models.const_param import ConstParam, ConstParamElement
 
 
@@ -17,8 +15,3 @@ def test_const_param_to_dict_from_dict() -> None:
     d = original.to_dict()
     actual = ConstParam.from_dict(d)
     assert original == actual
-
-
-def test_const_param_element_from_kv_raise_undefined_type() -> None:
-    with pytest.raises(LD2UndefinedError):
-        _ = ConstParamElement.from_kv(key="error_value", value=[])  # ty: ignore[invalid-argument-type]

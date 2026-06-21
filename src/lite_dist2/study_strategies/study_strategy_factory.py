@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, assert_never
 
-from lite_dist2.expections import LD2ModelTypeError, LD2ParameterError
+from lite_dist2.expections import LD2ParameterError
 from lite_dist2.study_strategies.all_calculation_study_strategy import AllCalculationStudyStrategy
 from lite_dist2.study_strategies.find_exact_study_strategy import FindExactStudyStrategy
 
@@ -23,5 +23,5 @@ def create_study_strategy(model: StudyStrategyModel) -> BaseStudyStrategy:
             return FindExactStudyStrategy(param)
         case "minimize":
             raise NotImplementedError
-        case _:
-            raise LD2ModelTypeError(model.type)
+        case _ as unreachable:
+            assert_never(unreachable)

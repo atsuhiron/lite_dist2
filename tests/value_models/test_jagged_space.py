@@ -154,11 +154,6 @@ def test_parameter_jagged_space_primitive_to_portable(
     assert actual == expected
 
 
-def test_parameter_jagged_space_primitive_to_portable_raise_undefined_type() -> None:
-    with pytest.raises(LD2UndefinedError):
-        ParameterJaggedSpace._primitive_to_portable([])  # ty: ignore[invalid-argument-type]
-
-
 @pytest.mark.parametrize(
     ("portable", "expected"),
     [

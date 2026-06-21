@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, assert_never
 
 import aiofiles
-
-from lite_dist2.expections import LD2ModelTypeError
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -37,8 +35,8 @@ def numerize(type_name: Literal["bool", "int", "float"], value: PortableValueTyp
             return hex2int(str(value))
         case "float":
             return hex2float(str(value))
-        case _:
-            raise LD2ModelTypeError(type_name)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def portablize(type_name: Literal["bool", "int", "float"], value: PrimitiveValueType) -> PortableValueType:
@@ -49,8 +47,8 @@ def portablize(type_name: Literal["bool", "int", "float"], value: PrimitiveValue
             return int2hex(int(value))
         case "float":
             return float2hex(value)
-        case _:
-            raise LD2ModelTypeError(type_name)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def publish_timestamp() -> datetime:
