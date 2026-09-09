@@ -37,7 +37,7 @@ Start a table node locally: `uv run start-table [-c path/to/table_config.json]`.
 
 ### Node roles (all HTTP, FastAPI)
 - **Table node** — the only stateful server; exactly one per cluster. `table_node_api/` defines the FastAPI `app` (`api.py`), request/response Pydantic models (`table_param.py` / `table_response.py`), and startup (`start_table_api.py`). Does **not** know the actual computation.
-- **Worker node** — `worker_node/`. `Worker` loops: reserve a `Trial` → run it via a `TrialRunner` → register the result. Talks to the table node only through `TableNodeClient` (httpx).
+- **Worker node** — `worker_node/`. `Worker` loops: reserve a `Trial` → run it via a `TrialRunner` → register the result. Talks to the table node only through `TableNodeClient` (httpx2).
 - **Management node** — also just a `TableNodeClient`; registers a `Study` and polls `/study` for the result.
 
 Typical flow: `/study/register` → workers repeatedly `/trial/reserve` + `/trial/register` → management `/study` retrieves the aggregated result.
