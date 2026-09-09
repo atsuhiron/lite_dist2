@@ -11,11 +11,13 @@ ignore = [
     "TD002",    #
     "TD003",    #
     "PLR0913",  # Because of my lazy
+    "PLR0917",  # many args
     "PLR2004",  # Magic number
     "ERA001",   # Ocurring False Positive
     "FBT001",   # flag parameter
     "FBT002",   # flag parameter
     "COM812",   # avoid conflict
+    "CPY001",   # copyright
 ]
 
 [lint.per-file-ignores]

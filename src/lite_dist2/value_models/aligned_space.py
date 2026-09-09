@@ -172,7 +172,8 @@ class ParameterAlignedSpace(BaseSpace):
         axes = [self.axes[i].slice(*start_and_sizes[i]) for i in range(self.dim)]
         return ParameterAlignedSpace(axes=axes, check_lower_filling=self.check_lower_filling)
 
-    def get_start_index(self, target_dim: int) -> int:
+    def get_start_index(self, *args: object) -> int:
+        target_dim = self._get_target_dim_from_args(*args)
         return self.axes[target_dim].get_start_index()
 
     def get_flatten_ambient_start_and_size(self) -> FlattenSegment:
