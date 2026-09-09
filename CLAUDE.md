@@ -8,7 +8,7 @@ LiteDist2 is a LAN-only distributed computing library. A **table node** hands ou
 
 ## Commands
 
-Uses [uv](https://docs.astral.sh/uv/) (>=0.7) and Python >=3.13.
+Uses [uv](https://docs.astral.sh/uv/) (>=0.7) and Python >=3.13. The development environment (`.python-version`) is 3.14; CI runs the gate on {ubuntu, windows} x {3.13, 3.14}, so keep `ruff.toml`'s `target-version` at the *minimum* supported version (`py313`).
 
 ```bash
 uv sync                                    # install dev environment
