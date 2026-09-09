@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-import httpx
+import httpx2
 
 from lite_dist2.curriculum_models.study_status import StudyStatus
 from lite_dist2.curriculum_models.trial import Trial
@@ -102,7 +102,7 @@ class TableNodeClient:
     ) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
         _query = None if query is None else {k: v for k, v in query.items() if v is not None}
-        async with httpx.AsyncClient() as client:
+        async with httpx2.AsyncClient() as client:
             response = await client.get(
                 url,
                 headers=self.HEADERS,
@@ -113,7 +113,7 @@ class TableNodeClient:
 
     async def _post(self, path: str, timeout_seconds: int, body: BaseModel) -> tuple[int, dict[str, Any]]:
         url = f"{self.domain}{path}"
-        async with httpx.AsyncClient() as client:
+        async with httpx2.AsyncClient() as client:
             response = await client.post(
                 url,
                 headers=self.HEADERS,

@@ -12,7 +12,7 @@ services:
     networks:
       - lite_dist2-network
     healthcheck:
-      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/ping', timeout=5.0)"]
+      test: ["CMD", "python", "-c", "import httpx2; httpx2.get('http://localhost:8000/ping', timeout=5.0)"]
       interval: 5s
       timeout: 10s
       retries: 5
