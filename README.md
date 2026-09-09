@@ -144,7 +144,7 @@ class Mandelbrot(AutoMPTrialRunner):
         z = complex(0, 0)
         iter_count = 0
         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
-            z = z ** 2 + c
+            z = z**2 + c
             iter_count += 1
         return iter_count
 ```
@@ -156,9 +156,15 @@ The other arguments, `args` and `kwargs`, can be used when you want to pass some
 For `BaseTrialRunner` implementations, there is `AutoMPTrialRunner` as well as `SemiAutoMPTrialRunner` and `ManualMPTrialRunner`.
 See [advanced TrialRunner implementation](#advanced-implementation-of-trialrunner) for details.
 
+> **Note on multiprocessing**  
+> The `func` you implement runs in child processes. Define your `TrialRunner` subclass at the top level of an
+> importable module, and make sure the `args` / `kwargs` you pass to `Worker` are picklable.
+> This has always been required on Windows and macOS, and it applies to Linux as well from Python 3.14,
+> where the default `multiprocessing` start method changed from `fork` to `forkserver`.
+
 ## 4. Installation
 ### Requirements
-- Python >= 3.13
+- Python >= 3.13 (tested on 3.13 and 3.14)
 
 ### Recommended requirements
 - uv >= 0.7.0
@@ -300,9 +306,10 @@ from lite_dist2.worker_node.worker import Worker
 from lite_dist2.type_definitions import RawParamType, RawResultType
 from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 
+
 class Mandelbrot(AutoMPTrialRunner):
-    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
-        ...
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType: ...
+
 
 worker_config = WorkerConfig(
     name="w_01",
@@ -331,6 +338,7 @@ In Python:
 import asyncio
 
 from lite_dist2.worker_node.table_node_client import TableNodeClient
+
 client = TableNodeClient(ip="xxx.xxx.xxx.xxx", port=8000)
 study = asyncio.run(client.study(name="mandelbrot"))
 ```
@@ -940,7 +948,9 @@ from lite_dist2.worker_node.trial_runner import ManualMPTrialRunner
 
 
 class ManualMandelbrot(ManualMPTrialRunner):
-    def batch_func(self, raw_params: Iterator[RawParamType], config: WorkerConfig, *args: object, **kwargs: object) -> list[tuple[RawParamType, RawResultType]]:
+    def batch_func(
+        self, raw_params: Iterator[RawParamType], config: WorkerConfig, *args: object, **kwargs: object
+    ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
         with Pool(processes=2) as pool:
@@ -968,10 +978,7 @@ Alternatively, it can be generated from a dictionary.
 ```python
 from lite_dist2.value_models.const_param import ConstParam
 
-_const_dict = {
-    "abs_threshold": 2.0,
-    "max_iter": 255
-}
+_const_dict = {"abs_threshold": 2.0, "max_iter": 255}
 const_param = ConstParam.from_dict(_const_dict)
 ```
 These constants can be `str` as well as `int`, `float`, and `bool`.  
@@ -1051,7 +1058,7 @@ After the results are finally retrieved by the /study API, the `Study` directori
 
 ## 10. Development
 ### Requirements
-- Python >= 3.13
+- Python >= 3.13 (the development environment uses 3.14; CI runs both 3.13 and 3.14)
 - uv >= 0.7.0
 
 ### Development environment setup

@@ -141,7 +141,7 @@ class Mandelbrot(AutoMPTrialRunner):
         z = complex(0, 0)
         iter_count = 0
         while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
-            z = z ** 2 + c
+            z = z**2 + c
             iter_count += 1
         return iter_count
 ```
@@ -153,9 +153,15 @@ class Mandelbrot(AutoMPTrialRunner):
 `BaseTrialRunner` の実装については `AutoMPTrialRunner` の他にも `SemiAutoMPTrialRunner`、`ManualMPTrialRunner` があります。
 詳細は [高度な TrialRunner の実装](#高度な-trialrunner-の実装) を参照してください。
 
+> **マルチプロセスに関する注意**  
+> 実装した `func` は子プロセス上で実行されます。`TrialRunner` の派生クラスはインポート可能なモジュールの
+> トップレベルに定義し、`Worker` に渡す `args` / `kwargs` は pickle 可能なものにしてください。
+> これは Windows と macOS では従来から必要でしたが、Python 3.14 で Linux の `multiprocessing` の既定の
+> start method が `fork` から `forkserver` に変更されたため、Linux でも同様の制約が適用されます。
+
 ## 4. インストール方法
 ### 必要要件
-- Python >= 3.13
+- Python >= 3.13 (3.13 / 3.14 でテスト済み)
 
 ### 推奨要件
 - uv >= 0.7.0
@@ -294,9 +300,10 @@ from lite_dist2.worker_node.worker import Worker
 from lite_dist2.type_definitions import RawParamType, RawResultType
 from lite_dist2.worker_node.trial_runner import AutoMPTrialRunner
 
+
 class Mandelbrot(AutoMPTrialRunner):
-    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType:
-        ...
+    def func(self, parameters: RawParamType, *args: tuple, **kwargs: dict) -> RawResultType: ...
+
 
 worker_config = WorkerConfig(
     name="w_01",
@@ -323,6 +330,7 @@ worker.start()
 Python の場合:
 ```python
 from lite_dist2.worker_node.table_node_client import TableNodeClient
+
 client = TableNodeClient("xxx.xxx.xxx.xxx", port=8000)
 study = client.study(name="mandelbrot")
 ```
@@ -932,7 +940,9 @@ from lite_dist2.worker_node.trial_runner import ManualMPTrialRunner
 
 
 class ManualMandelbrot(ManualMPTrialRunner):
-    def batch_func(self, raw_params: Iterator[RawParamType], config: WorkerConfig, *args: object, **kwargs: object) -> list[tuple[RawParamType, RawResultType]]:
+    def batch_func(
+        self, raw_params: Iterator[RawParamType], config: WorkerConfig, *args: object, **kwargs: object
+    ) -> list[tuple[RawParamType, RawResultType]]:
         raw_mappings: list[tuple[RawParamType, RawResultType]] = []
         parameter_pass_func = functools.partial(self.parameter_pass_func, args=args, kwargs=kwargs)
         with Pool(processes=2) as pool:
@@ -960,10 +970,7 @@ const_param = ConstParam(
 ```python
 from lite_dist2.value_models.const_param import ConstParam
 
-_const_dict = {
-    "abs_threshold": 2.0,
-    "max_iter": 255
-}
+_const_dict = {"abs_threshold": 2.0, "max_iter": 255}
 const_param = ConstParam.from_dict(_const_dict)
 ```
 これらの定数は、`int`、`float`、`bool` のほかに `str` も使用できます。  
@@ -1043,7 +1050,7 @@ start_in_thread()
 
 ## 10. 開発
 ### 必要要件
-- Python >= 3.13
+- Python >= 3.13 (開発環境は 3.14 を使用。CI では 3.13 / 3.14 の両方を実行)
 - uv >= 0.7.0
 
 ### 開発環境のセットアップ
