@@ -156,9 +156,15 @@ The other arguments, `args` and `kwargs`, can be used when you want to pass some
 For `BaseTrialRunner` implementations, there is `AutoMPTrialRunner` as well as `SemiAutoMPTrialRunner` and `ManualMPTrialRunner`.
 See [advanced TrialRunner implementation](#advanced-implementation-of-trialrunner) for details.
 
+> **Note on multiprocessing**  
+> The `func` you implement runs in child processes. Define your `TrialRunner` subclass at the top level of an
+> importable module, and make sure the `args` / `kwargs` you pass to `Worker` are picklable.
+> This has always been required on Windows and macOS, and it applies to Linux as well from Python 3.14,
+> where the default `multiprocessing` start method changed from `fork` to `forkserver`.
+
 ## 4. Installation
 ### Requirements
-- Python >= 3.13
+- Python >= 3.13 (tested on 3.13 and 3.14)
 
 ### Recommended requirements
 - uv >= 0.7.0
@@ -1052,7 +1058,7 @@ After the results are finally retrieved by the /study API, the `Study` directori
 
 ## 10. Development
 ### Requirements
-- Python >= 3.13
+- Python >= 3.13 (the development environment uses 3.14; CI runs both 3.13 and 3.14)
 - uv >= 0.7.0
 
 ### Development environment setup

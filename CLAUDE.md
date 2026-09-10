@@ -8,7 +8,7 @@ LiteDist2 is a LAN-only distributed computing library. A **table node** hands ou
 
 ## Commands
 
-Uses [uv](https://docs.astral.sh/uv/) (>=0.7) and Python >=3.13.
+Uses [uv](https://docs.astral.sh/uv/) (>=0.7) and Python >=3.13. The development environment (`.python-version`) is 3.14; CI runs the gate on {ubuntu, windows} x {3.13, 3.14}, so keep `ruff.toml`'s `target-version` at the *minimum* supported version (`py313`).
 
 ```bash
 uv sync                                    # install dev environment
@@ -37,7 +37,7 @@ Start a table node locally: `uv run start-table [-c path/to/table_config.json]`.
 
 ### Node roles (all HTTP, FastAPI)
 - **Table node** — the only stateful server; exactly one per cluster. `table_node_api/` defines the FastAPI `app` (`api.py`), request/response Pydantic models (`table_param.py` / `table_response.py`), and startup (`start_table_api.py`). Does **not** know the actual computation.
-- **Worker node** — `worker_node/`. `Worker` loops: reserve a `Trial` → run it via a `TrialRunner` → register the result. Talks to the table node only through `TableNodeClient` (httpx).
+- **Worker node** — `worker_node/`. `Worker` loops: reserve a `Trial` → run it via a `TrialRunner` → register the result. Talks to the table node only through `TableNodeClient` (httpx2).
 - **Management node** — also just a `TableNodeClient`; registers a `Study` and polls `/study` for the result.
 
 Typical flow: `/study/register` → workers repeatedly `/trial/reserve` + `/trial/register` → management `/study` retrieves the aggregated result.

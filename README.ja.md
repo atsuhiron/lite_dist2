@@ -153,9 +153,15 @@ class Mandelbrot(AutoMPTrialRunner):
 `BaseTrialRunner` の実装については `AutoMPTrialRunner` の他にも `SemiAutoMPTrialRunner`、`ManualMPTrialRunner` があります。
 詳細は [高度な TrialRunner の実装](#高度な-trialrunner-の実装) を参照してください。
 
+> **マルチプロセスに関する注意**  
+> 実装した `func` は子プロセス上で実行されます。`TrialRunner` の派生クラスはインポート可能なモジュールの
+> トップレベルに定義し、`Worker` に渡す `args` / `kwargs` は pickle 可能なものにしてください。
+> これは Windows と macOS では従来から必要でしたが、Python 3.14 で Linux の `multiprocessing` の既定の
+> start method が `fork` から `forkserver` に変更されたため、Linux でも同様の制約が適用されます。
+
 ## 4. インストール方法
 ### 必要要件
-- Python >= 3.13
+- Python >= 3.13 (3.13 / 3.14 でテスト済み)
 
 ### 推奨要件
 - uv >= 0.7.0
@@ -1044,7 +1050,7 @@ start_in_thread()
 
 ## 10. 開発
 ### 必要要件
-- Python >= 3.13
+- Python >= 3.13 (開発環境は 3.14 を使用。CI では 3.13 / 3.14 の両方を実行)
 - uv >= 0.7.0
 
 ### 開発環境のセットアップ

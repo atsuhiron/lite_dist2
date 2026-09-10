@@ -94,13 +94,14 @@ class AutoMPTrialRunner(BaseTrialRunner, abc.ABC):
                     ):
                         raw_mappings.append((arg_tuple, result_iter))
                         p_bar.update(1)
-                return raw_mappings
             except KeyboardInterrupt:
                 _pool.terminate()
-                _pool.join()
+                raise
             else:
                 _pool.close()
+            finally:
                 _pool.join()
+            return raw_mappings
         return [
             self.parameter_pass_func(arg_tuple, args, kwargs)
             for arg_tuple in tqdm.tqdm(parameter_space.grid(), **tqdm_kwargs)
