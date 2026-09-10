@@ -1,5 +1,7 @@
-from concurrent.futures import ProcessPoolExecutor
+import sys
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from multiprocessing import Pool
+from pathlib import Path
 
 import pytest
 
@@ -59,3 +61,38 @@ def test_semi_auto_mp_trial_runner_with_pool() -> None:
     with Pool(processes=2) as pool:
         actual = _SemiAutoDoubler().wrap_func(_space(4), config, pool, offset=10)
     assert sorted(actual) == _EXPECTED
+
+
+def test_semi_auto_mp_trial_runner_with_thread_pool_executor() -> None:
+    config = WorkerConfig(disable_function_progress_bar=True)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        actual = _SemiAutoDoubler().wrap_func(_space(4), config, pool, offset=10)
+    assert sorted(actual) == _EXPECTED
+
+
+if sys.version_info >= (3, 14):
+    from concurrent.futures import InterpreterPoolExecutor
+
+    from tests.worker_node.interpreter_runner import InterpreterDoubler
+
+    def _extend_sys_path(root: str) -> None:
+        # Runs inside each subinterpreter. A subinterpreter starts from the process's initial sys.path,
+        # which under `uv run pytest` does not contain the repository root, so `tests.worker_node` would
+        # not be importable there. The function must be stateless (no module globals, local import only)
+        # so that it can be sent across interpreters by code rather than by pickle.
+        import sys  # noqa: PLC0415
+
+        sys.path.insert(0, root)
+
+    def test_semi_auto_mp_trial_runner_with_interpreter_pool_executor() -> None:
+        config = WorkerConfig(disable_function_progress_bar=True)
+        repo_root = str(Path(__file__).resolve().parents[2])
+        with InterpreterPoolExecutor(max_workers=2, initializer=_extend_sys_path, initargs=(repo_root,)) as pool:
+            actual = InterpreterDoubler().wrap_func(_space(4), config, pool, offset=10)
+        assert sorted(actual) == _EXPECTED
+
+else:
+
+    @pytest.mark.skip(reason="InterpreterPoolExecutor requires Python 3.14")
+    def test_semi_auto_mp_trial_runner_with_interpreter_pool_executor() -> None:
+        pass

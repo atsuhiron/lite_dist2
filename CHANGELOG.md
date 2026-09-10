@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- `SemiAutoMPTrialRunner` accepts any `concurrent.futures.Executor`, including `InterpreterPoolExecutor` on Python 3.14.
 
 ## [0.6.7] - 2026-06-21
 ### Changes

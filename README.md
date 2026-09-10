@@ -896,7 +896,7 @@ When executing, the process pool is injected from the outside. Also, `WorkerConf
 +             trial_runner=Mandelbrot(),
 +             ip=table_ip,
 +             config=worker_config,
-+             pool=Pool,
++             pool=pool,
 +         )
 +         worker.start()
 ```
@@ -923,15 +923,73 @@ You can use `concurrent.futures.ProcessPoolExecutor` instead of `multiprocessing
 -         config=worker_config,
 -     )
 -     worker.start()
-+     with ProcessPoolExecutor(max_worker=2) as pool:
++     with ProcessPoolExecutor(max_workers=2) as pool:
 +         worker = Worker(
 +             trial_runner=Mandelbrot(),
 +             ip=table_ip,
 +             config=worker_config,
-+             pool=Pool,
++             pool=pool,
 +         )
 +         worker.start()
 ```
+
+On Python 3.14 or later, `concurrent.futures.InterpreterPoolExecutor` (a pool of subinterpreters) can be injected in the same way.
+A subinterpreter, unlike a child process, does not re-execute your script, and it cannot import extension modules that do not support subinterpreters — `pydantic_core`, on which `lite_dist2.config` and `lite_dist2.worker_node.worker` depend, is one of them.
+So put the `TrialRunner` in its own module that imports only `lite_dist2.worker_node.trial_runner` and `lite_dist2.type_definitions`:
+
+```python
+# mandelbrot_runner.py
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import SemiAutoMPTrialRunner
+
+
+class Mandelbrot(SemiAutoMPTrialRunner):
+    _ABS_THRESHOLD = 2.0
+    _MAX_ITER = 255
+
+    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+        while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
+            z = z**2 + c
+            iter_count += 1
+        return iter_count
+```
+
+```diff
+- from concurrent.futures import ProcessPoolExecutor
++ from concurrent.futures import InterpreterPoolExecutor
+
+  from lite_dist2.config import WorkerConfig
+  from lite_dist2.worker_node.worker import Worker
++ from mandelbrot_runner import Mandelbrot
+
+  def run_worker(table_ip: str) -> None:
+      worker_config = WorkerConfig(
+          name="w_01",
+          max_size=10,
+          wait_seconds_on_no_trial=5,
+          table_node_request_timeout_seconds=60,
+      )
+-     with ProcessPoolExecutor(max_workers=2) as pool:
++     with InterpreterPoolExecutor(max_workers=2) as pool:
+          worker = Worker(
+              trial_runner=Mandelbrot(),
+              ip=table_ip,
+              config=worker_config,
+              pool=pool,
+          )
+          worker.start()
+```
+
+Constraints specific to `InterpreterPoolExecutor` (violating them raises `concurrent.interpreters.NotShareableError` or `BrokenInterpreterPool` at run time):
+- The module that defines the runner must not import anything depending on `pydantic` (`lite_dist2.config`, `lite_dist2.worker_node.worker`, `lite_dist2.curriculum_models`, ...). Keep it separate from the script that builds `Worker` / `WorkerConfig`.
+- The runner cannot be defined in the `__main__` script. With `multiprocessing`, child processes re-import the script as `__mp_main__`; subinterpreters do not.
+- The runner's module must be importable from the interpreter's initial `sys.path` (an installed package, or a module next to the script you run). Changes to `sys.path` made at run time are not propagated to subinterpreters.
+- `initializer` cannot install signal handlers (only the main thread of the main interpreter may), so a `signal.signal(...)` initializer written for `ProcessPoolExecutor` cannot be reused.
 
 #### ManualMPTrialRunner
 If you want to implement the part that takes a list of parameter pairs and processes them yourself (for example, the parallel processing part), you can use `ManualMPTrialRunner`.

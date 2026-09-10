@@ -888,7 +888,7 @@ x, y のサイズが変わっていることに注目してください。それ
 +             trial_runner=Mandelbrot(),
 +             ip=table_ip,
 +             config=worker_config,
-+             pool=Pool,
++             pool=pool,
 +         )
 +         worker.start()
 ```
@@ -915,15 +915,73 @@ x, y のサイズが変わっていることに注目してください。それ
 -         config=worker_config,
 -     )
 -     worker.start()
-+     with ProcessPoolExecutor(max_worker=2) as pool:
++     with ProcessPoolExecutor(max_workers=2) as pool:
 +         worker = Worker(
 +             trial_runner=Mandelbrot(),
 +             ip=table_ip,
 +             config=worker_config,
-+             pool=Pool,
++             pool=pool,
 +         )
 +         worker.start()
 ```
+
+Python 3.14 以降では `concurrent.futures.InterpreterPoolExecutor`（サブインタプリタのプール）も同じ方法で注入できます。
+サブインタプリタは子プロセスと違ってスクリプトを再実行しません。また、サブインタプリタに対応していない拡張モジュールを import できず、`lite_dist2.config` や `lite_dist2.worker_node.worker` が依存する `pydantic_core` もその一つです。
+そのため `TrialRunner` は `lite_dist2.worker_node.trial_runner` と `lite_dist2.type_definitions` だけを import する独立したモジュールに置いてください。
+
+```python
+# mandelbrot_runner.py
+from lite_dist2.type_definitions import RawParamType, RawResultType
+from lite_dist2.worker_node.trial_runner import SemiAutoMPTrialRunner
+
+
+class Mandelbrot(SemiAutoMPTrialRunner):
+    _ABS_THRESHOLD = 2.0
+    _MAX_ITER = 255
+
+    def func(self, parameters: RawParamType, *args: object, **kwargs: object) -> RawResultType:
+        x = float(parameters[0])
+        y = float(parameters[1])
+        c = complex(x, y)
+        z = complex(0, 0)
+        iter_count = 0
+        while abs(z) <= self._ABS_THRESHOLD and iter_count < self._MAX_ITER:
+            z = z**2 + c
+            iter_count += 1
+        return iter_count
+```
+
+```diff
+- from concurrent.futures import ProcessPoolExecutor
++ from concurrent.futures import InterpreterPoolExecutor
+
+  from lite_dist2.config import WorkerConfig
+  from lite_dist2.worker_node.worker import Worker
++ from mandelbrot_runner import Mandelbrot
+
+  def run_worker(table_ip: str) -> None:
+      worker_config = WorkerConfig(
+          name="w_01",
+          max_size=10,
+          wait_seconds_on_no_trial=5,
+          table_node_request_timeout_seconds=60,
+      )
+-     with ProcessPoolExecutor(max_workers=2) as pool:
++     with InterpreterPoolExecutor(max_workers=2) as pool:
+          worker = Worker(
+              trial_runner=Mandelbrot(),
+              ip=table_ip,
+              config=worker_config,
+              pool=pool,
+          )
+          worker.start()
+```
+
+`InterpreterPoolExecutor` 固有の制約（違反すると実行時に `concurrent.interpreters.NotShareableError` または `BrokenInterpreterPool` になります）:
+- runner を定義するモジュールは `pydantic` に依存するもの（`lite_dist2.config`、`lite_dist2.worker_node.worker`、`lite_dist2.curriculum_models` など）を import してはいけません。`Worker` / `WorkerConfig` を組み立てるスクリプトとは分離してください。
+- runner を `__main__` スクリプト内に定義することはできません。`multiprocessing` では子プロセスがスクリプトを `__mp_main__` として再 import しますが、サブインタプリタは再 import しません。
+- runner のモジュールはインタプリタ起動時の `sys.path` から import できる場所（インストール済みパッケージ、または実行するスクリプトと同じディレクトリ）に置いてください。実行時に行った `sys.path` の変更はサブインタプリタに伝わりません。
+- `initializer` でシグナルハンドラは設定できません（メインインタプリタのメインスレッドでのみ可能）。`ProcessPoolExecutor` 向けに書いた `signal.signal(...)` の initializer は流用できません。
 
 #### ManualMPTrialRunner
 もしあなたがパラメータの組のリストを受け取って処理する部分を自分で実装したい場合（例えば、並列処理の部分を自分で実装したい）、`ManualMPTrialRunner` が利用できます。
