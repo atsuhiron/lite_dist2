@@ -55,7 +55,11 @@ class NormalTrialRepository(BaseTrialRepository):
         if not self.save_dir.exists() or not self.save_dir.is_dir():
             raise FileNotFoundError(self.save_dir)
 
-        for json_path in self.save_dir.glob("*.json"):
+        # sorted() is required: glob() yields entries in filesystem order, which is
+        # name-ordered on NTFS but arbitrary on ext4, and callers such as
+        # AllCalculationStudyStrategy.extract_mappings pass this order through to the
+        # aggregated result.
+        for json_path in sorted(self.save_dir.glob("*.json")):
             content = await async_read_file(json_path)
             trials.append(TrialModel.model_validate_json(content))
         return trials
