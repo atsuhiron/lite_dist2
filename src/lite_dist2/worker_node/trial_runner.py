@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 import functools
 import logging
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import Executor, as_completed
 from multiprocessing.pool import Pool
 from typing import TYPE_CHECKING, Any, assert_never, override
 
@@ -34,7 +34,7 @@ class BaseTrialRunner(abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | ProcessPoolExecutor | None = None,
+        pool: Pool | Executor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
@@ -52,7 +52,7 @@ class BaseTrialRunner(abc.ABC):
         self,
         trial: Trial,
         config: WorkerConfig,
-        pool: Pool | ProcessPoolExecutor | None = None,
+        pool: Pool | Executor | None = None,
         *args: object,
         **kwargs: object,
     ) -> Trial:
@@ -75,7 +75,7 @@ class AutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | ProcessPoolExecutor | None = None,
+        pool: Pool | Executor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
@@ -114,7 +114,7 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | ProcessPoolExecutor | None = None,
+        pool: Pool | Executor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
@@ -133,8 +133,8 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
         match pool:
             case Pool():
                 return self._run_pool(pool, parameter_pass_func, grid, config.chunk_size, tqdm_kwargs)
-            case ProcessPoolExecutor():
-                return self._run_process_pool_executor(pool, parameter_pass_func, grid, tqdm_kwargs)
+            case Executor():
+                return self._run_executor(pool, parameter_pass_func, grid, tqdm_kwargs)
             case _ as unreachable:
                 assert_never(unreachable)
 
@@ -157,9 +157,9 @@ class SemiAutoMPTrialRunner(BaseTrialRunner, abc.ABC):
                 p_bar.update(1)
         return raw_mappings
 
-    def _run_process_pool_executor(
+    def _run_executor(
         self,
-        pool: ProcessPoolExecutor,
+        pool: Executor,
         parameter_pass_func: functools.partial[tuple[RawParamType, RawResultType]],
         grid: Iterator[tuple[PrimitiveValueType, ...]],
         tqdm_kwargs: dict[str, Any],
@@ -194,7 +194,7 @@ class ManualMPTrialRunner(BaseTrialRunner, abc.ABC):
         self,
         parameter_space: ParameterSpaceType,
         config: WorkerConfig,
-        pool: Pool | ProcessPoolExecutor | None = None,
+        pool: Pool | Executor | None = None,
         *args: object,
         **kwargs: object,
     ) -> list[tuple[RawParamType, RawResultType]]:
